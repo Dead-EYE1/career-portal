@@ -10,8 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <!-- Netlify Identity Widget -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
 </head>
 <body>
 
@@ -79,7 +78,6 @@
         <li><a href="#" class="nav-link" id="nav-private">Private Job</a></li>
         <li><a href="#" class="nav-link nav-cta" id="nav-submit">📤 Submit Job</a></li>
         <li><a href="#" class="nav-link" id="nav-contact">Contact</a></li>
-        <li><a href="admin/index.html" class="nav-link nav-admin" id="nav-admin">⚙️ Admin</a></li>
       </ul>
     </div>
   </nav>
@@ -365,17 +363,6 @@
   </footer>
 
   <script src="script.js"></script>
-  <!-- Handle Netlify Identity Login Redirect -->
-  <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          window.netlifyIdentity.on("login", () => {
-            document.location.href = "/admin/";
-          });
-        }
-      });
-    }
-  </script>
+
 </body>
 </html>

@@ -55,11 +55,35 @@ function getBadgeText(badge) {
 }
 
 // ---- RENDER POSTS ----
+function toggleJobDetails(el) {
+  const details = el.querySelector('.post-details');
+  const arrow = el.querySelector('.post-arrow');
+  if (details) {
+    const isExpanded = details.classList.contains('expanded');
+    document.querySelectorAll('.post-details.expanded').forEach(d => {
+      d.classList.remove('expanded');
+      d.style.maxHeight = null;
+    });
+    document.querySelectorAll('.post-item.expanded-card').forEach(c => {
+      c.classList.remove('expanded-card');
+      const arr = c.querySelector('.post-arrow');
+      if (arr) arr.style.transform = 'rotate(0deg)';
+    });
+
+    if (!isExpanded) {
+      details.classList.add('expanded');
+      el.classList.add('expanded-card');
+      details.style.maxHeight = details.scrollHeight + "px";
+      if (arrow) arrow.style.transform = 'rotate(90deg)';
+    }
+  }
+}
+
 function renderPosts(listId, data) {
   const container = document.getElementById(listId);
   if (!container) return;
   container.innerHTML = data.map(item => `
-    <div class="post-item" role="listitem" tabindex="0" aria-label="${item.title}" onclick="this.style.background='#f0f4ff'">
+    <div class="post-item" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
       <span class="post-badge ${getBadgeClass(item.badge)}">${getBadgeText(item.badge)}</span>
       <div class="post-content">
         <div class="post-title">${item.title}</div>
@@ -68,6 +92,17 @@ function renderPosts(listId, data) {
           ${item.posts ? `<span>👤 ${item.posts}</span>` : ""}
           <span class="post-meta-tag">🏷️ ${item.tag}</span>
         </div>
+        ${(item.apply_date || item.last_date || item.education || item.other_details) ? `
+        <div class="post-details">
+          <div class="post-details-grid">
+            ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> ${item.apply_date}</div>` : ''}
+            ${item.last_date ? `<div class="detail-item"><strong>Last Date:</strong> <span class="highlight-date">${item.last_date}</span></div>` : ''}
+            ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> ${item.education}</div>` : ''}
+            ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${item.other_details}</div>` : ''}
+          </div>
+          <a href="#" class="apply-btn">Apply Now</a>
+        </div>
+        ` : ''}
       </div>
       <span class="post-arrow">›</span>
     </div>
@@ -127,7 +162,7 @@ function initCategoryFilter() {
       } else {
         noResults.style.display = "none";
         list.innerHTML = matches.map(item => `
-          <div class="post-item" role="listitem" tabindex="0" aria-label="${item.title}">
+          <div class="post-item" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
             <span class="post-badge ${getBadgeClass(item.badge)}">${item.section}</span>
             <div class="post-content">
               <div class="post-title">${item.title}</div>
@@ -136,6 +171,17 @@ function initCategoryFilter() {
                 ${item.posts ? `<span>👤 ${item.posts}</span>` : ""}
                 <span class="post-meta-tag">🏷️ ${item.tag}</span>
               </div>
+              ${(item.apply_date || item.last_date || item.education || item.other_details) ? `
+              <div class="post-details">
+                <div class="post-details-grid">
+                  ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> ${item.apply_date}</div>` : ''}
+                  ${item.last_date ? `<div class="detail-item"><strong>Last Date:</strong> <span class="highlight-date">${item.last_date}</span></div>` : ''}
+                  ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> ${item.education}</div>` : ''}
+                  ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${item.other_details}</div>` : ''}
+                </div>
+                <a href="#" class="apply-btn">Apply Now</a>
+              </div>
+              ` : ''}
             </div>
             <span class="post-arrow">›</span>
           </div>

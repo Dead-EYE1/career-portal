@@ -269,18 +269,7 @@ ul { list-style: none; }
 }
 .nav-link.nav-cta:hover { background: var(--accent-dark); }
 
-.nav-link.nav-admin {
-  color: rgba(255,255,255,0.65);
-  font-size: 0.82rem;
-  border-left: 1px solid rgba(255,255,255,0.1);
-  margin-left: 6px;
-  padding-left: 16px;
-}
-.nav-link.nav-admin:hover {
-  color: #fff;
-  background: rgba(255,255,255,0.08);
-  border-bottom-color: rgba(255,255,255,0.4);
-}
+
 
 .hamburger {
   display: none;
@@ -631,6 +620,60 @@ ul { list-style: none; }
   transition: var(--transition);
 }
 .post-item:hover .post-arrow { color: var(--primary); transform: translateX(4px); }
+
+/* Job Details Accordion */
+.post-item.expanded-card {
+  background: #fdfefe;
+  border-left: 3px solid var(--accent);
+}
+.post-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  margin-top: 0;
+  opacity: 0;
+}
+.post-details.expanded {
+  margin-top: 12px;
+  opacity: 1;
+}
+.post-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: var(--bg);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+.detail-item.full-width {
+  grid-column: span 2;
+}
+.detail-item strong {
+  color: var(--text-primary);
+}
+.highlight-date {
+  color: var(--accent);
+  font-weight: 600;
+}
+.apply-btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: var(--transition);
+  text-align: center;
+}
+.apply-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
 
 /* =============================================
    QUICK NAV GRID
