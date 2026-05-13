@@ -557,7 +557,25 @@ ul { list-style: none; }
 /* =============================================
    POSTS LIST
    ============================================= */
-.posts-list { padding: 6px 0; }
+.posts-list { 
+  padding: 6px 0; 
+  max-height: 480px; 
+  overflow-y: auto; 
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.posts-list::-webkit-scrollbar {
+  width: 6px;
+}
+.posts-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.posts-list::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 10px;
+}
+
 
 .post-item {
   display: flex;
