@@ -1,7 +1,8 @@
 {
   "items": [
-    { "id": 1, "title": "Gauhati High Court MTS & Computer Asst Result 2026 — Merit List Published", "badge": "result", "category": "Court", "date": "2026-04-26", "tag": "Assam" },
-    { "id": 2, "title": "PNRD Assam Gram Rozgar Sahayak 2026 Final Selection List Released", "badge": "result", "category": "Assam", "date": "2026-04-24", "tag": "Assam" },
-    { "id": 3, "title": "SSC GD Constable 2025 Final Result Declared — Download PDF Scorecard", "badge": "result", "category": "SSC", "date": "2026-04-22", "tag": "Central" }
+    { "id": 1, "title": "Gauhati High Court MTS & Computer Asst Result 2026 — Merit List Published", "badge": "result", "category": "Court", "date": "2026-04-26", "tag": "Assam", "apply_link": "https://ghconline.gov.in/" },
+    { "id": 2, "title": "PNRD Assam Gram Rozgar Sahayak 2026 Final Selection List Released", "badge": "result", "category": "Assam", "date": "2026-04-24", "tag": "Assam", "apply_link": "https://pnrd.assam.gov.in/" },
+    { "id": 3, "title": "SSC GD Constable 2025 Final Result Declared — Download PDF Scorecard", "badge": "result", "category": "SSC", "date": "2026-04-22", "tag": "Central", "apply_link": "https://ssc.gov.in/" }
   ]
 }
+

@@ -54,6 +54,17 @@ function getBadgeText(badge) {
   return map[badge] || "NEW";
 }
 
+function getButtonText(badge) {
+  const map = {
+    admit: "Download Now",
+    result: "Check Result",
+    scholarship: "Apply Now",
+    new: "Apply Now",
+    hot: "Apply Now"
+  };
+  return map[badge] || "View Details";
+}
+
 // ---- RENDER POSTS ----
 function toggleJobDetails(el) {
   const details = el.querySelector('.post-details');
@@ -100,7 +111,7 @@ function renderPosts(listId, data) {
             ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> ${item.education}</div>` : ''}
             ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${item.other_details}</div>` : ''}
           </div>
-          <a href="#" class="apply-btn">Apply Now</a>
+          <a href="${item.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">${getButtonText(item.badge)}</a>
         </div>
         ` : ''}
       </div>
@@ -179,7 +190,7 @@ function initCategoryFilter() {
                   ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> ${item.education}</div>` : ''}
                   ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${item.other_details}</div>` : ''}
                 </div>
-                <a href="#" class="apply-btn">Apply Now</a>
+                <a href="${item.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">${getButtonText(item.badge)}</a>
               </div>
               ` : ''}
             </div>

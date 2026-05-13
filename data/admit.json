@@ -1,8 +1,9 @@
 {
   "items": [
-    { "id": 1, "title": "SSC GD Constable Admit Card 2026 — Download Hall Ticket Now", "badge": "admit", "category": "SSC", "date": "2026-04-26", "tag": "Central" },
-    { "id": 2, "title": "RRB NTPC Undergraduate CBT-1 Admit Card 2026 — Exam May 7 to Jun 21", "badge": "admit", "category": "Railway", "date": "2026-04-25", "tag": "Railway" },
-    { "id": 3, "title": "UPSC IAS/IPS Prelims 2026 Admit Card — Exam Scheduled May 24, 2026", "badge": "admit", "category": "UPSC", "date": "2026-04-22", "tag": "Central" },
-    { "id": 4, "title": "NCET 2026 Admit Card Released by NTA — Download from Official Portal", "badge": "admit", "category": "Teacher", "date": "2026-04-13", "tag": "National" }
+    { "id": 1, "title": "SSC GD Constable Admit Card 2026 — Download Hall Ticket Now", "badge": "admit", "category": "SSC", "date": "2026-04-26", "tag": "Central", "apply_link": "https://ssc.gov.in/" },
+    { "id": 2, "title": "RRB NTPC Undergraduate CBT-1 Admit Card 2026 — Exam May 7 to Jun 21", "badge": "admit", "category": "Railway", "date": "2026-04-25", "tag": "Railway", "apply_link": "https://indianrailways.gov.in/" },
+    { "id": 3, "title": "UPSC IAS/IPS Prelims 2026 Admit Card — Exam Scheduled May 24, 2026", "badge": "admit", "category": "UPSC", "date": "2026-04-22", "tag": "Central", "apply_link": "https://upsc.gov.in/" },
+    { "id": 4, "title": "NCET 2026 Admit Card Released by NTA — Download from Official Portal", "badge": "admit", "category": "Teacher", "date": "2026-04-13", "tag": "National", "apply_link": "https://nta.ac.in/" }
   ]
 }
+
