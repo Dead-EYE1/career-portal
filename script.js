@@ -2,6 +2,28 @@
 // ASSAM CAREER PORTAL — JAVASCRIPT
 // =============================================
 
+// ---- SUPABASE CONFIG ----
+const SUPABASE_URL = 'https://bnpsnehsyjtvqtfmmjbo.supabase.co';
+// Replace this with your actual Supabase Anon Key
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucHNuZWhzeWp0dnF0Zm1tamJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNDc4NTMsImV4cCI6MjA5NDcyMzg1M30.oHNiY68WiDK2BWTRdI4YrE55Gxc9xXr-E38vxLJkY2Q';
+let supabaseClient = null;
+if (typeof supabase !== 'undefined') {
+  supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+async function fetchJobs() {
+  if (supabaseClient && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
+    try {
+      const { data, error } = await supabaseClient.from('jobs').select('*').order('id', { ascending: true });
+      if (error) throw error;
+      if (data && data.length > 0) return data;
+    } catch (err) {
+      console.error("Supabase fetch failed, falling back to JSON:", err);
+    }
+  }
+  return fetchSectionData('data/jobs.json');
+}
+
 // ---- DATA FETCHING ----
 let allData = [];
 
@@ -103,11 +125,14 @@ function renderPosts(listId, data) {
           ${item.posts ? `<span>👤 ${item.posts}</span>` : ""}
           <span class="post-meta-tag">🏷️ ${item.tag}</span>
         </div>
-        ${(item.apply_date || item.last_date || item.education || item.other_details) ? `
+        ${(item.apply_date || item.last_date || item.education || item.other_details || item.salary || item.location || item.application_fee) ? `
         <div class="post-details">
           <div class="post-details-grid">
             ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> ${item.apply_date}</div>` : ''}
             ${item.last_date ? `<div class="detail-item"><strong>Last Date:</strong> <span class="highlight-date">${item.last_date}</span></div>` : ''}
+            ${item.salary ? `<div class="detail-item"><strong>Salary:</strong> ${item.salary}</div>` : ''}
+            ${item.location ? `<div class="detail-item"><strong>Location:</strong> ${item.location}</div>` : ''}
+            ${item.application_fee ? `<div class="detail-item"><strong>Application Fee:</strong> ${item.application_fee}</div>` : ''}
             ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> ${item.education}</div>` : ''}
             ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${item.other_details}</div>` : ''}
           </div>
@@ -182,11 +207,14 @@ function initCategoryFilter() {
                 ${item.posts ? `<span>👤 ${item.posts}</span>` : ""}
                 <span class="post-meta-tag">🏷️ ${item.tag}</span>
               </div>
-              ${(item.apply_date || item.last_date || item.education || item.other_details) ? `
+              ${(item.apply_date || item.last_date || item.education || item.other_details || item.salary || item.location || item.application_fee) ? `
               <div class="post-details">
                 <div class="post-details-grid">
                   ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> ${item.apply_date}</div>` : ''}
                   ${item.last_date ? `<div class="detail-item"><strong>Last Date:</strong> <span class="highlight-date">${item.last_date}</span></div>` : ''}
+                  ${item.salary ? `<div class="detail-item"><strong>Salary:</strong> ${item.salary}</div>` : ''}
+                  ${item.location ? `<div class="detail-item"><strong>Location:</strong> ${item.location}</div>` : ''}
+                  ${item.application_fee ? `<div class="detail-item"><strong>Application Fee:</strong> ${item.application_fee}</div>` : ''}
                   ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> ${item.education}</div>` : ''}
                   ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${item.other_details}</div>` : ''}
                 </div>
@@ -442,7 +470,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   // Fetch JSON data dynamically
   const [rawJobs, rawAdmit, rawResult, rawScholarship] = await Promise.all([
-    fetchSectionData('data/jobs.json'),
+    fetchJobs(),
     fetchSectionData('data/admit.json'),
     fetchSectionData('data/result.json'),
     fetchSectionData('data/scholarship.json')
