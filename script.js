@@ -136,23 +136,17 @@ function generatePostHTML(data) {
           ${item.posts ? `<span>👤 ${item.posts}</span>` : ""}
           <span class="post-meta-tag">🏷️ ${item.tag}</span>
         </div>
-        ${(item.apply_date || item.last_date || item.education || item.other_details || item.salary || item.location || item.application_fee) ? `
+        ${(item.apply_date || item.education || item.other_details || item.salary || item.location || item.application_fee) ? `
         <div class="post-details">
-          ${isExpired(item.last_date) ? `
-          <div class="expired-alert" style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #ffeeba; font-size: 0.85rem;">
-            ⚠️ This application window closed on <strong>${item.last_date}</strong>. <a href="#latest-jobs-section" style="color: #004085; text-decoration: underline; font-weight: bold;">Click here to view latest live jobs</a>.
-          </div>
-          ` : ''}
           <div class="post-details-grid">
             ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> ${item.apply_date}</div>` : ''}
-            ${item.last_date ? `<div class="detail-item"><strong>Last Date:</strong> <span class="highlight-date">${item.last_date}</span></div>` : ''}
             ${item.salary ? `<div class="detail-item"><strong>Salary:</strong> ${item.salary}</div>` : ''}
             ${item.location ? `<div class="detail-item"><strong>Location:</strong> ${item.location}</div>` : ''}
             ${item.application_fee ? `<div class="detail-item"><strong>Application Fee:</strong> ${item.application_fee}</div>` : ''}
             ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> ${item.education}</div>` : ''}
             ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${item.other_details}</div>` : ''}
           </div>
-          ${!isExpired(item.last_date) ? `<a href="${item.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">${getButtonText(item.badge)}</a>` : ''}
+          <a href="${item.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">${getButtonText(item.badge)}</a>
         </div>
         ` : ''}
       </div>
@@ -521,7 +515,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     fetchSectionData('data/scholarship.json')
   ]);
 
-  const jobsData = normaliseDate(rawJobs);
+  const jobsData = normaliseDate(rawJobs).sort((a, b) => {
+    const dateA = new Date(a.apply_date || 0);
+    const dateB = new Date(b.apply_date || 0);
+    if (dateA.getTime() !== dateB.getTime()) {
+      return dateB.getTime() - dateA.getTime();
+    }
+    const postA = new Date(a.date || 0);
+    const postB = new Date(b.date || 0);
+    if (postA.getTime() !== postB.getTime()) {
+      return postB.getTime() - postA.getTime();
+    }
+    return b.id - a.id;
+  });
   const admitData = normaliseDate(rawAdmit);
   const resultData = normaliseDate(rawResult);
   const scholarshipData = normaliseDate(rawScholarship);
