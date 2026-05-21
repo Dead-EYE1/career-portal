@@ -112,12 +112,23 @@ function toggleJobDetails(el) {
   }
 }
 
-function renderPosts(listId, data) {
-  const container = document.getElementById(listId);
-  if (!container) return;
-  container.innerHTML = data.map(item => `
+// ---- UTILS: EXPIRED CHECK ----
+function isExpired(dateStr) {
+  if (!dateStr) return false;
+  // Try parsing the date. (e.g. '24 May 2026' or '2026-05-24')
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return false;
+  // Treat as expired if today is past the last date (ignoring time)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  d.setHours(0, 0, 0, 0);
+  return today > d;
+}
+
+function generatePostHTML(data) {
+  return data.map(item => `
     <div class="post-item" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
-      <span class="post-badge ${getBadgeClass(item.badge)}">${getBadgeText(item.badge)}</span>
+      <span class="post-badge ${getBadgeClass(item.badge)}">${item.section || getBadgeText(item.badge)}</span>
       <div class="post-content">
         <div class="post-title">${item.title}</div>
         <div class="post-meta">
@@ -127,6 +138,11 @@ function renderPosts(listId, data) {
         </div>
         ${(item.apply_date || item.last_date || item.education || item.other_details || item.salary || item.location || item.application_fee) ? `
         <div class="post-details">
+          ${isExpired(item.last_date) ? `
+          <div class="expired-alert" style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #ffeeba; font-size: 0.85rem;">
+            ⚠️ This application window closed on <strong>${item.last_date}</strong>. <a href="#latest-jobs-section" style="color: #004085; text-decoration: underline; font-weight: bold;">Click here to view latest live jobs</a>.
+          </div>
+          ` : ''}
           <div class="post-details-grid">
             ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> ${item.apply_date}</div>` : ''}
             ${item.last_date ? `<div class="detail-item"><strong>Last Date:</strong> <span class="highlight-date">${item.last_date}</span></div>` : ''}
@@ -136,13 +152,19 @@ function renderPosts(listId, data) {
             ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> ${item.education}</div>` : ''}
             ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${item.other_details}</div>` : ''}
           </div>
-          <a href="${item.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">${getButtonText(item.badge)}</a>
+          ${!isExpired(item.last_date) ? `<a href="${item.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">${getButtonText(item.badge)}</a>` : ''}
         </div>
         ` : ''}
       </div>
       <span class="post-arrow">›</span>
     </div>
   `).join("");
+}
+
+function renderPosts(listId, data) {
+  const container = document.getElementById(listId);
+  if (!container) return;
+  container.innerHTML = generatePostHTML(data);
 }
 
 // ---- CATEGORY FILTER ----
@@ -153,81 +175,66 @@ function initCategoryFilter() {
   const list        = document.getElementById("filter-results-list");
   const noResults   = document.getElementById("no-filter-results");
   const clearBtn    = document.getElementById("clear-filter-btn");
+  const seoText     = document.getElementById("category-seo-text");
 
   if (!block || !title || !list || !noResults || !clearBtn) return;
 
-  function clearFilter() {
-    block.style.display = "none";
-    list.innerHTML = "";
+  function renderInitial() {
+    const latest = allData.filter(d => d.section === "Govt Job").slice(0, 10);
+    title.innerHTML = `🔍 Latest Updates <span class="filter-count-badge">${latest.length}</span>`;
+    block.style.display = "block";
     noResults.style.display = "none";
+    if (seoText) seoText.style.display = "none";
+    list.innerHTML = generatePostHTML(latest);
+  }
+
+  function clearFilter() {
+    renderInitial();
     chips.forEach(c => c.classList.remove("active"));
   }
+
+  // Set initial state to Latest Jobs instead of hidden
+  renderInitial();
 
   chips.forEach(chip => {
     chip.addEventListener("click", (e) => {
       e.preventDefault();
 
-      // If clicking the already-active chip, clear and hide
       if (chip.classList.contains("active")) {
         clearFilter();
         return;
       }
 
-      // Mark active chip
       chips.forEach(c => c.classList.remove("active"));
       chip.classList.add("active");
 
       const category = chip.dataset.category;
       const label    = chip.textContent.trim();
 
-      // Filter allData — match category field (case-insensitive)
       const matches = allData.filter(item =>
         (item.category && item.category.toLowerCase().includes(category.toLowerCase())) ||
         (item.tag      && item.tag.toLowerCase().includes(category.toLowerCase()))
       );
 
-      // Build heading with count badge
       title.innerHTML = `🔍 ${label} <span class="filter-count-badge">${matches.length}</span>`;
-
-      // Show block
       block.style.display = "block";
 
       if (matches.length === 0) {
         list.innerHTML = "";
         noResults.style.display = "block";
+        if (seoText) seoText.style.display = "none";
       } else {
         noResults.style.display = "none";
-        list.innerHTML = matches.map(item => `
-          <div class="post-item" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
-            <span class="post-badge ${getBadgeClass(item.badge)}">${item.section}</span>
-            <div class="post-content">
-              <div class="post-title">${item.title}</div>
-              <div class="post-meta">
-                <span>📅 ${item.date}</span>
-                ${item.posts ? `<span>👤 ${item.posts}</span>` : ""}
-                <span class="post-meta-tag">🏷️ ${item.tag}</span>
-              </div>
-              ${(item.apply_date || item.last_date || item.education || item.other_details || item.salary || item.location || item.application_fee) ? `
-              <div class="post-details">
-                <div class="post-details-grid">
-                  ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> ${item.apply_date}</div>` : ''}
-                  ${item.last_date ? `<div class="detail-item"><strong>Last Date:</strong> <span class="highlight-date">${item.last_date}</span></div>` : ''}
-                  ${item.salary ? `<div class="detail-item"><strong>Salary:</strong> ${item.salary}</div>` : ''}
-                  ${item.location ? `<div class="detail-item"><strong>Location:</strong> ${item.location}</div>` : ''}
-                  ${item.application_fee ? `<div class="detail-item"><strong>Application Fee:</strong> ${item.application_fee}</div>` : ''}
-                  ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> ${item.education}</div>` : ''}
-                  ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${item.other_details}</div>` : ''}
-                </div>
-                <a href="${item.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">${getButtonText(item.badge)}</a>
-              </div>
-              ` : ''}
-            </div>
-            <span class="post-arrow">›</span>
-          </div>
-        `).join("");
+        
+        // Show SEO text container for category hubs
+        if (seoText) {
+          seoText.style.display = "block";
+          seoText.innerHTML = `<strong>Welcome to the ${label} Jobs Portal.</strong> This section is dedicated to bringing you the most recent and relevant updates for ${category}-related recruitment. Bookmark this page for the latest job notifications, exam dates, syllabi, admit card releases, and final result declarations. We ensure all information is up-to-date and verified from official sources to give you a competitive edge.`;
+        }
+
+        list.innerHTML = generatePostHTML(matches);
       }
 
-      // Smooth scroll to results
       block.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
@@ -464,9 +471,47 @@ function initAnimations() {
   });
 }
 
+// ---- JOB SCHEMA GENERATION ----
+function generateJobSchema(jobs) {
+  if (!jobs || !jobs.length) return;
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": jobs.filter(j => j.title).map(job => ({
+      "@type": "JobPosting",
+      "title": job.title,
+      "description": job.other_details || job.title,
+      "datePosted": job.date ? new Date(job.date).toISOString() : new Date().toISOString(),
+      "validThrough": job.last_date && !isNaN(new Date(job.last_date).getTime()) ? new Date(job.last_date).toISOString() : "",
+      "hiringOrganization": {
+        "@type": "Organization",
+        "name": job.tag || "Government of India",
+        "sameAs": "https://newjobupdates.in"
+      },
+      "jobLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressRegion": job.location || "Assam",
+          "addressCountry": "IN"
+        }
+      }
+    }))
+  };
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.text = JSON.stringify(schema);
+  document.head.appendChild(script);
+}
+
 // ---- INIT ----
 document.addEventListener("DOMContentLoaded", async () => {
   setLiveDate();
+  
+  // Set copyright year dynamically
+  const yearSpan = document.getElementById("copyright-year");
+  if (yearSpan) {
+    yearSpan.textContent = new Date().getFullYear();
+  }
   
   // Fetch JSON data dynamically
   const [rawJobs, rawAdmit, rawResult, rawScholarship] = await Promise.all([
@@ -504,6 +549,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   initItemHover();
   // Delay animations slightly
   setTimeout(initAnimations, 100);
+
+  // Generate SEO schema for loaded jobs
+  generateJobSchema(jobsData);
 
   // Header scroll style
   const style = document.createElement("style");
