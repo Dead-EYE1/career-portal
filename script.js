@@ -152,10 +152,21 @@ function highlightExamKeywords(title) {
   return newTitle;
 }
 
+function wrapTablesInResponsiveDiv(html) {
+  if (!html) return '';
+  // Wraps tables in a responsive scrollable div if not already wrapped
+  let cleanHtml = html;
+  if (cleanHtml.includes('<table') && !cleanHtml.includes('table-responsive')) {
+    cleanHtml = cleanHtml.replace(/<table/gi, '<div class="table-responsive"><table').replace(/<\/table>/gi, '</table></div>');
+  }
+  return cleanHtml;
+}
+
 function generatePostHTML(data) {
   return data.map(item => {
     const isPastDeadline = isExpired(item.apply_date || item.last_date);
-    const safeDetails = item.other_details ? item.other_details.replace(/<table/gi, '<div class="table-responsive"><table').replace(/<\/table>/gi, '</table></div>') : '';
+    const safeDetails = wrapTablesInResponsiveDiv(item.other_details);
+    const safeMainDetails = wrapTablesInResponsiveDiv(item.details);
     
     return `
     <div class="post-item" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
@@ -171,7 +182,7 @@ function generatePostHTML(data) {
         <button type="button" class="view-details-btn" onclick="event.stopPropagation(); toggleJobDetails(this.closest('.post-item'))">👁️ View Details</button>
         <div class="post-details" onclick="event.stopPropagation()">
           ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.apply_date || item.last_date || 'the deadline'}</strong>. <a href="#latest-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
-          ${item.details ? `<div class="extended-details-content">${item.details}</div>` : ''}
+          ${safeMainDetails ? `<div class="extended-details-content">${safeMainDetails}</div>` : ''}
           <div class="post-details-grid">
             ${(item.apply_date || item.last_date) ? `<div class="detail-item"><strong>Closing Date:</strong> <span class="highlight-date">${item.apply_date || item.last_date}</span></div>` : ''}
             ${item.salary ? `<div class="detail-item"><strong>Salary:</strong> ${item.salary}</div>` : ''}
@@ -411,6 +422,14 @@ function initSearch() {
   const closeBtn = document.getElementById("search-close-btn");
   const widgetInput = document.getElementById("widget-search-input");
   const widgetBtn = document.getElementById("widget-search-btn");
+  const mobileToggle = document.getElementById("mobile-search-toggle");
+  const overlayInput = document.getElementById("overlay-search-input");
+
+  function clearSearchInputs() {
+    if (input) input.value = "";
+    if (overlayInput) overlayInput.value = "";
+    if (widgetInput) widgetInput.value = "";
+  }
 
   if (input) {
     input.addEventListener("input", (e) => {
@@ -422,16 +441,37 @@ function initSearch() {
     });
   }
 
+  if (overlayInput) {
+    overlayInput.addEventListener("input", (e) => {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => doSearch(e.target.value), 200);
+    });
+    overlayInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") doSearch(overlayInput.value);
+    });
+  }
+
   if (btn) {
     btn.addEventListener("click", () => {
       if (input) doSearch(input.value);
     });
   }
 
+  if (mobileToggle && overlay) {
+    mobileToggle.addEventListener("click", () => {
+      clearSearchInputs();
+      overlay.classList.add("active");
+      // Focus after CSS transitions finish
+      setTimeout(() => {
+        if (overlayInput) overlayInput.focus();
+      }, 150);
+    });
+  }
+
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       if (overlay) overlay.classList.remove("active");
-      if (input) input.value = "";
+      clearSearchInputs();
     });
   }
 
@@ -439,7 +479,7 @@ function initSearch() {
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) {
         overlay.classList.remove("active");
-        if (input) input.value = "";
+        clearSearchInputs();
       }
     });
   }
@@ -466,7 +506,7 @@ function initSearch() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && overlay && overlay.classList.contains("active")) {
       overlay.classList.remove("active");
-      if (input) input.value = "";
+      clearSearchInputs();
     }
   });
 }
