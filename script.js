@@ -11,10 +11,13 @@ if (typeof supabase !== 'undefined') {
   supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-async function fetchJobs() {
+async function fetchLiveJobs() {
   if (supabaseClient && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
     try {
-      const { data, error } = await supabaseClient.from('jobs').select('*').order('id', { ascending: true });
+      const { data, error } = await supabaseClient
+        .from('jobs')
+        .select('*')
+        .order('created_at', { ascending: false });
       if (error) throw error;
       if (data && data.length > 0) return data;
     } catch (err) {
@@ -101,13 +104,23 @@ function toggleJobDetails(el) {
       c.classList.remove('expanded-card');
       const arr = c.querySelector('.post-arrow');
       if (arr) arr.style.transform = 'rotate(0deg)';
+      const btn = c.querySelector('.view-details-btn');
+      if (btn) {
+        btn.innerHTML = '👁️ View Details';
+        btn.classList.remove('open-btn');
+      }
     });
 
     if (!isExpanded) {
       details.classList.add('expanded');
       el.classList.add('expanded-card');
-      details.style.maxHeight = details.scrollHeight + "px";
+      details.style.maxHeight = details.scrollHeight + 500 + "px"; // Adding extra buffer for text wrap
       if (arrow) arrow.style.transform = 'rotate(90deg)';
+      const btn = el.querySelector('.view-details-btn');
+      if (btn) {
+        btn.innerHTML = '❌ Close Details';
+        btn.classList.add('open-btn');
+      }
     }
   }
 }
@@ -146,7 +159,7 @@ function generatePostHTML(data) {
     
     return `
     <div class="post-item" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
-      <span class="post-badge ${getBadgeClass(item.badge)}">${item.section || getBadgeText(item.badge)}</span>
+      <span class="post-badge ${getBadgeClass(item.badge)}">${item.organization || item.section || getBadgeText(item.badge)}</span>
       <div class="post-content">
         <div class="post-title">${highlightExamKeywords(item.title)}</div>
         <div class="post-meta">
@@ -154,11 +167,13 @@ function generatePostHTML(data) {
           ${item.posts ? `<span>👤 ${item.posts}</span>` : ""}
           <span class="post-meta-tag">🏷️ ${item.tag}</span>
         </div>
-        ${(item.apply_date || item.education || item.other_details || item.salary || item.location || item.application_fee) ? `
-        <div class="post-details">
+        ${(item.apply_date || item.education || item.other_details || item.details || item.salary || item.location || item.application_fee) ? `
+        <button type="button" class="view-details-btn" onclick="event.stopPropagation(); toggleJobDetails(this.closest('.post-item'))">👁️ View Details</button>
+        <div class="post-details" onclick="event.stopPropagation()">
           ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.apply_date || item.last_date || 'the deadline'}</strong>. <a href="#latest-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
+          ${item.details ? `<div class="extended-details-content">${item.details}</div>` : ''}
           <div class="post-details-grid">
-            ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> <span class="highlight-date">${item.apply_date}</span></div>` : ''}
+            ${(item.apply_date || item.last_date) ? `<div class="detail-item"><strong>Closing Date:</strong> <span class="highlight-date">${item.apply_date || item.last_date}</span></div>` : ''}
             ${item.salary ? `<div class="detail-item"><strong>Salary:</strong> ${item.salary}</div>` : ''}
             ${item.location ? `<div class="detail-item"><strong>Location:</strong> ${item.location}</div>` : ''}
             ${item.application_fee ? `<div class="detail-item"><strong>Application Fee:</strong> ${item.application_fee}</div>` : ''}
@@ -540,7 +555,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   // Fetch JSON data dynamically
   const [rawJobs, rawAdmit, rawResult, rawScholarship] = await Promise.all([
-    fetchJobs(),
+    fetchLiveJobs(),
     fetchSectionData('data/admit.json'),
     fetchSectionData('data/result.json'),
     fetchSectionData('data/scholarship.json')

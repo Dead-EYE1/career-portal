@@ -585,6 +585,7 @@ ul { list-style: none; }
   border-bottom: 1px solid var(--border-light);
   transition: var(--transition);
   cursor: pointer;
+  position: relative;
 }
 .post-item:last-child { border-bottom: none; }
 .post-item:hover { background: linear-gradient(90deg, #f5f8ff, #fff); }
@@ -648,6 +649,65 @@ ul { list-style: none; }
   transition: var(--transition);
 }
 .post-item:hover .post-arrow { color: var(--primary); transform: translateX(4px); }
+
+/* View Details Button */
+.view-details-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: #f0f4ff;
+  color: var(--primary);
+  border: 1px solid rgba(0, 53, 128, 0.15);
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--font-main);
+  cursor: pointer;
+  transition: var(--transition);
+  width: max-content;
+}
+
+.view-details-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.view-details-btn.open-btn {
+  background: #f1f3f5;
+  color: #495057;
+  border-color: #dee2e6;
+}
+
+.view-details-btn.open-btn:hover {
+  background: #e9ecef;
+}
+
+/* Extended Details Content */
+.extended-details-content {
+  border-top: 1px dashed var(--border-light);
+  margin-top: 12px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.extended-details-content p {
+  margin-bottom: 12px;
+}
+.extended-details-content ul {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+.extended-details-content li {
+  margin-bottom: 6px;
+}
+.extended-details-content strong {
+  color: var(--text-primary);
+}
 
 /* Job Details Accordion */
 .post-item.expanded-card {
@@ -1188,9 +1248,21 @@ ul { list-style: none; }
 
 @media (max-width: 700px) {
   .top-bar { overflow: hidden; }
-  .top-bar-inner { gap: 6px; }
+  .top-bar-inner {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 12px;
+  }
   .top-bar-left .top-bar-date, .top-bar-divider { display: none; }
-  .top-bar-left { flex-wrap: wrap; gap: 6px; }
+  .top-bar-left {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+  .top-bar-right {
+    justify-content: center;
+    flex-shrink: 0;
+  }
 
   .header { position: static; overflow: hidden; }
   .header-inner { flex-direction: column; align-items: stretch; gap: 10px; }
@@ -1225,8 +1297,29 @@ ul { list-style: none; }
   .footer-bottom-inner { flex-direction: column; text-align: center; }
 
   /* Job info accordion full-width on mobile */
-  .post-item { flex-wrap: wrap; }
-  .post-content { width: 100%; min-width: 0; }
+  .post-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding-right: 36px;
+  }
+  .post-badge {
+    align-self: flex-start;
+    margin-top: 0;
+  }
+  .post-content {
+    width: 100%;
+    min-width: 0;
+  }
+  .post-arrow {
+    position: absolute;
+    right: 20px;
+    top: 22px;
+    transform: translateY(-50%);
+  }
+  .post-item:hover .post-arrow {
+    transform: translateY(-50%) translateX(4px);
+  }
   .post-details-grid { grid-template-columns: 1fr; }
   .detail-item.full-width { grid-column: span 1; }
   .apply-btn { width: 100%; box-sizing: border-box; }
@@ -1244,7 +1337,7 @@ ul { list-style: none; }
   .qnav-icon { font-size: 1.8rem; }
   .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
   .breaking-label { font-size: 0.65rem; padding: 3px 8px; }
-  .post-item { padding: 12px 14px; gap: 8px; }
+  .post-item { padding: 12px 36px 12px 14px; gap: 8px; }
   .post-title { font-size: 0.88rem; }
   .post-meta { font-size: 0.72rem; gap: 4px 8px; }
   .post-details-grid { padding: 10px; font-size: 0.8rem; gap: 8px; }
@@ -1275,7 +1368,8 @@ ul { list-style: none; }
   .social-icon.youtube { display: none; }
   .section-title { font-size: 0.95rem; }
   .view-all-link { padding: 6px 12px; font-size: 0.78rem; }
-  .post-item { padding: 10px 12px; }
+  .post-item { padding: 10px 32px 10px 12px; }
+  .post-arrow { right: 12px; }
 }
 
 /* =============================================
