@@ -125,12 +125,30 @@ function isExpired(dateStr) {
   return today > d;
 }
 
+function highlightExamKeywords(title) {
+  const keywords = ['SSC GD','ASSAM POLICE','SSC CGL', 'SSC', 'UPSC', 'RRB', 'APSC', 'ADRE', 'Bank', 'Railway', 'SBI', 'IBPS', 'CISF', 'Indian Air Force', 'NABARD'];
+  let newTitle = title;
+  const sortedKeywords = keywords.sort((a, b) => b.length - a.length);
+  for (const kw of sortedKeywords) {
+    const regex = new RegExp(`\\b(${kw})\\b`, 'i');
+    if (regex.test(newTitle)) {
+      newTitle = newTitle.replace(regex, `<span class="exam-highlight-badge">$1</span>`);
+      break;
+    }
+  }
+  return newTitle;
+}
+
 function generatePostHTML(data) {
-  return data.map(item => `
+  return data.map(item => {
+    const isPastDeadline = isExpired(item.apply_date || item.last_date);
+    const safeDetails = item.other_details ? item.other_details.replace(/<table/gi, '<div class="table-responsive"><table').replace(/<\/table>/gi, '</table></div>') : '';
+    
+    return `
     <div class="post-item" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
       <span class="post-badge ${getBadgeClass(item.badge)}">${item.section || getBadgeText(item.badge)}</span>
       <div class="post-content">
-        <div class="post-title">${item.title}</div>
+        <div class="post-title">${highlightExamKeywords(item.title)}</div>
         <div class="post-meta">
           <span>📅 ${item.date}</span>
           ${item.posts ? `<span>👤 ${item.posts}</span>` : ""}
@@ -138,13 +156,14 @@ function generatePostHTML(data) {
         </div>
         ${(item.apply_date || item.education || item.other_details || item.salary || item.location || item.application_fee) ? `
         <div class="post-details">
+          ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.apply_date || item.last_date || 'the deadline'}</strong>. <a href="#latest-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
           <div class="post-details-grid">
-            ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> ${item.apply_date}</div>` : ''}
+            ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> <span class="highlight-date">${item.apply_date}</span></div>` : ''}
             ${item.salary ? `<div class="detail-item"><strong>Salary:</strong> ${item.salary}</div>` : ''}
             ${item.location ? `<div class="detail-item"><strong>Location:</strong> ${item.location}</div>` : ''}
             ${item.application_fee ? `<div class="detail-item"><strong>Application Fee:</strong> ${item.application_fee}</div>` : ''}
             ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> ${item.education}</div>` : ''}
-            ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${item.other_details}</div>` : ''}
+            ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${safeDetails}</div>` : ''}
           </div>
           <a href="${item.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">${getButtonText(item.badge)}</a>
         </div>
@@ -152,7 +171,7 @@ function generatePostHTML(data) {
       </div>
       <span class="post-arrow">›</span>
     </div>
-  `).join("");
+  `}).join("");
 }
 
 function renderPosts(listId, data) {
@@ -173,22 +192,13 @@ function initCategoryFilter() {
 
   if (!block || !title || !list || !noResults || !clearBtn) return;
 
-  function renderInitial() {
-    const latest = allData.filter(d => d.section === "Govt Job").slice(0, 10);
-    title.innerHTML = `🔍 Latest Updates <span class="filter-count-badge">${latest.length}</span>`;
-    block.style.display = "block";
-    noResults.style.display = "none";
-    if (seoText) seoText.style.display = "none";
-    list.innerHTML = generatePostHTML(latest);
-  }
-
   function clearFilter() {
-    renderInitial();
+    block.style.display = "none";
     chips.forEach(c => c.classList.remove("active"));
   }
 
-  // Set initial state to Latest Jobs instead of hidden
-  renderInitial();
+  // Set initial state to hidden instead of showing latest jobs
+  block.style.display = "none";
 
   chips.forEach(chip => {
     chip.addEventListener("click", (e) => {
@@ -223,10 +233,11 @@ function initCategoryFilter() {
         // Show SEO text container for category hubs
         if (seoText) {
           seoText.style.display = "block";
-          seoText.innerHTML = `<strong>Welcome to the ${label} Jobs Portal.</strong> This section is dedicated to bringing you the most recent and relevant updates for ${category}-related recruitment. Bookmark this page for the latest job notifications, exam dates, syllabi, admit card releases, and final result declarations. We ensure all information is up-to-date and verified from official sources to give you a competitive edge.`;
+          seoText.innerHTML = `<strong>Welcome to the ${label} Jobs Portal.</strong> This dedicated section brings you the most recent and highly relevant updates for ${category}-related recruitment across India and Assam. Whether you are a fresher seeking entry-level positions or an experienced professional looking to advance your career in the government sector, this hub provides comprehensive details on current vacancies, eligibility criteria, application procedures, and important deadlines. Bookmark this page to stay ahead with real-time job notifications, upcoming exam dates, detailed syllabi, official admit card releases, and final result declarations. Our platform is continuously updated with verified information from official government notifications to ensure you have accurate and timely resources at your fingertips, giving you a competitive edge in your exam preparation. Explore the listings below, check your eligibility, and apply directly through the provided official links to secure your future in the ${category} department.`;
         }
 
         list.innerHTML = generatePostHTML(matches);
+        generateJobSchema(matches);
       }
 
       block.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -340,6 +351,17 @@ function initNavLinks() {
       // Close mobile menu
       const menu = document.getElementById("nav-menu");
       if (menu) menu.classList.remove("open");
+    });
+  });
+}
+
+// ---- MOBILE BOTTOM NAV ----
+function initMobileNav() {
+  const items = document.querySelectorAll('.mobile-nav-item');
+  items.forEach(item => {
+    item.addEventListener('click', () => {
+      items.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
     });
   });
 }
@@ -470,28 +492,37 @@ function generateJobSchema(jobs) {
   if (!jobs || !jobs.length) return;
   const schema = {
     "@context": "https://schema.org",
-    "@graph": jobs.filter(j => j.title).map(job => ({
-      "@type": "JobPosting",
-      "title": job.title,
-      "description": job.other_details || job.title,
-      "datePosted": job.date ? new Date(job.date).toISOString() : new Date().toISOString(),
-      "validThrough": job.last_date && !isNaN(new Date(job.last_date).getTime()) ? new Date(job.last_date).toISOString() : "",
-      "hiringOrganization": {
-        "@type": "Organization",
-        "name": job.tag || "Government of India",
-        "sameAs": "https://newjobupdates.in"
-      },
-      "jobLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressRegion": job.location || "Assam",
-          "addressCountry": "IN"
+    "@graph": jobs.filter(j => j.title).map(job => {
+      const validThroughDate = job.last_date && !isNaN(new Date(job.last_date).getTime()) ? new Date(job.last_date) : 
+                               (job.apply_date && !isNaN(new Date(job.apply_date).getTime()) ? new Date(job.apply_date) : null);
+      return {
+        "@type": "JobPosting",
+        "title": job.title,
+        "description": job.other_details || job.title,
+        "datePosted": job.date ? new Date(job.date).toISOString() : new Date().toISOString(),
+        "validThrough": validThroughDate ? validThroughDate.toISOString() : "",
+        "hiringOrganization": {
+          "@type": "Organization",
+          "name": job.tag || "Government of India",
+          "sameAs": "https://newjobupdates.in"
+        },
+        "jobLocation": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressRegion": job.location || "Assam",
+            "addressCountry": "IN"
+          }
         }
-      }
-    }))
+      };
+    })
   };
+  
+  const oldScript = document.getElementById('job-schema-script');
+  if (oldScript) oldScript.remove();
+
   const script = document.createElement('script');
+  script.id = 'job-schema-script';
   script.type = 'application/ld+json';
   script.text = JSON.stringify(schema);
   document.head.appendChild(script);
@@ -549,6 +580,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initHamburger();
   initNewsletter();
   initNavLinks();
+  initMobileNav();
   initBackToTop();
   initScrollHeader();
   initSearch();
