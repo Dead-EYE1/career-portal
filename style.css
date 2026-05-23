@@ -488,6 +488,10 @@ ul { list-style: none; }
   margin-bottom: 22px;
 }
 
+.content-area > .join-banner {
+  display: none;
+}
+
 .join-card {
   display: flex;
   align-items: center;
@@ -1311,6 +1315,13 @@ ul { list-style: none; }
   .sidebar { position: static; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .join-banner { grid-template-columns: 1fr; }
+
+  /* Mobile-specific join channel overrides */
+  .content-area > .join-banner { display: grid; }
+  .sidebar > .join-banner { display: none; }
+
+  /* Hide redundant sidebar search on mobile viewports */
+  #search-widget { display: none; }
 }
 
 @media (max-width: 700px) {
@@ -1479,11 +1490,22 @@ ul { list-style: none; }
   .search-overlay { padding: 80px 12px 0; }
   .search-overlay-box { padding: 20px 16px; border-radius: var(--radius-lg); }
 
-  .section-header { flex-wrap: wrap; gap: 8px; }
+  .section-header { flex-wrap: wrap; gap: 8px; padding: 10px 16px; }
+  .main-layout {
+    padding-top: 12px;
+    padding-bottom: 24px;
+    gap: 16px;
+  }
+  .section-block {
+    margin-bottom: 16px;
+    border-radius: var(--radius-md);
+  }
 }
 
 @media (max-width: 480px) {
   .container { padding: 0 12px; }
+  .main-layout { padding-top: 8px; gap: 12px; }
+  .section-block { margin-bottom: 12px; }
   .quick-nav-grid { gap: 10px; }
   .qnav-box { padding: 14px 10px; }
   .qnav-icon { font-size: 1.8rem; }
