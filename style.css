@@ -34,7 +34,12 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; font-size: 15px; overflow-x: hidden; }
+html {
+  scroll-behavior: smooth;
+  font-size: 15px;
+  overflow-x: hidden;
+  max-width: 100%;
+}
 
 body {
   font-family: var(--font-main);
@@ -44,6 +49,8 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   width: 100%;
+  max-width: 100%;
+  position: relative;
 }
 
 a { text-decoration: none; color: inherit; }
@@ -431,11 +438,14 @@ ul { list-style: none; }
 .section-block {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow: visible; /* allows horizontal-scroll children to work properly */
   box-shadow: var(--shadow-sm);
   margin-bottom: 22px;
   border: 1px solid var(--border-light);
-  transition: var(--transition);
+  transition: box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 .section-block:hover { box-shadow: var(--shadow-md); }
 
@@ -545,6 +555,9 @@ ul { list-style: none; }
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 12px;
   padding: 16px 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .cat-chip {
@@ -563,6 +576,7 @@ ul { list-style: none; }
   transition: var(--transition);
   cursor: pointer;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 .cat-chip:hover {
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
@@ -848,6 +862,9 @@ ul { list-style: none; }
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
   margin-bottom: 22px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .qnav-box {
@@ -1421,38 +1438,78 @@ ul { list-style: none; }
 
   .quick-nav-grid { 
     display: flex;
+    flex-direction: row;
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
-    padding-bottom: 8px; /* space for scroll */
-    mask-image: linear-gradient(to right, #000 88%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,53,128,0.35) transparent;
+    padding: 8px 0 12px;
+    gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 16px;
   }
-  .quick-nav-grid::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+  .quick-nav-grid::-webkit-scrollbar {
+    height: 4px;
+  }
+  .quick-nav-grid::-webkit-scrollbar-track {
+    background: rgba(0,53,128,0.06);
+    border-radius: 4px;
+  }
+  .quick-nav-grid::-webkit-scrollbar-thumb {
+    background: rgba(0,53,128,0.28);
+    border-radius: 4px;
+  }
+  .quick-nav-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,53,128,0.5);
+  }
   .qnav-box {
-    width: 140px !important;
-    min-width: 140px !important;
-    max-width: 140px !important;
-    flex-shrink: 0 !important;
+    flex: 0 0 auto;
+    width: 130px !important;
+    min-width: 130px !important;
+    max-width: 130px !important;
+    flex-shrink: 0;
   }
 
   .category-grid {
     display: flex;
+    flex-direction: row;
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding-bottom: 12px;
-    mask-image: linear-gradient(to right, #000 88%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,53,128,0.35) transparent;
+    padding: 12px 16px 16px;
+    gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
-  .category-grid::-webkit-scrollbar { display: none; }
+  .category-grid::-webkit-scrollbar {
+    height: 4px;
+  }
+  .category-grid::-webkit-scrollbar-track {
+    background: rgba(0,53,128,0.06);
+    border-radius: 4px;
+  }
+  .category-grid::-webkit-scrollbar-thumb {
+    background: rgba(0,53,128,0.28);
+    border-radius: 4px;
+  }
+  .category-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,53,128,0.5);
+  }
   .cat-chip {
-    width: 130px !important;
-    min-width: 130px !important;
-    max-width: 130px !important;
-    flex-shrink: 0 !important;
+    flex: 0 0 auto;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    padding: 8px 14px;
+    font-size: 0.8rem;
   }
   .join-banner { grid-template-columns: 1fr; }
 
@@ -1585,12 +1642,24 @@ ul { list-style: none; }
 }
 
 .table-responsive {
+  display: block;
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
 }
 .table-responsive table {
   min-width: 100%;
+  border-collapse: collapse;
+}
+
+/* Global table overflow safety — no table should ever bust the page width */
+table {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .expired-banner {
@@ -1619,14 +1688,39 @@ ul { list-style: none; }
   
   .category-grid {
     display: flex;
+    flex-direction: row;
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
-    padding-right: 40px; /* Swipe cushion */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,53,128,0.35) transparent;
+    padding: 10px 14px 14px;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   .category-grid::-webkit-scrollbar {
-    display: none; /* Safari and Chrome */
+    height: 4px;
+  }
+  .category-grid::-webkit-scrollbar-track {
+    background: rgba(0,53,128,0.06);
+    border-radius: 4px;
+  }
+  .category-grid::-webkit-scrollbar-thumb {
+    background: rgba(0,53,128,0.28);
+    border-radius: 4px;
+  }
+  .category-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,53,128,0.5);
+  }
+  .cat-chip {
+    flex: 0 0 auto;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    white-space: nowrap;
   }
 
   .mobile-bottom-nav {
