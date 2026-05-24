@@ -474,6 +474,8 @@ ul { list-style: none; }
   align-items: center;
   justify-content: center;
   border-radius: 50px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .view-all-link:hover {
   background: var(--accent);
@@ -607,6 +609,10 @@ ul { list-style: none; }
   color: var(--text-muted);
   font-size: 0.9rem;
   transition: var(--transition);
+  align-self: center;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
 }
 .post-item:hover .post-arrow { color: var(--primary); transform: translateX(4px); }
 
@@ -685,10 +691,38 @@ ul { list-style: none; }
   max-width: 100%;
   overflow-wrap: anywhere;
   word-break: normal;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
 }
-.detail-item.full-width { grid-column: span 2; }
-.detail-item strong { color: var(--text-primary); }
+.detail-item.full-width { 
+  grid-column: span 2; 
+  flex-direction: column;
+}
+.detail-item strong { color: var(--text-primary); flex-shrink: 0; }
 .highlight-date { color: var(--accent); font-weight: 600; }
+
+.text-right { text-align: right; flex: 1; }
+.text-left { text-align: left; width: 100%; }
+.mt-1 { margin-top: 4px; }
+
+/* Table responsive utility */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 12px;
+}
+.table-responsive table {
+  width: 100%;
+  min-width: 500px;
+  border-collapse: collapse;
+}
+.table-responsive th, .table-responsive td {
+  border: 1px solid var(--border);
+  padding: 8px;
+}
 
 .apply-btn {
   display: flex;
@@ -1314,3 +1348,80 @@ ul { list-style: none; }
     gap: 12px;
   }
 }
+/* 1. Fix mobile text cut-off (forces text to wrap and stay inside the screen) */
+.post-item {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.post-content {
+  flex: 1 1 0%;
+  min-width: 0 !important; 
+}
+
+.post-title {
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  display: block;
+}
+
+/* Styling for the JS keyword highlighter */
+.exam-highlight-badge {
+  background-color: #ff1e00; /* Bright highlighter yellow */
+  color: #000000; /* Solid black text for maximum contrast */
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 800; /* Extra bold */
+  display: inline-block;
+  margin: 0 2px;
+  border: 3px solid #181817; /* Slight border to define the edges */
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08); /* Tiny shadow to lift it off the page */
+}
+/* Final structural layout fix for mobile viewports under 700px */
+@media (max-width: 900px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .footer-grid { grid-template-columns: 1fr; } /* Stack footer items */
+  .join-banner { grid-template-columns: 1fr; }
+
+  .content-area > .join-banner { display: grid; }
+  .sidebar > .join-banner { display: none; }
+
+  #search-widget { display: none; }
+
+  /* FIX: Reset the layout to keep it as a row, just tighten the spacing */
+  .post-item { 
+    flex-direction: row; 
+    padding: 10px; /* Tighter padding for mobile */
+    gap: 8px;      /* Smaller gap to save space */
+  }
+  
+  /* OPTIONAL: Shrink the font slightly to ensure long titles fit */
+  .post-title { 
+    font-size: 0.85rem; 
+  }
+  
+  .post-badge { 
+    font-size: 0.65rem; 
+    padding: 2px 4px; 
+    white-space: nowrap; /* Prevents badge text from breaking */
+  }
+}
+/* Stack and self-align footer zones */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 24px;
+  }
+  
+  .footer-social {
+    justify-content: center;
+  }
+
+  .footer-bottom-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }

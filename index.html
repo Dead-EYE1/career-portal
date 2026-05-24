@@ -14,11 +14,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-
 </head>
 <body>
 
-  <!-- TOP BAR -->
   <div class="top-bar" id="top-bar">
     <div class="container top-bar-inner">
       <div class="top-bar-left">
@@ -45,7 +43,6 @@
     </div>
   </div>
 
-  <!-- HEADER -->
   <header class="header" id="main-header">
     <div class="container header-inner">
       <a href="#" class="logo" id="logo-link">
@@ -74,7 +71,6 @@
     </div>
   </header>
 
-  <!-- NAVIGATION -->
   <nav class="main-nav" id="main-nav">
     <div class="container nav-inner">
       <ul class="nav-menu" id="nav-menu">
@@ -91,7 +87,6 @@
     </div>
   </nav>
 
-  <!-- BREAKING NEWS TICKER -->
   <div class="breaking-news-bar" id="breaking-bar">
     <div class="container breaking-inner">
       <span class="breaking-label">🔴 BREAKING</span>
@@ -109,13 +104,10 @@
     </div>
   </div>
 
-  <!-- MAIN LAYOUT -->
   <main class="main-layout container" id="main-content">
 
-    <!-- LEFT: MAIN CONTENT -->
     <section class="content-area" id="content-area">
 
-      <!-- JOIN CHANNELS BANNER (MOBILE-ONLY TOP VIEW) -->
       <div class="join-banner mobile-top-join" id="mobile-top-join-banner">
         <a href="https://whatsapp.com/channel/0029VbCL2TO9Bb60qlR7KA0r" target="_blank" rel="noopener noreferrer" class="join-card whatsapp" id="mobile-whatsapp-join">
           <div class="join-icon">
@@ -139,41 +131,33 @@
         </a>
       </div>
 
-
-      <!-- LATEST GOVT JOBS -->
       <div class="section-block" id="latest-jobs-section">
         <div class="section-header">
           <h2 class="section-title">🏛️ Latest Government Jobs</h2>
           <a href="#" class="view-all-link" id="view-all-jobs">View All →</a>
         </div>
         <div class="posts-list" id="posts-list">
-          <!-- Populated by JS -->
-        </div>
+          </div>
       </div>
 
-      <!-- ADMIT CARD -->
       <div class="section-block" id="admit-section">
         <div class="section-header">
           <h2 class="section-title">🪪 Latest Admit Cards</h2>
           <a href="#" class="view-all-link" id="view-all-admit">View All →</a>
         </div>
         <div class="posts-list" id="admit-list">
-          <!-- Populated by JS -->
-        </div>
+          </div>
       </div>
 
-      <!-- RESULTS -->
       <div class="section-block" id="result-section">
         <div class="section-header">
           <h2 class="section-title">📊 Latest Results</h2>
           <a href="#" class="view-all-link" id="view-all-results">View All →</a>
         </div>
         <div class="posts-list" id="result-list">
-          <!-- Populated by JS -->
-        </div>
+          </div>
       </div>
 
-      <!-- QUICK NAV BOXES -->
       <div class="quick-nav-grid" id="quick-nav-grid">
         <a href="#latest-jobs-section" class="qnav-box qnav-govt" id="qnav-govt">
           <div class="qnav-icon">🏛️</div>
@@ -207,23 +191,19 @@
         </a>
       </div>
 
-      <!-- SCHOLARSHIPS -->
       <div class="section-block" id="scholarship-section">
         <div class="section-header">
           <h2 class="section-title">🏆 Scholarships</h2>
           <a href="#" class="view-all-link" id="view-all-scholarship">View All →</a>
         </div>
         <div class="posts-list" id="scholarship-list">
-          <!-- Populated by JS -->
-        </div>
+          </div>
       </div>
 
     </section>
 
-    <!-- RIGHT: SIDEBAR -->
     <aside class="sidebar" id="sidebar">
 
-      <!-- JOIN CHANNELS BANNER -->
       <div class="join-banner" id="join-banner">
         <a href="https://whatsapp.com/channel/0029VbCL2TO9Bb60qlR7KA0r" target="_blank" rel="noopener noreferrer" class="join-card whatsapp" id="whatsapp-join">
           <div class="join-icon">
@@ -247,7 +227,6 @@
         </a>
       </div>
 
-      <!-- QUICK LINKS -->
       <div class="sidebar-widget" id="quick-links-widget">
         <h3 class="widget-title">⚡ Quick Links</h3>
         <ul class="quick-link-list" id="quick-link-list">
@@ -261,7 +240,6 @@
         </ul>
       </div>
 
-      <!-- SEARCH WIDGET -->
       <div class="sidebar-widget" id="search-widget">
         <h3 class="widget-title">🔍 Search Jobs</h3>
         <div class="widget-search">
@@ -270,7 +248,6 @@
         </div>
       </div>
 
-      <!-- AD PLACEHOLDER -->
       <div class="sidebar-widget ad-widget" id="ad-widget">
         <div class="ad-box">
           <span class="ad-label">Advertisement</span>
@@ -285,7 +262,6 @@
     </aside>
   </main>
 
-  <!-- SEARCH OVERLAY -->
   <div class="search-overlay" id="search-overlay">
     <div class="search-overlay-box">
       <button class="search-close-btn" id="search-close-btn" aria-label="Close search">✕</button>
@@ -299,7 +275,6 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
   <footer class="footer" id="footer">
     <div class="footer-top">
       <div class="container footer-grid">
@@ -363,7 +338,6 @@
     </div>
   </footer>
 
-  <!-- MOBILE BOTTOM NAV -->
   <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
     <a href="#" class="mobile-nav-item active" id="mob-nav-home">
       <span class="nav-icon">🏠</span>
@@ -383,7 +357,6 @@
     </a>
   </nav>
 
-  <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>
 </body>

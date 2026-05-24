@@ -139,7 +139,7 @@ function isExpired(dateStr) {
 }
 
 function highlightExamKeywords(title) {
-  const keywords = ['SSC GD','ASSAM POLICE','SSC CGL', 'SSC', 'UPSC', 'RRB', 'APSC', 'ADRE', 'Bank', 'Railway', 'SBI', 'IBPS', 'CISF', 'Indian Air Force', 'NABARD'];
+  const keywords = ['SSC GD','ASSAM POLICE','SSC CGL', 'SSC','RBI','INDIA POST GDS', 'UPSC', 'RRB', 'APSC', 'ADRE', 'Bank', 'Railway', 'SBI', 'IBPS', 'CISF', 'Indian Air Force', 'NABARD'];
   let newTitle = title;
   const sortedKeywords = keywords.sort((a, b) => b.length - a.length);
   for (const kw of sortedKeywords) {
@@ -184,12 +184,12 @@ function generatePostHTML(data) {
           ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.apply_date || item.last_date || 'the deadline'}</strong>. <a href="#latest-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
           ${safeMainDetails ? `<div class="extended-details-content">${safeMainDetails}</div>` : ''}
           <div class="post-details-grid">
-            ${(item.apply_date || item.last_date) ? `<div class="detail-item"><strong>Closing Date:</strong> <span class="highlight-date">${item.apply_date || item.last_date}</span></div>` : ''}
-            ${item.salary ? `<div class="detail-item"><strong>Salary:</strong> ${item.salary}</div>` : ''}
-            ${item.location ? `<div class="detail-item"><strong>Location:</strong> ${item.location}</div>` : ''}
-            ${item.application_fee ? `<div class="detail-item"><strong>Application Fee:</strong> ${item.application_fee}</div>` : ''}
-            ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> ${item.education}</div>` : ''}
-            ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> ${safeDetails}</div>` : ''}
+            ${(item.apply_date || item.last_date) ? `<div class="detail-item"><strong>Closing Date:</strong> <span class="highlight-date text-right">${item.apply_date || item.last_date}</span></div>` : ''}
+            ${item.salary ? `<div class="detail-item"><strong>Salary:</strong> <span class="text-right">${item.salary}</span></div>` : ''}
+            ${item.location ? `<div class="detail-item"><strong>Location:</strong> <span class="text-right">${item.location}</span></div>` : ''}
+            ${item.application_fee ? `<div class="detail-item"><strong>Application Fee:</strong> <span class="text-right">${item.application_fee}</span></div>` : ''}
+            ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> <div class="text-left mt-1">${item.education}</div></div>` : ''}
+            ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> <div class="text-left mt-1">${safeDetails}</div></div>` : ''}
           </div>
           <a href="${item.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">${getButtonText(item.badge)}</a>
         </div>
