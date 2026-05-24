@@ -33,11 +33,16 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 html {
   scroll-behavior: smooth;
   font-size: 15px;
-  overflow-x: clip;
-  max-width: 100%;
 }
 
 body {
@@ -46,9 +51,6 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
-  overflow-x: clip;
-  width: 100%;
-  max-width: 100%;
   position: relative;
 }
 
@@ -448,18 +450,22 @@ ul { list-style: none; }
   padding: 14px 20px;
   border-bottom: 2px solid var(--border-light);
   background: linear-gradient(90deg, #f8f9ff, #fff);
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .section-title {
   font-family: var(--font-heading);
-  font-size: 1.05rem;
+  font-size: clamp(0.95rem, 4vw, 1.15rem);
   font-weight: 700;
   color: var(--primary);
   display: flex;
   align-items: center;
   gap: 8px;
-  overflow-wrap: anywhere;
-  word-break: normal;
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .view-all-link {
@@ -575,14 +581,14 @@ ul { list-style: none; }
 .post-content { flex: 1; min-width: 0; }
 .post-title {
   font-weight: 600;
-  font-size: 0.92rem;
+  font-size: clamp(0.85rem, 3.5vw, 0.95rem);
   color: var(--text-primary);
   line-height: 1.4;
   margin-bottom: 5px;
   transition: var(--transition);
   white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .post-item:hover .post-title { color: var(--primary); }
 
@@ -703,7 +709,13 @@ ul { list-style: none; }
 .detail-item strong { color: var(--text-primary); flex-shrink: 0; }
 .highlight-date { color: var(--accent); font-weight: 600; }
 
-.text-right { text-align: right; flex: 1; }
+.text-right { 
+  text-align: right; 
+  flex: 1; 
+  min-width: 0; 
+  word-break: break-word; 
+  overflow-wrap: anywhere; 
+}
 .text-left { text-align: left; width: 100%; }
 .mt-1 { margin-top: 4px; }
 
@@ -1414,18 +1426,20 @@ ul { list-style: none; }
   .sidebar > .join-banner { display: none; }
 
   #search-widget { display: none; }
+  
+  /* Collapse details grid early on tablet to avoid flex row horizontal overflow */
+  .post-details-grid {
+    grid-template-columns: 1fr;
+  }
 
   /* FIX: Reset the layout to keep it as a row, just tighten the spacing */
   .post-item { 
     flex-direction: row; 
-    padding: 10px; /* Tighter padding for mobile */
-    gap: 8px;      /* Smaller gap to save space */
+    padding: 12px 18px 12px 12px; /* Increased right padding for visual balance */
+    gap: 10px;
   }
   
-  /* OPTIONAL: Shrink the font slightly to ensure long titles fit */
-  .post-title { 
-    font-size: 0.85rem; 
-  }
+  /* Removed static post-title font override, now handled globally by clamp() */
   
   .post-badge { 
     font-size: 0.65rem; 
@@ -1433,19 +1447,59 @@ ul { list-style: none; }
     white-space: nowrap; /* Prevents badge text from breaking */
   }
 }
-/* Stack and self-align footer zones */
-  .footer-grid {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 24px;
+
+/* Ultra-small mobile screens (320px - 480px) */
+@media (max-width: 480px) {
+  /* Stack detail items to prevent horizontal cutoff */
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .text-right {
+    text-align: left;
   }
   
-  .footer-social {
-    justify-content: center;
+  /* Tighter padding on job cards, but preserve right-side spacing */
+  .post-item {
+    padding: 12px 16px 12px 10px; /* Extra space on the right */
+    gap: 8px;
   }
-
-  .footer-bottom-inner {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
+  .post-badge {
+    padding: 2px 4px;
+    font-size: 0.6rem;
   }
+  .post-arrow {
+    margin-left: auto;
+  }
+  
+  /* Reduce header spacing */
+  .section-header {
+    padding: 12px 10px;
+  }
+  .section-title {
+    font-size: 0.9rem;
+  }
+  .view-all-link {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+  
+  /* Reduce top bar header elements size */
+  .logo-main {
+    font-size: 1.2rem;
+  }
+  .logo-sub {
+    font-size: 0.65rem;
+  }
+  .logo-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+  
+  /* Make container padding tighter */
+  .container {
+    padding: 0 10px;
+  }
+}
