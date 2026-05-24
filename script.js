@@ -258,22 +258,61 @@ function doSearch(query) {
     return text.replace(re, "<mark>$1</mark>");
   };
 
-  resultsList.innerHTML = matches.map(item => `
-    <div class="search-result-item" role="option" tabindex="0">
+  resultsList.innerHTML = matches.map(item => {
+    // Escape quotes for the inline handler
+    const safeTitle = item.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    return `
+    <div class="search-result-item" role="option" tabindex="0" onclick="handleSearchResultClick('${safeTitle}')">
       <span class="search-result-tag post-badge ${getBadgeClass(item.badge)}">${item.section}</span>
       <span class="search-result-title">${highlight(item.title)}</span>
     </div>
-  `).join("");
+  `}).join("");
 }
 
-// ---- HAMBURGER MENU ----
+// Global handler to navigate to the clicked search result
+window.handleSearchResultClick = function(title) {
+  // 1. Close overlay
+  const overlay = document.getElementById("search-overlay");
+  if (overlay) overlay.classList.remove("active");
+
+  // 2. Find the card in the DOM by matching title
+  const posts = document.querySelectorAll(".post-item");
+  for (let post of posts) {
+    const postTitleEl = post.querySelector(".post-title");
+    if (postTitleEl && postTitleEl.textContent.trim() === title) {
+      // 3. Scroll to it
+      post.scrollIntoView({ behavior: "smooth", block: "center" });
+      
+      // 4. Expand details if closed
+      const details = post.querySelector('.post-details');
+      if (details && !details.classList.contains('expanded')) {
+        toggleJobDetails(post);
+      }
+      
+      // 5. Highlight briefly to draw attention
+      post.style.transition = "background-color 0.4s";
+      const origBg = post.style.backgroundColor;
+      post.style.backgroundColor = "#fff3e0"; // Soft orange flash
+      setTimeout(() => {
+        post.style.backgroundColor = origBg;
+        post.style.transition = "";
+      }, 1200);
+      return;
+    }
+  }
+};
+
+// ---- HAMBURGER MENU / LOGO TOGGLE ----
 function initHamburger() {
-  const btn = document.getElementById("hamburger-btn");
+  const logo = document.getElementById("logo-link");
   const menu = document.getElementById("nav-menu");
-  if (!btn || !menu) return;
-  btn.addEventListener("click", () => {
-    menu.classList.toggle("open");
-    btn.setAttribute("aria-expanded", menu.classList.contains("open").toString());
+  if (!logo || !menu) return;
+  logo.addEventListener("click", (e) => {
+    // Only act as a menu toggle on mobile viewports
+    if (window.innerWidth <= 1100) {
+      e.preventDefault();
+      menu.classList.toggle("open");
+    }
   });
 }
 

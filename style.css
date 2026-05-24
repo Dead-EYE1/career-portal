@@ -151,7 +151,8 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .logo-icon {
@@ -173,6 +174,13 @@ ul { list-style: none; }
 .logo-text {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+}
+
+.logo-main, .logo-sub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .logo-main {
@@ -202,19 +210,23 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--bg);
+  border: none;
+  background: rgba(0, 53, 128, 0.06);
   color: var(--primary);
   cursor: pointer;
   transition: var(--transition);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 12px rgba(0, 53, 128, 0.08);
 }
 .mobile-search-toggle:hover {
-  background: var(--primary-light);
+  background: var(--primary);
   color: #fff;
-  border-color: transparent;
+  transform: translateY(-1px);
 }
 .mobile-search-toggle svg { width: 20px; height: 20px; }
 
@@ -339,19 +351,33 @@ ul { list-style: none; }
 .hamburger {
   display: none;
   flex-direction: column;
-  gap: 5px;
-  background: none;
+  gap: 4px;
+  background: rgba(0, 53, 128, 0.06);
   border: none;
   cursor: pointer;
-  padding: 10px;
+  padding: 0;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+.hamburger:hover {
+  background: var(--primary);
+  transform: translateY(-1px);
 }
 .hamburger span {
   display: block;
-  width: 24px;
-  height: 2px;
-  background: #fff;
+  width: 18px;
+  height: 2.5px;
+  background: var(--primary);
   border-radius: 2px;
   transition: var(--transition);
+}
+.hamburger:hover span {
+  background: #fff;
 }
 
 /* =============================================
@@ -1284,53 +1310,46 @@ ul { list-style: none; }
 
   .hamburger {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    cursor: pointer;
-    padding: 9px;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    align-items: center;
-    justify-content: center;
-  }
-  .hamburger span {
-    display: block;
-    width: 18px;
-    height: 2px;
-    background: var(--text-primary);
-    border-radius: 2px;
-    transition: var(--transition);
   }
 
   .nav-menu {
     display: flex;
     flex-direction: column;
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 67px; /* Sits exactly beneath the 66px sticky header */
     left: 0;
     right: 0;
     width: 100%;
-    background: rgba(0, 32, 96, 0.96);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    z-index: 999;
-    box-shadow: var(--shadow-lg);
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    max-height: calc(100vh - 67px);
+    overflow-y: auto;
+    background: #ffffff;
+    z-index: 9999;
+    box-shadow: 0 15px 35px rgba(0, 53, 128, 0.12);
+    border-top: 1px solid var(--border);
+    border-bottom: 3px solid var(--primary);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
-    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
   }
   .nav-menu.open {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
   }
-  .nav-link { border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; }
+  .nav-link { 
+    border-bottom: 1px solid rgba(0,0,0,0.04); 
+    width: 100%; 
+    color: var(--text-primary);
+    padding: 18px 24px;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: rgba(0, 53, 128, 0.04);
+    color: var(--primary);
+    border-bottom-color: rgba(0,0,0,0.04);
+  }
 
   .main-nav { position: static; overflow: visible; }
   .breaking-news-bar { position: static; }
@@ -1520,13 +1539,33 @@ ul { list-style: none; }
    NUCLEAR MOBILE FALLBACK
    ============================================= */
 @media screen and (max-width: 768px) {
-    /* Force absolutely every box and container to shrink to screen width */
-    html, body, main, section, .container, .main-layout, .section-block, [class*="wrapper"] {
+    /* Lightweight performance fix for mobile scrolling */
+    html, body {
+        width: 100%;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+    
+    /* Ensure fixed headers or absolute icons do not stall the scroll paint layout thread */
+    header, .main-nav, .header-actions {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        will-change: transform;
+    }
+
+    /* Guarantee touch inputs register smoothly on icons */
+    #search-btn, #mobile-search-toggle, #hamburger-btn {
+        pointer-events: auto;
+    }
+
+    /* Retain strict containment only for content containers */
+    main, section, .container, .main-layout, .section-block, [class*="wrapper"] {
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
         box-sizing: border-box !important;
-        overflow-x: hidden !important;
     }
     
     /* Force the apply buttons and job cards to fit and stack vertically */
