@@ -206,72 +206,6 @@ function renderPosts(listId, data) {
   container.innerHTML = generatePostHTML(data);
 }
 
-// ---- CATEGORY FILTER ----
-function initCategoryFilter() {
-  const chips       = document.querySelectorAll(".cat-chip");
-  const block       = document.getElementById("filter-results-block");
-  const title       = document.getElementById("filter-results-title");
-  const list        = document.getElementById("filter-results-list");
-  const noResults   = document.getElementById("no-filter-results");
-  const clearBtn    = document.getElementById("clear-filter-btn");
-  const seoText     = document.getElementById("category-seo-text");
-
-  if (!block || !title || !list || !noResults || !clearBtn) return;
-
-  function clearFilter() {
-    block.style.display = "none";
-    chips.forEach(c => c.classList.remove("active"));
-  }
-
-  // Set initial state to hidden instead of showing latest jobs
-  block.style.display = "none";
-
-  chips.forEach(chip => {
-    chip.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      if (chip.classList.contains("active")) {
-        clearFilter();
-        return;
-      }
-
-      chips.forEach(c => c.classList.remove("active"));
-      chip.classList.add("active");
-
-      const category = chip.dataset.category;
-      const label    = chip.textContent.trim();
-
-      const matches = allData.filter(item =>
-        (item.category && item.category.toLowerCase().includes(category.toLowerCase())) ||
-        (item.tag      && item.tag.toLowerCase().includes(category.toLowerCase()))
-      );
-
-      title.innerHTML = `🔍 ${label} <span class="filter-count-badge">${matches.length}</span>`;
-      block.style.display = "block";
-
-      if (matches.length === 0) {
-        list.innerHTML = "";
-        noResults.style.display = "block";
-        if (seoText) seoText.style.display = "none";
-      } else {
-        noResults.style.display = "none";
-        
-        // Show SEO text container for category hubs
-        if (seoText) {
-          seoText.style.display = "block";
-          seoText.innerHTML = `<strong>Welcome to the ${label} Jobs Portal.</strong> This dedicated section brings you the most recent and highly relevant updates for ${category}-related recruitment across India and Assam. Whether you are a fresher seeking entry-level positions or an experienced professional looking to advance your career in the government sector, this hub provides comprehensive details on current vacancies, eligibility criteria, application procedures, and important deadlines. Bookmark this page to stay ahead with real-time job notifications, upcoming exam dates, detailed syllabi, official admit card releases, and final result declarations. Our platform is continuously updated with verified information from official government notifications to ensure you have accurate and timely resources at your fingertips, giving you a competitive edge in your exam preparation. Explore the listings below, check your eligibility, and apply directly through the provided official links to secure your future in the ${category} department.`;
-        }
-
-        list.innerHTML = generatePostHTML(matches);
-        generateJobSchema(matches);
-      }
-
-      block.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  });
-
-  clearBtn.addEventListener("click", clearFilter);
-}
 
 
 
@@ -511,20 +445,10 @@ function initSearch() {
   });
 }
 
-// ---- SMOOTH ITEM HOVER ----
-function initItemHover() {
-  document.addEventListener("mouseover", (e) => {
-    const item = e.target.closest(".post-item");
-    if (item && !item.dataset.hovered) {
-      item.dataset.hovered = "1";
-    }
-  });
-}
-
 // ---- INTERSECTION OBSERVER (Animate cards) ----
 function initAnimations() {
   if (!('IntersectionObserver' in window)) return;
-  const items = document.querySelectorAll(".qnav-box, .cat-chip, .post-item");
+  const items = document.querySelectorAll(".qnav-box, .post-item");
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -629,7 +553,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderPosts("admit-list", admitData);
   renderPosts("result-list", resultData);
   renderPosts("scholarship-list", scholarshipData);
-  initCategoryFilter();
+
 
   initTicker();
   initHamburger();
@@ -639,7 +563,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initBackToTop();
   initScrollHeader();
   initSearch();
-  initItemHover();
+
   // Delay animations slightly
   setTimeout(initAnimations, 100);
 
