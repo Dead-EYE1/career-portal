@@ -1330,9 +1330,33 @@ ul { list-style: none; }
   /* Structural collapse of inner elements */
   .post-details-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .detail-item {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 8px;
   }
-  .detail-item.full-width { grid-column: span 1; }
+  .detail-item.full-width { 
+    grid-column: span 1; 
+    flex-direction: column;
+  }
+  .text-right { 
+    text-align: right; 
+    min-width: 0; 
+    word-break: break-word; 
+    overflow-wrap: anywhere; 
+  }
+  .detail-item.full-width .text-right,
+  .detail-item.full-width .text-left {
+    text-align: left;
+  }
+  
+  .view-details-btn, .apply-btn {
+    white-space: normal;
+    word-break: break-word;
+  }
 
   /* Stack and self-align footer zones */
   .footer-grid {
