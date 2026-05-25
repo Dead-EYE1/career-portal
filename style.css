@@ -791,6 +791,44 @@ ul { list-style: none; }
 }
 .apply-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
 
+.share-buttons-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+.action-share-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  min-height: 48px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.75rem;
+  transition: var(--transition);
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+.action-share-btn svg {
+  width: 18px;
+  height: 18px;
+  margin-bottom: 4px;
+}
+.action-share-btn.whatsapp { background: #25D366; color: #fff; }
+.action-share-btn.whatsapp:hover { background: #128C7E; transform: translateY(-1px); }
+.action-share-btn.whatsapp svg { fill: currentColor; }
+
+.action-share-btn.general { background: #f0f4ff; color: var(--primary); border: 1px solid rgba(0,53,128,0.15); }
+.action-share-btn.general:hover { background: var(--primary); color: #fff; transform: translateY(-1px); }
+
+.action-share-btn.copy { background: #f1f3f5; color: #495057; border: 1px solid #dee2e6; }
+.action-share-btn.copy:hover { background: #e9ecef; color: #212529; transform: translateY(-1px); }
+
 /* =============================================
    QUICK NAV GRID
    ============================================= */

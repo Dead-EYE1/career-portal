@@ -166,9 +166,63 @@ function wrapTablesInResponsiveDiv(html) {
   return cleanHtml;
 }
 
+// ---- SHARE ON WHATSAPP LOGIC ----
+window.shareOnWhatsApp = function(jobId) {
+  const job = allData.find(j => j.id === jobId);
+  if (!job) return;
+  
+  const title = job.title || '';
+  const organization = job.organization || job.section || '';
+  
+  let vacancyCount = 'Various';
+  if (job.posts) {
+    const match = job.posts.match(/[0-9,]+/);
+    if (match) {
+      vacancyCount = match[0];
+    }
+  }
+  
+  const jobTitleOrg = organization ? `${title} / ${organization}` : title;
+  
+  const text = `🚨 ${jobTitleOrg} Recruitment 2026 - ${vacancyCount}+ Vacancies open for Assam citizens! Check age limits, qualifications, and apply online here: https://newjobupdates.in/job/${jobId}`;
+  
+  const encodedText = encodeURIComponent(text);
+  window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+};
+
+window.shareGeneral = function(jobId) {
+  const job = allData.find(j => j.id === jobId);
+  if (!job) return;
+  const title = job.title || 'New Job Update';
+  const url = `https://newjobupdates.in/job/${jobId}`;
+  
+  if (navigator.share) {
+    navigator.share({
+      title: title,
+      url: url
+    }).catch(console.error);
+  } else {
+    alert("Sharing is not supported on this browser.");
+  }
+};
+
+window.copyJobLink = function(jobId, btnElement) {
+  const url = `https://newjobupdates.in/job/${jobId}`;
+  navigator.clipboard.writeText(url).then(() => {
+    const originalHTML = btnElement.innerHTML;
+    btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Copied!`;
+    setTimeout(() => {
+      btnElement.innerHTML = originalHTML;
+    }, 2000);
+  }).catch(err => {
+    console.error('Failed to copy: ', err);
+  });
+};
+
+
 function generatePostHTML(data) {
   return data.map(item => {
-    const isPastDeadline = isExpired(item.apply_date || item.last_date);
+    const isPastDeadline = item.last_date ? isExpired(item.last_date) : false;
     const safeDetails = wrapTablesInResponsiveDiv(item.other_details);
     const safeMainDetails = wrapTablesInResponsiveDiv(item.details);
     
@@ -185,17 +239,35 @@ function generatePostHTML(data) {
         ${(item.apply_date || item.education || item.other_details || item.details || item.salary || item.location || item.application_fee) ? `
         <button type="button" class="view-details-btn" onclick="event.stopPropagation(); toggleJobDetails(this.closest('.post-item'))">👁️ View Details</button>
         <div class="post-details" onclick="event.stopPropagation()">
-          ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.apply_date || item.last_date || 'the deadline'}</strong>. <a href="#latest-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
+          ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.last_date || 'the deadline'}</strong>. <a href="#latest-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
           ${safeMainDetails ? `<div class="extended-details-content">${safeMainDetails}</div>` : ''}
           <div class="post-details-grid">
-            ${(item.apply_date || item.last_date) ? `<div class="detail-item"><strong>Closing Date:</strong> <span class="highlight-date text-right">${item.apply_date || item.last_date}</span></div>` : ''}
+            ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> <span class="highlight-date text-right" style="color:var(--primary);">${item.apply_date}</span></div>` : ''}
+            ${item.last_date ? `<div class="detail-item"><strong>Closing Date:</strong> <span class="highlight-date text-right">${item.last_date}</span></div>` : ''}
             ${item.salary ? `<div class="detail-item"><strong>Salary:</strong> <span class="text-right">${item.salary}</span></div>` : ''}
             ${item.location ? `<div class="detail-item"><strong>Location:</strong> <span class="text-right">${item.location}</span></div>` : ''}
             ${item.application_fee ? `<div class="detail-item"><strong>Application Fee:</strong> <span class="text-right">${item.application_fee}</span></div>` : ''}
             ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> <div class="text-left mt-1">${item.education}</div></div>` : ''}
             ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> <div class="text-left mt-1">${safeDetails}</div></div>` : ''}
           </div>
-          <a href="${item.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">${getButtonText(item.badge)}</a>
+          <div class="action-buttons" style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
+            <a href="${item.apply_link || '#'}" class="apply-btn" style="margin-top: 0;" target="_blank" rel="noopener noreferrer">${getButtonText(item.badge)}</a>
+            
+            <div class="share-buttons-row">
+              <button type="button" class="action-share-btn whatsapp" onclick="shareOnWhatsApp(${item.id})" title="Share on WhatsApp">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.487-1.761-1.663-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                WhatsApp
+              </button>
+              <button type="button" class="action-share-btn general" onclick="shareGeneral(${item.id})" title="Share Link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                Share
+              </button>
+              <button type="button" class="action-share-btn copy" onclick="copyJobLink(${item.id}, this)" title="Copy Link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+          </div>
         </div>
         ` : ''}
       </div>
@@ -561,16 +633,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   
   // Fetch JSON data dynamically
-  const [rawJobs, rawAdmit, rawResult, rawScholarship] = await Promise.all([
+  const [rawJobs, rawResult, rawScholarship] = await Promise.all([
     fetchLiveJobs(),
-    fetchSectionData('data/admit.json'),
     fetchSectionData('data/result.json'),
     fetchSectionData('data/scholarship.json')
   ]);
 
   const jobsData = normaliseDate(rawJobs).sort((a, b) => {
-    const dateA = new Date(a.apply_date || 0);
-    const dateB = new Date(b.apply_date || 0);
+    const dateA = new Date(a.apply_date || a.last_date || 0);
+    const dateB = new Date(b.apply_date || b.last_date || 0);
     if (dateA.getTime() !== dateB.getTime()) {
       return dateB.getTime() - dateA.getTime();
     }
@@ -581,19 +652,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     return b.id - a.id;
   });
-  const admitData = normaliseDate(rawAdmit);
   const resultData = normaliseDate(rawResult);
   const scholarshipData = normaliseDate(rawScholarship);
 
   allData = [
     ...jobsData.map(j => ({ ...j, section: "Govt Job" })),
-    ...admitData.map(a => ({ ...a, section: "Admit Card" })),
     ...resultData.map(r => ({ ...r, section: "Result" })),
     ...scholarshipData.map(s => ({ ...s, section: "Scholarship" })),
   ];
 
   renderPosts("posts-list", jobsData);
-  renderPosts("admit-list", admitData);
   renderPosts("result-list", resultData);
   renderPosts("scholarship-list", scholarshipData);
 
