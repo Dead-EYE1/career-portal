@@ -8,12 +8,6 @@ const SUPABASE_URL = 'https://bnpsnehsyjtvqtfmmjbo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucHNuZWhzeWp0dnF0Zm1tamJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNDc4NTMsImV4cCI6MjA5NDcyMzg1M30.oHNiY68WiDK2BWTRdI4YrE55Gxc9xXr-E38vxLJkY2Q';
 let supabaseClient = null;
 
-// TEMPORARILY DISCONNECTED
-/*
-if (typeof supabase !== 'undefined') {
-  supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-}
-*/
 
 async function fetchLiveJobs() {
   if (supabaseClient && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
