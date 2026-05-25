@@ -28,7 +28,7 @@ async function fetchLiveJobs() {
       console.error("Supabase fetch failed, falling back to JSON:", err);
     }
   }
-  return fetchSectionData('data/jobs.json');
+  return fetchSectionData('/data/jobs.json');
 }
 
 // ---- DATA FETCHING ----
@@ -635,8 +635,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Fetch JSON data dynamically
   const [rawJobs, rawResult, rawScholarship] = await Promise.all([
     fetchLiveJobs(),
-    fetchSectionData('data/result.json'),
-    fetchSectionData('data/scholarship.json')
+    fetchSectionData('/data/result.json'),
+    fetchSectionData('/data/scholarship.json')
   ]);
 
   const jobsData = normaliseDate(rawJobs).sort((a, b) => {
