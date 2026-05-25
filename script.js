@@ -2,29 +2,6 @@
 // ASSAM CAREER PORTAL — JAVASCRIPT
 // =============================================
 
-// ---- SUPABASE CONFIG ----
-const SUPABASE_URL = 'https://bnpsnehsyjtvqtfmmjbo.supabase.co';
-// Replace this with your actual Supabase Anon Key
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucHNuZWhzeWp0dnF0Zm1tamJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNDc4NTMsImV4cCI6MjA5NDcyMzg1M30.oHNiY68WiDK2BWTRdI4YrE55Gxc9xXr-E38vxLJkY2Q';
-let supabaseClient = null;
-
-
-async function fetchLiveJobs() {
-  if (supabaseClient && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
-    try {
-      const { data, error } = await supabaseClient
-        .from('jobs')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      if (data && data.length > 0) return data;
-    } catch (err) {
-      console.error("Supabase fetch failed, falling back to JSON:", err);
-    }
-  }
-  return fetchSectionData('/data/jobs.json');
-}
-
 // ---- DATA FETCHING ----
 let allData = [];
 
@@ -301,7 +278,10 @@ function doSearch(query) {
   if (!overlay || !resultsList) return;
 
   if (!query || query.trim().length < 2) {
-    overlay.classList.remove("active");
+    resultsList.innerHTML = '<p class="no-results" id="no-results-msg">Start typing to see results...</p>';
+    if (document.activeElement !== document.getElementById("overlay-search-input")) {
+      overlay.classList.remove("active");
+    }
     return;
   }
 
@@ -628,7 +608,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   // Fetch JSON data dynamically
   const [rawJobs, rawResult, rawScholarship] = await Promise.all([
-    fetchLiveJobs(),
+    fetchSectionData('/data/jobs.json'),
     fetchSectionData('/data/result.json'),
     fetchSectionData('/data/scholarship.json')
   ]);
