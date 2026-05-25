@@ -681,6 +681,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Generate SEO schema for loaded jobs
   generateJobSchema(jobsData);
 
+  // SPA Routing: auto-open job from URL
+  const pathParts = window.location.pathname.split('/');
+  if (pathParts.length >= 3 && pathParts[1] === 'job') {
+    const jobId = parseInt(pathParts[2], 10);
+    setTimeout(() => {
+      const shareBtn = document.querySelector(`button[onclick="shareGeneral(${jobId})"]`);
+      if (shareBtn) {
+        const postItem = shareBtn.closest('.post-item');
+        if (postItem) {
+          postItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          toggleJobDetails(postItem);
+          const origBg = postItem.style.backgroundColor;
+          postItem.style.transition = 'background-color 0.4s';
+          postItem.style.backgroundColor = '#fff3e0';
+          setTimeout(() => {
+            postItem.style.backgroundColor = origBg;
+            postItem.style.transition = '';
+          }, 1500);
+        }
+      }
+    }, 300);
+  }
+
   // Header scroll style
   const style = document.createElement("style");
   style.textContent = `.header.scrolled { box-shadow: 0 4px 20px rgba(0,53,128,0.14); }`;
