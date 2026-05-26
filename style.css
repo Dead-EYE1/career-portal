@@ -519,7 +519,7 @@ ul { list-style: none; }
    ============================================= */
 .join-banner {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 14px;
   margin-bottom: 22px;
 }
@@ -607,7 +607,7 @@ ul { list-style: none; }
 .post-content { flex: 1; min-width: 0; }
 .post-title {
   font-weight: 600;
-  font-size: clamp(0.85rem, 3.5vw, 0.95rem);
+  font-size: clamp(1rem, 4.5vw, 1.15rem);
   color: var(--text-primary);
   line-height: 1.4;
   margin-bottom: 5px;
@@ -676,7 +676,7 @@ ul { list-style: none; }
   margin-top: 12px;
   padding-top: 16px;
   padding-bottom: 16px;
-  font-size: clamp(0.75rem, 3.5vw, 0.9rem);
+  font-size: clamp(0.9rem, 4vw, 1rem);
   line-height: 1.5;
   color: var(--text-secondary);
   width: 100%;
@@ -712,7 +712,7 @@ ul { list-style: none; }
   background: var(--bg);
   padding: 12px;
   border-radius: var(--radius-sm);
-  font-size: clamp(0.7rem, 3.5vw, 0.84rem);
+  font-size: clamp(0.85rem, 4vw, 0.95rem);
   color: var(--text-secondary);
   overflow-wrap: anywhere;
   word-break: normal;
@@ -1474,15 +1474,15 @@ ul { list-style: none; }
 
 /* Styling for the JS keyword highlighter */
 .exam-highlight-badge {
-  background-color: #ff1e00; /* Bright highlighter yellow */
-  color: #000000; /* Solid black text for maximum contrast */
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 800; /* Extra bold */
+  background-color: #ffeb3b; /* Vibrant yellow */
+  color: #1a1a2e; /* Dark text for readability */
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 700;
   display: inline-block;
   margin: 0 2px;
-  border: 3px solid #181817; /* Slight border to define the edges */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.08); /* Tiny shadow to lift it off the page */
+  border: 1px solid #fbc02d;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
 /* Final structural layout fix for mobile viewports under 700px */
 @media (max-width: 900px) {

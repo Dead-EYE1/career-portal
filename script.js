@@ -114,7 +114,7 @@ function isExpired(dateStr) {
 }
 
 function highlightExamKeywords(title) {
-  const keywords = ['SSC GD','ASSAM POLICE','SSC CGL', 'SSC','RBI','INDIA POST GDS', 'UPSC', 'RRB', 'APSC', 'ADRE', 'Bank', 'Railway', 'SBI', 'IBPS', 'CISF', 'Indian Air Force', 'NABARD'];
+  const keywords = ['SSC GD','ASSAM POLICE','SSC CGL', 'SSC','RBI','INDIA POST GDS','BRO', 'UPSC', 'RRB', 'APSC', 'ADRE', 'Bank', 'Railway', 'SBI', 'IBPS', 'CISF', 'Indian Air Force', 'NABARD'];
   let newTitle = title;
   const sortedKeywords = keywords.sort((a, b) => b.length - a.length);
   for (const kw of sortedKeywords) {
