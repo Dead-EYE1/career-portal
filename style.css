@@ -1501,11 +1501,24 @@ ul { list-style: none; }
     grid-template-columns: 1fr;
   }
 
-  /* FIX: Reset the layout to keep it as a row, just tighten the spacing */
+  .posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+
   .post-item { 
     flex-direction: row; 
-    padding: 12px 18px 12px 12px; /* Increased right padding for visual balance */
-    gap: 10px;
+    padding: 16px;
+    gap: 12px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    box-shadow: 0 2px 4px rgba(0,53,128,0.04);
+  }
+  
+  .post-item:last-child {
+    border-bottom: 1px solid var(--border-light);
   }
   
   /* Removed static post-title font override, now handled globally by clamp() */
@@ -1530,9 +1543,14 @@ ul { list-style: none; }
   }
   
   /* Tighter padding on job cards, but preserve right-side spacing */
+  .posts-list {
+    padding: 12px;
+    gap: 14px;
+  }
+  
   .post-item {
-    padding: 12px 16px 12px 10px; /* Extra space on the right */
-    gap: 8px;
+    padding: 14px;
+    gap: 10px;
   }
   .post-badge {
     padding: 2px 4px;
