@@ -16,7 +16,12 @@ function isoToDisplay(iso) {
 
 function normaliseDate(items) {
   if (!items) return [];
-  return items.map(item => ({ ...item, date: isoToDisplay(item.date) }));
+  return items.map(item => ({ 
+    ...item, 
+    date: isoToDisplay(item.date),
+    apply_date: isoToDisplay(item.apply_date),
+    last_date: isoToDisplay(item.last_date)
+  }));
 }
 
 async function fetchSectionData(url) {
@@ -206,7 +211,7 @@ function generatePostHTML(data) {
       <div class="post-content">
         <div class="post-title">${highlightExamKeywords(item.title)}</div>
         <div class="post-meta">
-          <span>📅 ${item.date}</span>
+          <span>📅 ${item.apply_date || item.date}</span>
           ${item.posts ? `<span>👤 ${item.posts}</span>` : ""}
           <span class="post-meta-tag">🏷️ ${item.tag}</span>
         </div>
@@ -625,8 +630,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   ]);
 
   const jobsData = normaliseDate(rawJobs).map(j => ({ ...j, section: "Govt Job", uid: `job-${j.id}` })).sort((a, b) => {
-    const dateA = new Date(a.apply_date || a.last_date || 0);
-    const dateB = new Date(b.apply_date || b.last_date || 0);
+    if (a.featured && !b.featured) return -1;
+    if (!a.featured && b.featured) return 1;
+
+    const dateA = new Date(a.apply_date || 0);
+    const dateB = new Date(b.apply_date || 0);
     if (dateA.getTime() !== dateB.getTime()) {
       return dateB.getTime() - dateA.getTime();
     }
