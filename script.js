@@ -679,7 +679,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (pathParts.length >= 3 && pathParts[1] === 'job') {
     const uid = decodeURIComponent(pathParts[2]);
     setTimeout(() => {
-      const shareBtn = document.querySelector(`button[onclick="shareGeneral('${uid}')"]`);
+      const shareBtn = document.querySelector(`button[onclick="event.stopPropagation(); shareGeneral('${uid}')"]`);
       if (shareBtn) {
         const postItem = shareBtn.closest('.post-item');
         if (postItem) {
