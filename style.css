@@ -519,7 +519,7 @@ ul { list-style: none; }
    ============================================= */
 .join-banner {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
   margin-bottom: 22px;
 }
@@ -655,7 +655,7 @@ ul { list-style: none; }
   justify-content: center;
   margin-top: 10px;
   padding: 8px 16px;
-  background: #f0f4ff;
+  background: #cbcdd5;
   color: var(--primary);
   border: 1px solid rgba(0, 53, 128, 0.15);
   border-radius: 50px;
@@ -667,8 +667,8 @@ ul { list-style: none; }
   max-width: 100%;
   white-space: normal;
 }
-.view-details-btn:hover { background: var(--primary); color: #fff; }
-.view-details-btn.open-btn { background: #f1f3f5; color: #495057; border-color: #dee2e6; }
+.view-details-btn:hover { background: var(--primary); color: #c5b9b9; }
+.view-details-btn.open-btn { background: #a3a4a8; color: #c02929; border-color: #dee2e6; }
 .view-details-btn.open-btn:hover { background: #e9ecef; }
 
 .extended-details-content {
@@ -1474,14 +1474,14 @@ ul { list-style: none; }
 
 /* Styling for the JS keyword highlighter */
 .exam-highlight-badge {
-  background-color: #ff523b; /* Vibrant yellow */
+  background-color: #ff562c; /* Vibrant yellow */
   color: #1a1a2e; /* Dark text for readability */
   padding: 3px 8px;
   border-radius: 6px;
   font-weight: 700;
   display: inline-block;
   margin: 0 2px;
-  border: 2px solid #626262;
+  border: 2px solid #77340b;
   box-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
 /* Final structural layout fix for mobile viewports under 700px */
@@ -1501,24 +1501,11 @@ ul { list-style: none; }
     grid-template-columns: 1fr;
   }
 
-  .posts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 16px;
-  }
-
+  /* FIX: Reset the layout to keep it as a row, just tighten the spacing */
   .post-item { 
     flex-direction: row; 
-    padding: 16px;
-    gap: 12px;
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    box-shadow: 0 2px 4px rgba(0,53,128,0.04);
-  }
-  
-  .post-item:last-child {
-    border-bottom: 1px solid var(--border-light);
+    padding: 12px 18px 12px 12px; /* Increased right padding for visual balance */
+    gap: 10px;
   }
   
   /* Removed static post-title font override, now handled globally by clamp() */
@@ -1543,14 +1530,9 @@ ul { list-style: none; }
   }
   
   /* Tighter padding on job cards, but preserve right-side spacing */
-  .posts-list {
-    padding: 12px;
-    gap: 14px;
-  }
-  
   .post-item {
-    padding: 14px;
-    gap: 10px;
+    padding: 12px 16px 12px 10px; /* Extra space on the right */
+    gap: 8px;
   }
   .post-badge {
     padding: 2px 4px;
