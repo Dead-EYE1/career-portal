@@ -101,6 +101,11 @@ function toggleJobDetails(el) {
         btn.innerHTML = '❌ Close Details';
         btn.classList.add('open-btn');
       }
+      
+      const uid = el.getAttribute('data-uid');
+      if (uid && typeof renderComments === 'function') {
+        renderComments(uid);
+      }
     }
   }
 }
@@ -206,7 +211,7 @@ function generatePostHTML(data) {
     const safeMainDetails = wrapTablesInResponsiveDiv(item.details);
     
     return `
-    <div class="post-item" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
+    <div class="post-item" data-uid="${item.uid}" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
       <span class="post-badge ${getBadgeClass(item.badge)}">${item.organization || item.section || getBadgeText(item.badge)}</span>
       <div class="post-content">
         <div class="post-title">${highlightExamKeywords(item.title)}</div>
@@ -247,6 +252,18 @@ function generatePostHTML(data) {
               </button>
             </div>
           </div>
+          
+          <div class="comments-section" id="comments-${item.uid}" onclick="event.stopPropagation()">
+            <h4 class="comments-title">Comments</h4>
+            <div class="comments-list" id="comments-list-${item.uid}">
+              <div style="font-size: 0.85rem; color: var(--text-muted); text-align: center; padding: 10px 0;">Loading comments...</div>
+            </div>
+            <div class="comment-form">
+              <input type="text" id="comment-input-${item.uid}" placeholder="Write a comment..." class="comment-input" onkeydown="if(event.key === 'Enter') addComment('${item.uid}')" />
+              <button type="button" onclick="addComment('${item.uid}')" class="comment-submit-btn">Post</button>
+            </div>
+          </div>
+          
         </div>
         ` : ''}
       </div>
@@ -611,6 +628,71 @@ function generateJobSchema(jobs) {
   script.text = JSON.stringify(schema);
   document.head.appendChild(script);
 }
+
+// ---- COMMENTS LOGIC ----
+function getComments(uid) {
+  try {
+    const data = localStorage.getItem('comments_' + uid);
+    return data ? JSON.parse(data) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+window.renderComments = function(uid) {
+  const list = document.getElementById('comments-list-' + uid);
+  if (!list) return;
+  const comments = getComments(uid);
+  if (comments.length === 0) {
+    list.innerHTML = `<div style="font-size: 0.85rem; color: var(--text-muted); text-align: center; padding: 10px 0;">No comments yet. Be the first!</div>`;
+    return;
+  }
+  list.innerHTML = comments.map(c => `
+    <div class="comment-item">
+      <strong>Guest User</strong>
+      <div class="comment-text">${c.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+    </div>
+  `).join("");
+};
+
+let lastCommentTime = 0;
+
+window.addComment = function(uid) {
+  const input = document.getElementById('comment-input-' + uid);
+  if (!input || !input.value.trim()) return;
+  
+  // Anti-Spam: Rate Limiting (5 seconds)
+  const now = Date.now();
+  if (now - lastCommentTime < 5000) {
+    alert("Please wait a few seconds before posting another comment to prevent spam.");
+    return;
+  }
+  
+  let text = input.value.trim();
+  
+  // Anti-Spam: Max Length (Prevent massive walls of text)
+  if (text.length > 300) {
+    alert("Comment is too long! Please keep it under 300 characters.");
+    return;
+  }
+
+  // Anti-Spam: Basic Profanity Filter (Example)
+  const blockedWords = ['spam', 'hate', 'fake'];
+  for (let word of blockedWords) {
+    if (text.toLowerCase().includes(word)) {
+      alert("Your comment contains blocked words and cannot be posted.");
+      return;
+    }
+  }
+
+  const comments = getComments(uid);
+  comments.push({ text, date: new Date().toISOString() });
+  localStorage.setItem('comments_' + uid, JSON.stringify(comments));
+  
+  lastCommentTime = Date.now();
+  input.value = "";
+  renderComments(uid);
+};
 
 // ---- INIT ----
 document.addEventListener("DOMContentLoaded", async () => {
