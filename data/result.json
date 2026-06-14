@@ -26,6 +26,34 @@
       "date": "2026-04-22",
       "tag": "Central",
       "apply_link": "https://ssc.gov.in/"
+    },
+    {
+      "id": 4,
+      "title": "UPSC Civil Services Prelims Result 2026 — Check Qualifying Status Now",
+      "badge": "result",
+      "category": "UPSC",
+      "date": "2026-06-14",
+      "tag": "Central",
+      "apply_link": "https://upsc.gov.in/"
+    },
+    {
+      "id": 5,
+      "title": "Assam Police SI (UB) Result 2026 Announced — Download Merit List",
+      "badge": "result",
+      "category": "Assam Police",
+      "date": "2026-06-10",
+      "tag": "Assam",
+      "apply_link": "https://slprbassam.in/"
+    },
+    {
+      "id": 6,
+      "title": "IBPS Clerk Prelims Result 2026 — To be announced shortly",
+      "badge": "result",
+      "category": "Banking",
+      "date": "2026-06-30",
+      "status": "upcoming",
+      "tag": "All India",
+      "apply_link": "#"
     }
   ]
 }

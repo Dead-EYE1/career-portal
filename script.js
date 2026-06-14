@@ -564,6 +564,38 @@ function initSearch() {
   });
 }
 
+// ---- TAB SWITCHER LOGIC ----
+function initJobTabs() {
+  const wrappers = document.querySelectorAll('.tabs-wrapper');
+  if (!wrappers.length) return;
+
+  wrappers.forEach(wrapper => {
+    const tabs = wrapper.querySelectorAll('.job-tab');
+    const contents = wrapper.querySelectorAll('.job-tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs in this wrapper
+        tabs.forEach(t => t.classList.remove('active'));
+        // Add active class to clicked tab
+        tab.classList.add('active');
+
+        // Hide all tab contents in this wrapper
+        contents.forEach(content => {
+          content.classList.remove('active');
+        });
+
+        // Show the targeted content
+        const targetId = tab.getAttribute('data-target');
+        const targetContent = document.getElementById(targetId);
+        if (targetContent) {
+          targetContent.classList.add('active');
+        }
+      });
+    });
+  });
+}
+
 // ---- INTERSECTION OBSERVER (Animate cards) ----
 function initAnimations() {
   if (!('IntersectionObserver' in window)) return;
@@ -736,9 +768,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     ...scholarshipData
   ];
 
-  renderPosts("posts-list", jobsData);
-  renderPosts("result-list", resultData);
-  renderPosts("scholarship-list", scholarshipData);
+  const activeJobs = jobsData.filter(j => j.status !== 'upcoming');
+  const upcomingJobs = jobsData.filter(j => j.status === 'upcoming');
+  
+  const activeResult = resultData.filter(r => r.status !== 'upcoming');
+  const upcomingResult = resultData.filter(r => r.status === 'upcoming');
+
+  const activeScholarship = scholarshipData.filter(s => s.status !== 'upcoming');
+  const upcomingScholarship = scholarshipData.filter(s => s.status === 'upcoming');
+
+  renderPosts("posts-list", activeJobs);
+  if (upcomingJobs.length > 0) {
+    renderPosts("upcoming-posts-list", upcomingJobs);
+  }
+
+  renderPosts("result-list", activeResult);
+  if (upcomingResult.length > 0) {
+    renderPosts("upcoming-result-list", upcomingResult);
+  }
+
+  renderPosts("scholarship-list", activeScholarship);
+  if (upcomingScholarship.length > 0) {
+    renderPosts("upcoming-scholarship-list", upcomingScholarship);
+  }
 
 
   initTicker();
@@ -749,6 +801,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initBackToTop();
   initScrollHeader();
   initSearch();
+  initJobTabs();
 
   // Delay animations slightly
   setTimeout(initAnimations, 100);

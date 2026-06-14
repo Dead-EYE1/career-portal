@@ -121,22 +121,106 @@
         </a>
       </div>
 
-      <div class="section-block" id="latest-jobs-section">
-        <div class="section-header">
-          <h2 class="section-title">🏛️ Latest Government Jobs</h2>
-          <a href="#" class="view-all-link" id="view-all-jobs">View All →</a>
+      <div class="tabs-wrapper">
+        <div class="job-tabs-container" id="job-tabs">
+          <button class="job-tab active" data-target="active-jobs-container">Active Jobs</button>
+          <button class="job-tab" data-target="upcoming-jobs-container">Upcoming Jobs</button>
         </div>
-        <div class="posts-list" id="posts-list">
+
+        <div id="active-jobs-container" class="job-tab-content active">
+          <div class="section-block" id="latest-jobs-section">
+            <div class="section-header">
+              <h2 class="section-title">🏛️ Latest Government Jobs</h2>
+              <a href="#" class="view-all-link" id="view-all-jobs">View All →</a>
+            </div>
+            <div class="posts-list" id="posts-list">
+              </div>
           </div>
+        </div>
+
+        <div id="upcoming-jobs-container" class="job-tab-content">
+          <div class="section-block" id="upcoming-jobs-section">
+            <div class="section-header">
+              <h2 class="section-title">⏳ Upcoming Jobs</h2>
+              <a href="#" class="view-all-link" id="view-all-upcoming">View All →</a>
+            </div>
+            <div class="posts-list" id="upcoming-posts-list">
+              <div style="padding: 30px 20px; text-align: center; color: var(--text-muted);">
+                <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+                <p>No upcoming jobs at the moment.</p>
+                <p style="font-size: 0.85rem; margin-top: 5px;">Check back later for future notifications!</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="section-block" id="result-section">
-        <div class="section-header">
-          <h2 class="section-title">📊 Latest Results</h2>
-          <a href="#" class="view-all-link" id="view-all-results">View All →</a>
+      <div class="tabs-wrapper">
+        <div class="job-tabs-container" id="scholarship-tabs">
+          <button class="job-tab active" data-target="active-scholarship-container">Active Scholarships</button>
+          <button class="job-tab" data-target="upcoming-scholarship-container">Upcoming Scholarships</button>
         </div>
-        <div class="posts-list" id="result-list">
+
+        <div id="active-scholarship-container" class="job-tab-content active">
+          <div class="section-block" id="scholarship-section">
+            <div class="section-header">
+              <h2 class="section-title">🏆 Scholarships</h2>
+              <a href="#" class="view-all-link" id="view-all-scholarship">View All →</a>
+            </div>
+            <div class="posts-list" id="scholarship-list">
+              </div>
           </div>
+        </div>
+
+        <div id="upcoming-scholarship-container" class="job-tab-content">
+          <div class="section-block" id="upcoming-scholarship-section">
+            <div class="section-header">
+              <h2 class="section-title">⏳ Upcoming Scholarships</h2>
+              <a href="#" class="view-all-link" id="view-all-upcoming-scholarships">View All →</a>
+            </div>
+            <div class="posts-list" id="upcoming-scholarship-list">
+              <div style="padding: 30px 20px; text-align: center; color: var(--text-muted);">
+                <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+                <p>No upcoming scholarships at the moment.</p>
+                <p style="font-size: 0.85rem; margin-top: 5px;">Check back later for future notifications!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs-wrapper">
+        <div class="job-tabs-container" id="result-tabs">
+          <button class="job-tab active" data-target="active-result-container">Active Results</button>
+          <button class="job-tab" data-target="upcoming-result-container">Upcoming Results</button>
+        </div>
+
+        <div id="active-result-container" class="job-tab-content active">
+          <div class="section-block" id="result-section">
+            <div class="section-header">
+              <h2 class="section-title">📊 Latest Results</h2>
+              <a href="#" class="view-all-link" id="view-all-results">View All →</a>
+            </div>
+            <div class="posts-list" id="result-list">
+              </div>
+          </div>
+        </div>
+
+        <div id="upcoming-result-container" class="job-tab-content">
+          <div class="section-block" id="upcoming-result-section">
+            <div class="section-header">
+              <h2 class="section-title">⏳ Upcoming Results</h2>
+              <a href="#" class="view-all-link" id="view-all-upcoming-results">View All →</a>
+            </div>
+            <div class="posts-list" id="upcoming-result-list">
+              <div style="padding: 30px 20px; text-align: center; color: var(--text-muted);">
+                <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+                <p>No upcoming results at the moment.</p>
+                <p style="font-size: 0.85rem; margin-top: 5px;">Check back later for future notifications!</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="quick-nav-grid" id="quick-nav-grid">
@@ -155,15 +239,6 @@
           <div class="qnav-label">Scholarship</div>
           <div class="qnav-count">15 Active</div>
         </a>
-      </div>
-
-      <div class="section-block" id="scholarship-section">
-        <div class="section-header">
-          <h2 class="section-title">🏆 Scholarships</h2>
-          <a href="#" class="view-all-link" id="view-all-scholarship">View All →</a>
-        </div>
-        <div class="posts-list" id="scholarship-list">
-          </div>
       </div>
 
     </section>

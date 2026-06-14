@@ -451,6 +451,73 @@ ul { list-style: none; }
 }
 
 /* =============================================
+   JOB TABS SWITCHER
+   ============================================= */
+.job-tabs-container {
+  display: flex;
+  background: var(--border-light);
+  border-radius: var(--radius-md);
+  margin-bottom: 22px;
+  padding: 6px;
+  gap: 4px;
+  box-shadow: inset 0 2px 6px rgba(0,53,128,0.04);
+}
+
+.job-tab {
+  flex: 1;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  text-align: center;
+}
+
+.job-tab:hover {
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--primary);
+}
+
+.job-tab.active {
+  color: var(--primary);
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,53,128,0.08), 0 1px 3px rgba(0,53,128,0.05);
+}
+
+.job-tab-content {
+  display: none;
+  animation: tabFadeIn 0.3s ease;
+}
+
+.job-tab-content.active {
+  display: block;
+}
+
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .job-tabs-container {
+    border-radius: 0;
+    margin: 0 -16px 22px -16px; /* stretch full width */
+    border-left: none;
+    border-right: none;
+  }
+  .job-tab {
+    font-size: 0.95rem;
+    padding: 12px 10px;
+  }
+}
+
+/* =============================================
    SECTION BLOCKS
    ============================================= */
 .section-block {

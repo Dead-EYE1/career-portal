@@ -2,7 +2,9 @@
   "items": [
     { "id": 1, "title": "Nijut Moina Scheme Assam 2026 — Scholarship for Girl Students", "badge": "scholarship", "category": "Scholarship", "date": "2026-04-20", "tag": "Assam", "apply_link": "https://directorateofhighereducation.assam.gov.in/" },
     { "id": 2, "title": "Anundoram Borooah Cash Award Scheme (ARBAS) 2026 — Class 10 & 12 Toppers", "badge": "scholarship", "category": "Scholarship", "date": "2026-04-18", "tag": "Assam", "apply_link": "https://sebaonline.org/" },
-    { "id": 3, "title": "National Scholarship Portal (NSP) 2026 — Pre & Post Matric | Register Now", "badge": "scholarship", "category": "Scholarship", "date": "2026-04-10", "tag": "National", "apply_link": "https://scholarships.gov.in/" }
+    { "id": 3, "title": "National Scholarship Portal (NSP) 2026 — Pre & Post Matric | Register Now", "badge": "scholarship", "category": "Scholarship", "date": "2026-04-10", "tag": "National", "apply_link": "https://scholarships.gov.in/" },
+    { "id": 4, "title": "Ishan Uday Special Scholarship for NER 2026-27 | UGC Apply Online", "badge": "scholarship", "category": "Scholarship", "date": "2026-06-12", "tag": "North East", "apply_link": "https://scholarships.gov.in/" },
+    { "id": 5, "title": "Swami Vivekananda Merit-cum-Means Scholarship 2026", "badge": "scholarship", "category": "Scholarship", "date": "2026-06-05", "tag": "National", "apply_link": "https://svmcm.wbhed.gov.in/" }
   ]
 }
 
