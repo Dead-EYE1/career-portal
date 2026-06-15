@@ -669,6 +669,13 @@ ul { list-style: none; }
 .badge-admit { background: #fff8e1; color: #f57f17; border: 1px solid #fff3cd; }
 .badge-result { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
 .badge-scholarship { background: #f3e5f5; color: var(--purple); border: 1px solid #e1bee7; }
+.badge-expired { background: #f8d7da; color: var(--accent-dark); border: 1px solid #f5c6cb; }
+
+.expired-card-item {
+  opacity: 0.75;
+  filter: grayscale(85%);
+  background-color: #fcfcfc;
+}
 
 .post-content { flex: 1; min-width: 0; }
 .post-title {

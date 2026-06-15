@@ -159,7 +159,7 @@
           <div class="section-block" id="latest-jobs-section">
             <div class="section-header">
               <h2 class="section-title">🏛️ Latest Government Jobs</h2>
-              <a href="#" class="view-all-link" id="view-all-jobs">View All →</a>
+              <button type="button" class="view-all-link" id="view-expired-jobs" style="background:none;font:inherit;cursor:pointer;">Expired Jobs →</button>
             </div>
             <div class="posts-list" id="posts-list">
             </div>
@@ -176,6 +176,51 @@
               <div style="padding: 30px 20px; text-align: center; color: var(--text-muted);">
                 <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
                 <p>No upcoming jobs at the moment.</p>
+                <p style="font-size: 0.85rem; margin-top: 5px;">Check back later for future notifications!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="expired-jobs-container" class="job-tab-content">
+          <div class="section-block" id="expired-jobs-section">
+            <div class="section-header">
+              <h2 class="section-title">⚠️ Expired Jobs</h2>
+              <button type="button" class="view-all-link" id="back-to-active-jobs" style="background:none;font:inherit;cursor:pointer;">← Back to Active</button>
+            </div>
+            <div class="posts-list" id="expired-posts-list">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs-wrapper">
+        <div class="job-tabs-container" id="result-tabs">
+          <button class="job-tab active" data-target="active-result-container">Active Results</button>
+          <button class="job-tab" data-target="upcoming-result-container">Upcoming Results</button>
+        </div>
+
+        <div id="active-result-container" class="job-tab-content active">
+          <div class="section-block" id="result-section">
+            <div class="section-header">
+              <h2 class="section-title">📊 Latest Results</h2>
+              <a href="#" class="view-all-link" id="view-all-results">View All →</a>
+            </div>
+            <div class="posts-list" id="result-list">
+            </div>
+          </div>
+        </div>
+
+        <div id="upcoming-result-container" class="job-tab-content">
+          <div class="section-block" id="upcoming-result-section">
+            <div class="section-header">
+              <h2 class="section-title">⏳ Upcoming Results</h2>
+              <a href="#" class="view-all-link" id="view-all-upcoming-results">View All →</a>
+            </div>
+            <div class="posts-list" id="upcoming-result-list">
+              <div style="padding: 30px 20px; text-align: center; color: var(--text-muted);">
+                <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+                <p>No upcoming results at the moment.</p>
                 <p style="font-size: 0.85rem; margin-top: 5px;">Check back later for future notifications!</p>
               </div>
             </div>
@@ -210,40 +255,6 @@
               <div style="padding: 30px 20px; text-align: center; color: var(--text-muted);">
                 <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
                 <p>No upcoming scholarships at the moment.</p>
-                <p style="font-size: 0.85rem; margin-top: 5px;">Check back later for future notifications!</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="tabs-wrapper">
-        <div class="job-tabs-container" id="result-tabs">
-          <button class="job-tab active" data-target="active-result-container">Active Results</button>
-          <button class="job-tab" data-target="upcoming-result-container">Upcoming Results</button>
-        </div>
-
-        <div id="active-result-container" class="job-tab-content active">
-          <div class="section-block" id="result-section">
-            <div class="section-header">
-              <h2 class="section-title">📊 Latest Results</h2>
-              <a href="#" class="view-all-link" id="view-all-results">View All →</a>
-            </div>
-            <div class="posts-list" id="result-list">
-            </div>
-          </div>
-        </div>
-
-        <div id="upcoming-result-container" class="job-tab-content">
-          <div class="section-block" id="upcoming-result-section">
-            <div class="section-header">
-              <h2 class="section-title">⏳ Upcoming Results</h2>
-              <a href="#" class="view-all-link" id="view-all-upcoming-results">View All →</a>
-            </div>
-            <div class="posts-list" id="upcoming-result-list">
-              <div style="padding: 30px 20px; text-align: center; color: var(--text-muted);">
-                <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
-                <p>No upcoming results at the moment.</p>
                 <p style="font-size: 0.85rem; margin-top: 5px;">Check back later for future notifications!</p>
               </div>
             </div>

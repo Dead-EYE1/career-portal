@@ -209,10 +209,13 @@ function generatePostHTML(data) {
     const isPastDeadline = item.last_date ? isExpired(item.last_date) : false;
     const safeDetails = wrapTablesInResponsiveDiv(item.other_details);
     const safeMainDetails = wrapTablesInResponsiveDiv(item.details);
+    const expiredClass = isPastDeadline ? "expired-card-item" : "";
+    const badgeClass = isPastDeadline ? "badge-expired" : getBadgeClass(item.badge);
+    const badgeText = isPastDeadline ? "CLOSED" : (item.organization || item.section || getBadgeText(item.badge));
     
     return `
-    <div class="post-item" data-uid="${item.uid}" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
-      <span class="post-badge ${getBadgeClass(item.badge)}">${item.organization || item.section || getBadgeText(item.badge)}</span>
+    <div class="post-item ${expiredClass}" data-uid="${item.uid}" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
+      <span class="post-badge ${badgeClass}">${badgeText}</span>
       <div class="post-content">
         <div class="post-title">${highlightExamKeywords(item.title)}</div>
         <div class="post-meta">
@@ -220,7 +223,7 @@ function generatePostHTML(data) {
           ${item.posts ? `<span>👤 ${item.posts}</span>` : ""}
           <span class="post-meta-tag">🏷️ ${item.tag}</span>
         </div>
-        ${(item.apply_date || item.education || item.other_details || item.details || item.salary || item.location || item.application_fee) ? `
+        ${(item.apply_date || item.education || item.other_details || item.details || item.salary || item.location || item.application_fee || item.apply_link) ? `
         <button type="button" class="view-details-btn" onclick="event.stopPropagation(); toggleJobDetails(this.closest('.post-item'))">👁️ View Details</button>
         <div class="post-details" onclick="event.stopPropagation()">
           ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.last_date || 'the deadline'}</strong>. <a href="#latest-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
@@ -788,7 +791,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     ...scholarshipData
   ];
 
-  const activeJobs = jobsData.filter(j => j.status !== 'upcoming');
+  const activeJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.last_date || !isExpired(j.last_date)));
+  const expiredJobs = jobsData.filter(j => j.status !== 'upcoming' && j.last_date && isExpired(j.last_date));
   const upcomingJobs = jobsData.filter(j => j.status === 'upcoming');
   
   const activeResult = resultData.filter(r => r.status !== 'upcoming');
@@ -800,6 +804,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderPosts("posts-list", activeJobs);
   if (upcomingJobs.length > 0) {
     renderPosts("upcoming-posts-list", upcomingJobs);
+  }
+  if (expiredJobs.length > 0) {
+    renderPosts("expired-posts-list", expiredJobs);
+  } else {
+    const expiredList = document.getElementById("expired-posts-list");
+    if (expiredList) {
+      expiredList.innerHTML = `<div style="padding: 30px 20px; text-align: center; color: var(--text-muted);"><div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div><p>No expired jobs found.</p></div>`;
+    }
   }
 
   renderPosts("result-list", activeResult);
@@ -822,6 +834,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   initScrollHeader();
   initSearch();
   initJobTabs();
+
+  // Expired Jobs Tab Logic
+  const btnExpired = document.getElementById("view-expired-jobs");
+  const btnBackActive = document.getElementById("back-to-active-jobs");
+  if (btnExpired) {
+    btnExpired.addEventListener("click", () => {
+      document.querySelectorAll('#job-tabs .job-tab').forEach(t => t.classList.remove('active'));
+      
+      const activeContainer = document.getElementById('active-jobs-container');
+      const upcomingContainer = document.getElementById('upcoming-jobs-container');
+      if (activeContainer) activeContainer.classList.remove('active');
+      if (upcomingContainer) upcomingContainer.classList.remove('active');
+      
+      const expiredContainer = document.getElementById('expired-jobs-container');
+      if (expiredContainer) expiredContainer.classList.add('active');
+    });
+  }
+  if (btnBackActive) {
+    btnBackActive.addEventListener("click", () => {
+      const activeTab = document.querySelector('#job-tabs .job-tab[data-target="active-jobs-container"]');
+      if (activeTab) activeTab.click(); // This automatically handles the container switching
+    });
+  }
 
   // Delay animations slightly
   setTimeout(initAnimations, 100);
