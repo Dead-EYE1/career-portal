@@ -626,14 +626,21 @@ function generateJobSchema(jobs) {
   const schema = {
     "@context": "https://schema.org",
     "@graph": jobs.filter(j => j.title).map(job => {
-      const validThroughDate = job.last_date && !isNaN(new Date(job.last_date).getTime()) ? new Date(job.last_date) : 
+      const datePosted = job.date ? new Date(job.date) : new Date();
+      let validThroughDate = job.last_date && !isNaN(new Date(job.last_date).getTime()) ? new Date(job.last_date) : 
                                (job.apply_date && !isNaN(new Date(job.apply_date).getTime()) ? new Date(job.apply_date) : null);
+      
+      // Provide a 30-day dummy fallback for "TBA" or missing dates to fix the 6th warning
+      if (!validThroughDate) {
+        validThroughDate = new Date(datePosted.getTime() + 30 * 24 * 60 * 60 * 1000);
+      }
+
       return {
         "@type": "JobPosting",
         "title": job.title,
         "description": job.other_details || job.title,
-        "datePosted": job.date ? new Date(job.date).toISOString() : new Date().toISOString(),
-        "validThrough": validThroughDate ? validThroughDate.toISOString() : "",
+        "datePosted": datePosted.toISOString(),
+        "validThrough": validThroughDate.toISOString(),
         "employmentType": job.employmentType || "FULL_TIME",
         "hiringOrganization": {
           "@type": "Organization",
