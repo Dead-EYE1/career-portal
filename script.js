@@ -634,6 +634,7 @@ function generateJobSchema(jobs) {
         "description": job.other_details || job.title,
         "datePosted": job.date ? new Date(job.date).toISOString() : new Date().toISOString(),
         "validThrough": validThroughDate ? validThroughDate.toISOString() : "",
+        "employmentType": job.employmentType || "FULL_TIME",
         "hiringOrganization": {
           "@type": "Organization",
           "name": job.tag || "Government of India",
@@ -643,8 +644,20 @@ function generateJobSchema(jobs) {
           "@type": "Place",
           "address": {
             "@type": "PostalAddress",
+            "streetAddress": job.streetAddress || "Not specified",
+            "addressLocality": job.addressLocality || "Guwahati",
             "addressRegion": job.location || "Assam",
+            "postalCode": job.postalCode || "781001",
             "addressCountry": "IN"
+          }
+        },
+        "baseSalary": {
+          "@type": "MonetaryAmount",
+          "currency": "INR",
+          "value": {
+            "@type": "QuantitativeValue",
+            "value": job.baseSalary || 25000,
+            "unitText": "MONTH"
           }
         }
       };
