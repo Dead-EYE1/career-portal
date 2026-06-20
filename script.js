@@ -160,18 +160,18 @@ window.shareOnWhatsApp = function(uid) {
     text = `📊 *${title}*\n\n`;
     if (job.tag) text += `📌 ${job.tag}\n`;
     if (job.date) text += `📅 ${job.date}\n`;
-    text += `\n🔗 Check Result: ${url}\n\n📲 newjobupdates.in`;
+    text += `\n Check Result: ${url}\n`;
   } else if (job.section === "Scholarship") {
     text = `🏆 *${title}*\n\n`;
     if (job.education) text += `🎓 ${job.education}\n`;
     if (job.last_date) text += `⏰ Last Date: ${job.last_date}\n`;
-    text += `\n🔗 Apply Now: ${url}\n\n📲 newjobupdates.in`;
+    text += `\n Apply Now: ${url}\n`;
   } else {
     text = `🚨 *${title}*\n\n`;
     if (job.posts) text += `👤 ${job.posts}\n`;
     if (job.education) text += `🎓 ${job.education}\n`;
     if (job.last_date) text += `⏰ Last Date: ${job.last_date}\n`;
-    text += `\n🔗 Full Details & Apply: ${url}\n\n📲 newjobupdates.in`;
+    text += `\n Full Details & Apply: ${url}\n`;
   }
   
   const encodedText = encodeURIComponent(text);
