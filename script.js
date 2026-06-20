@@ -153,21 +153,25 @@ window.shareOnWhatsApp = function(uid) {
   if (!job) return;
   
   const title = job.title || '';
-  const organization = job.organization || job.section || '';
-  const jobTitleOrg = organization ? `${title} / ${organization}` : title;
+  const url = `https://newjobupdates.in/job/${uid}`;
   
   let text = '';
   if (job.section === "Result") {
-    text = `📊 ${jobTitleOrg} has been declared! Check your marks and download the merit list here: https://newjobupdates.in/job/${uid}`;
+    text = `📊 *${title}*\n\n`;
+    if (job.tag) text += `📌 ${job.tag}\n`;
+    if (job.date) text += `📅 ${job.date}\n`;
+    text += `\n🔗 Check Result: ${url}\n\n📲 newjobupdates.in`;
   } else if (job.section === "Scholarship") {
-    text = `🏆 ${jobTitleOrg} is open! Check eligibility and apply online here: https://newjobupdates.in/job/${uid}`;
+    text = `🏆 *${title}*\n\n`;
+    if (job.education) text += `🎓 ${job.education}\n`;
+    if (job.last_date) text += `⏰ Last Date: ${job.last_date}\n`;
+    text += `\n🔗 Apply Now: ${url}\n\n📲 newjobupdates.in`;
   } else {
-    let vacancyCount = 'Various';
-    if (job.posts) {
-      const match = job.posts.match(/[0-9,]+/);
-      if (match) vacancyCount = match[0];
-    }
-    text = `🚨 ${jobTitleOrg} Recruitment 2026 - ${vacancyCount}+ Vacancies open! Check age limits, qualifications, and apply online here: https://newjobupdates.in/job/${uid}`;
+    text = `🚨 *${title}*\n\n`;
+    if (job.posts) text += `👤 ${job.posts}\n`;
+    if (job.education) text += `🎓 ${job.education}\n`;
+    if (job.last_date) text += `⏰ Last Date: ${job.last_date}\n`;
+    text += `\n🔗 Full Details & Apply: ${url}\n\n📲 newjobupdates.in`;
   }
   
   const encodedText = encodeURIComponent(text);
