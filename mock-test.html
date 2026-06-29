@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mock Test | newjobupdates.in</title>
+  <meta name="description" content="Take a free mock test on newjobupdates.in. Practice General Knowledge questions with instant scoring and negative marking." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #0f0e17;
+      --bg-card: rgba(255, 255, 255, 0.06);
+      --bg-card-solid: #1a1830;
+      --accent: #7f5af0;
+      --accent-glow: rgba(127, 90, 240, 0.35);
+      --accent-light: #a78bfa;
+      --green: #2cb67d;
+      --green-glow: rgba(44, 182, 125, 0.25);
+      --red: #e45858;
+      --red-glow: rgba(228, 88, 88, 0.25);
+      --text-primary: #fffffe;
+      --text-secondary: #94a1b2;
+      --border: rgba(255, 255, 255, 0.08);
+      --radius: 16px;
+      --radius-sm: 12px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px 16px 40px;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(127, 90, 240, 0.18), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(44, 182, 125, 0.1), transparent);
+    }
+
+    /* ── Header / Branding ────────────────────────── */
+    .brand {
+      text-align: center;
+      margin-bottom: 24px;
+      animation: fadeDown 0.5s ease-out;
+    }
+    .brand h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--accent-light), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand p {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* ── Card Shell ────────────────────────────────── */
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg-card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px 28px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.45s ease-out;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(160deg, rgba(127, 90, 240, 0.25), transparent 50%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ── Top Bar (timer + progress) ───────────────── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .timer-badge, .progress-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border);
+    }
+    .timer-badge svg, .progress-badge svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+    .timer-badge.danger {
+      color: var(--red);
+      border-color: rgba(228, 88, 88, 0.3);
+      background: var(--red-glow);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    /* ── Progress Bar ─────────────────────────────── */
+    .progress-track {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 100px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--green));
+      border-radius: 100px;
+      transition: width 0.5s ease;
+    }
+
+    /* ── Question ──────────────────────────────────── */
+    .question-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.55;
+      margin-bottom: 22px;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── Options ───────────────────────────────────── */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 16px 18px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .option-btn:active {
+      transform: scale(0.985);
+    }
+    .option-btn:hover {
+      border-color: var(--accent);
+      background: rgba(127, 90, 240, 0.08);
+    }
+    .option-btn .key {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.07);
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .option-btn.selected {
+      border-color: var(--accent);
+      background: rgba(127, 90, 240, 0.12);
+      box-shadow: 0 0 0 1px var(--accent), 0 4px 20px var(--accent-glow);
+    }
+    .option-btn.selected .key {
+      background: var(--accent);
+      color: #fff;
+    }
+    .option-btn.correct {
+      border-color: var(--green);
+      background: rgba(44, 182, 125, 0.12);
+      box-shadow: 0 0 0 1px var(--green), 0 4px 20px var(--green-glow);
+    }
+    .option-btn.correct .key {
+      background: var(--green);
+      color: #fff;
+    }
+    .option-btn.wrong {
+      border-color: var(--red);
+      background: rgba(228, 88, 88, 0.1);
+      box-shadow: 0 0 0 1px var(--red), 0 4px 20px var(--red-glow);
+    }
+    .option-btn.wrong .key {
+      background: var(--red);
+      color: #fff;
+    }
+    .option-btn.disabled {
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    /* ── Next Button ───────────────────────────────── */
+    .next-btn {
+      width: 100%;
+      padding: 16px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), #6c3ce0);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 24px var(--accent-glow);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .next-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 32px var(--accent-glow);
+    }
+    .next-btn:active {
+      transform: translateY(0) scale(0.985);
+    }
+
+    /* ── Result Screen ─────────────────────────────── */
+    #result-screen .result-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      background: linear-gradient(135deg, var(--accent), var(--green));
+      box-shadow: 0 8px 32px var(--accent-glow);
+      animation: bounceIn 0.6s ease;
+    }
+    #result-screen h2 {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    #result-screen .subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      margin-bottom: 28px;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .score-item {
+      text-align: center;
+      padding: 16px 8px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+    }
+    .score-item .value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .score-item .label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .score-item.green .value { color: var(--green); }
+    .score-item.red .value { color: var(--red); }
+    .score-item.accent .value {
+      background: linear-gradient(135deg, var(--accent-light), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .final-score-banner {
+      text-align: center;
+      padding: 20px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, rgba(127, 90, 240, 0.15), rgba(44, 182, 125, 0.1));
+      border: 1px solid rgba(127, 90, 240, 0.2);
+      margin-bottom: 24px;
+    }
+    .final-score-banner .fs-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .final-score-banner .fs-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-light), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .final-score-banner .fs-total {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .retry-btn {
+      width: 100%;
+      padding: 16px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--green), #1a9963);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 24px var(--green-glow);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .retry-btn:hover {
+      transform: translateY(-1px);
+    }
+    .retry-btn:active {
+      transform: translateY(0) scale(0.985);
+    }
+
+    /* ── Start Screen ─────────────────────────────── */
+    #start-screen { text-align: center; }
+    #start-screen .quiz-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    #start-screen .quiz-desc {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .info-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    .chip svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+    .chip.green { color: var(--green); border-color: rgba(44, 182, 125, 0.25); }
+    .chip.red { color: var(--red); border-color: rgba(228, 88, 88, 0.25); }
+    .chip.accent { color: var(--accent-light); border-color: rgba(127, 90, 240, 0.25); }
+
+    .start-btn {
+      width: 100%;
+      padding: 16px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), #6c3ce0);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 24px var(--accent-glow);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .start-btn:hover { transform: translateY(-1px); }
+    .start-btn:active { transform: translateY(0) scale(0.985); }
+
+    /* ── Animations ────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(24px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .slide-in { animation: slideIn 0.35s ease-out; }
+
+    /* ── Footer ────────────────────────────────────── */
+    .footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      opacity: 0.6;
+    }
+    .footer a {
+      color: var(--accent-light);
+      text-decoration: none;
+    }
+
+    /* ── Desktop polish ────────────────────────────── */
+    @media (min-width: 520px) {
+      body { padding-top: 48px; }
+      .card { padding: 32px 28px 36px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Branding -->
+  <header class="brand">
+    <h1>newjobupdates.in</h1>
+    <p>Free Mock Test Series</p>
+  </header>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!--  START SCREEN                                  -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="card" id="start-screen">
+    <div style="font-size:2.4rem;margin-bottom:14px;">📝</div>
+    <h2 class="quiz-title">General Knowledge Quiz</h2>
+    <p class="quiz-desc">Test your knowledge with a quick 3-question mock test. Instant scoring with negative marking — just like the real exam!</p>
+
+    <div class="info-chips">
+      <span class="chip accent">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        5 Minutes
+      </span>
+      <span class="chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        3 Questions
+      </span>
+      <span class="chip green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        +1 Correct
+      </span>
+      <span class="chip red">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        −0.25 Wrong
+      </span>
+    </div>
+
+    <button class="start-btn" id="start-btn" onclick="startQuiz()">Start Quiz →</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!--  QUIZ SCREEN                                   -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="card hidden" id="quiz-screen">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="timer-badge" id="timer-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span id="timer-display">05:00</span>
+      </div>
+      <div class="progress-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <span id="progress-text">1 of 3</span>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- Question -->
+    <p class="question-text" id="question-text"></p>
+
+    <!-- Options -->
+    <div class="options-list" id="options-list"></div>
+
+    <!-- Next Button -->
+    <button class="next-btn hidden" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!--  RESULT SCREEN                                 -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="card hidden" id="result-screen">
+    <div class="result-icon">🏆</div>
+    <h2>Quiz Completed!</h2>
+    <p class="subtitle">Here's your performance breakdown</p>
+
+    <div class="score-grid">
+      <div class="score-item green">
+        <span class="value" id="res-correct">0</span>
+        <span class="label">Correct</span>
+      </div>
+      <div class="score-item red">
+        <span class="value" id="res-wrong">0</span>
+        <span class="label">Wrong</span>
+      </div>
+      <div class="score-item">
+        <span class="value" id="res-unanswered">0</span>
+        <span class="label">Skipped</span>
+      </div>
+    </div>
+
+    <div class="final-score-banner">
+      <div class="fs-label">Final Score</div>
+      <div class="fs-value" id="res-score">0.00</div>
+      <div class="fs-total">out of <span id="res-total">3.00</span></div>
+    </div>
+
+    <button class="retry-btn" onclick="restartQuiz()">↻ Retake Quiz</button>
+  </div>
+
+  <footer class="footer">
+    © 2026 <a href="#">newjobupdates.in</a> — Practice makes perfect.
+  </footer>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!--  JAVASCRIPT                                    -->
+  <!-- ══════════════════════════════════════════════ -->
+  <script>
+    // ── Hardcoded Sample Questions ───────────────────
+    const questions = [
+      {
+        question: "What is the capital of India?",
+        options: ["Mumbai", "New Delhi", "Kolkata", "Chennai"],
+        answer: 1  // index of correct option (0-based)
+      },
+      {
+        question: "Who wrote the Indian national anthem 'Jana Gana Mana'?",
+        options: ["Bankim Chandra Chattopadhyay", "Rabindranath Tagore", "Sarojini Naidu", "Mahatma Gandhi"],
+        answer: 1
+      },
+      {
+        question: "Which planet is known as the 'Red Planet'?",
+        options: ["Jupiter", "Venus", "Mars", "Saturn"],
+        answer: 2
+      }
+    ];
+
+    // ── Scoring Constants ────────────────────────────
+    const CORRECT_MARKS = 1;
+    const WRONG_PENALTY = 0.25;
+    const TIMER_SECONDS = 5 * 60; // 5 minutes
+
+    // ── State ────────────────────────────────────────
+    let currentIndex = 0;
+    let score = 0;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let selectedOption = -1;
+    let answered = false;
+    let timeLeft = TIMER_SECONDS;
+    let timerInterval = null;
+
+    // ── DOM Refs ─────────────────────────────────────
+    const startScreen   = document.getElementById('start-screen');
+    const quizScreen    = document.getElementById('quiz-screen');
+    const resultScreen  = document.getElementById('result-screen');
+    const timerDisplay  = document.getElementById('timer-display');
+    const timerBadge    = document.getElementById('timer-badge');
+    const progressText  = document.getElementById('progress-text');
+    const progressFill  = document.getElementById('progress-fill');
+    const questionText  = document.getElementById('question-text');
+    const optionsList   = document.getElementById('options-list');
+    const nextBtn       = document.getElementById('next-btn');
+
+    // ── Start Quiz ───────────────────────────────────
+    function startQuiz() {
+      startScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      resultScreen.classList.add('hidden');
+      currentIndex = 0;
+      score = 0;
+      correctCount = 0;
+      wrongCount = 0;
+      timeLeft = TIMER_SECONDS;
+      startTimer();
+      loadQuestion();
+    }
+
+    // ── Timer ────────────────────────────────────────
+    function startTimer() {
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 60) {
+          timerBadge.classList.add('danger');
+        }
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          showResult();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+      const secs = (timeLeft % 60).toString().padStart(2, '0');
+      timerDisplay.textContent = `${mins}:${secs}`;
+    }
+
+    // ── Load Question ────────────────────────────────
+    function loadQuestion() {
+      answered = false;
+      selectedOption = -1;
+      nextBtn.classList.add('hidden');
+
+      const q = questions[currentIndex];
+      progressText.textContent = `${currentIndex + 1} of ${questions.length}`;
+      progressFill.style.width = `${((currentIndex) / questions.length) * 100}%`;
+
+      questionText.textContent = `Q${currentIndex + 1}. ${q.question}`;
+
+      // Build option buttons
+      optionsList.innerHTML = '';
+      const keys = ['A', 'B', 'C', 'D'];
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="key">${keys[i]}</span><span>${opt}</span>`;
+        btn.addEventListener('click', () => selectOption(i, btn));
+        optionsList.appendChild(btn);
+      });
+
+      // Slide-in animation
+      questionText.classList.remove('slide-in');
+      optionsList.classList.remove('slide-in');
+      void questionText.offsetWidth; // trigger reflow
+      questionText.classList.add('slide-in');
+      optionsList.classList.add('slide-in');
+    }
+
+    // ── Select Option ────────────────────────────────
+    function selectOption(index, btn) {
+      if (answered) return;
+      answered = true;
+      selectedOption = index;
+
+      const q = questions[currentIndex];
+      const allBtns = optionsList.querySelectorAll('.option-btn');
+
+      // Disable all buttons
+      allBtns.forEach(b => b.classList.add('disabled'));
+
+      // Highlight correct answer
+      allBtns[q.answer].classList.add('correct');
+
+      if (index === q.answer) {
+        // Correct
+        correctCount++;
+        score += CORRECT_MARKS;
+      } else {
+        // Wrong — highlight the wrong pick
+        btn.classList.add('wrong');
+        wrongCount++;
+        score -= WRONG_PENALTY;
+      }
+
+      // Show next / finish button
+      nextBtn.textContent = currentIndex < questions.length - 1 ? 'Next Question →' : 'View Results →';
+      nextBtn.classList.remove('hidden');
+    }
+
+    // ── Next Question ────────────────────────────────
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        loadQuestion();
+      } else {
+        clearInterval(timerInterval);
+        showResult();
+      }
+    }
+
+    // ── Show Result ──────────────────────────────────
+    function showResult() {
+      clearInterval(timerInterval);
+      quizScreen.classList.add('hidden');
+      resultScreen.classList.remove('hidden');
+      resultScreen.style.animation = 'none';
+      void resultScreen.offsetWidth;
+      resultScreen.style.animation = 'fadeUp 0.45s ease-out';
+
+      const unanswered = questions.length - correctCount - wrongCount;
+      const totalPossible = questions.length * CORRECT_MARKS;
+
+      document.getElementById('res-correct').textContent = correctCount;
+      document.getElementById('res-wrong').textContent = wrongCount;
+      document.getElementById('res-unanswered').textContent = unanswered;
+      document.getElementById('res-score').textContent = score.toFixed(2);
+      document.getElementById('res-total').textContent = totalPossible.toFixed(2);
+    }
+
+    // ── Restart ──────────────────────────────────────
+    function restartQuiz() {
+      timerBadge.classList.remove('danger');
+      resultScreen.classList.add('hidden');
+      startScreen.classList.remove('hidden');
+      startScreen.style.animation = 'none';
+      void startScreen.offsetWidth;
+      startScreen.style.animation = 'fadeUp 0.45s ease-out';
+    }
+  </script>
+
+</body>
+</html>

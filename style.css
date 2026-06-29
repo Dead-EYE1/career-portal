@@ -590,6 +590,8 @@ ul { list-style: none; }
 }
 
 .content-area > .join-banner { display: none; }
+#mock-test-banner { display: grid !important; grid-template-columns: 1fr; }
+.mocktest-card:hover { box-shadow: 0 6px 32px rgba(127, 90, 240, 0.35); }
 
 .join-card {
   display: flex;
