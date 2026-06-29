@@ -1556,19 +1556,17 @@ ul { list-style: none; }
   .main-nav { position: static; overflow: visible; }
   .breaking-news-bar { position: static; }
 
-  /* Smooth swipe alignment for Quick Nav on mobile viewports */
+  /* 2×2 grid for Quick Nav so all items fit on screen without scrolling */
   .quick-nav-grid { 
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 12px;
-    padding: 4px 4px 12px 4px;
-    scrollbar-width: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 4px;
+    overflow-x: visible;
   }
   .quick-nav-grid::-webkit-scrollbar { display: none; }
   .qnav-box {
-    flex: 0 0 130px;
+    flex: none;
     padding: 14px 10px;
   }
 
@@ -1739,6 +1737,147 @@ ul { list-style: none; }
 }
 
 /* =============================================
+   JOIN BANNERS (WhatsApp + Mock Test)
+   ============================================= */
+.join-banner {
+  display: none; /* Hidden on desktop by default; shown by sidebar or mobile rules */
+  margin-bottom: 18px;
+}
+.sidebar > .join-banner {
+  display: block; /* Sidebar banners always visible on desktop */
+}
+
+.join-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  color: #fff;
+  transition: var(--transition);
+  text-decoration: none;
+  cursor: pointer;
+}
+.join-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+.join-card.whatsapp {
+  background: linear-gradient(135deg, #25d366, #128c7e);
+}
+.join-card.mocktest-card {
+  background: linear-gradient(135deg, #7f5af0, #6c3ce0);
+}
+
+.join-icon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.join-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.join-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.join-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  font-family: var(--font-heading);
+}
+.join-sub {
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+.join-btn {
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.join-card:hover .join-btn {
+  background: rgba(255,255,255,0.35);
+}
+
+/* =============================================
+   MOBILE TOP JOIN (shown only on mobile)
+   ============================================= */
+.mobile-top-join {
+  display: none;
+}
+
+/* =============================================
+   MOBILE BOTTOM NAVIGATION BAR
+   ============================================= */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: var(--transition);
+  text-decoration: none;
+  flex: 1;
+  min-width: 0;
+}
+.mobile-nav-item .nav-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+.mobile-nav-item.active,
+.mobile-nav-item:hover {
+  color: var(--primary);
+}
+
+/* Show mobile elements on ≤900px */
+@media (max-width: 900px) {
+  .mobile-top-join {
+    display: block;
+    margin-bottom: 14px;
+  }
+  .mobile-bottom-nav {
+    display: flex;
+    align-items: stretch;
+  }
+  /* Add bottom padding to body so content isn't hidden behind bottom nav */
+  body {
+    padding-bottom: 70px;
+  }
+}
+
+/* =============================================
    NUCLEAR MOBILE FALLBACK
    ============================================= */
 @media screen and (max-width: 768px) {
@@ -1771,8 +1910,12 @@ ul { list-style: none; }
         box-sizing: border-box !important;
     }
     
-    /* Force the apply buttons and job cards to fit and stack vertically */
-    .apply-btn, .apply-button, a[class*="btn"], button {
+    /* Force the apply buttons and job cards to fit and stack vertically
+       — exclude mobile nav items and join banner buttons */
+    .post-details .apply-btn,
+    .post-details .apply-button,
+    .post-details a[class*="btn"],
+    .post-details button {
         width: 100% !important;
         max-width: 100% !important;
         display: block !important;
