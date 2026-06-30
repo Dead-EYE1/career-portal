@@ -886,12 +886,18 @@
       // Disable all buttons
       allBtns.forEach(b => b.classList.add('disabled'));
 
+      // Option keys map index to string letters
+      const optionKeys = ['a', 'b', 'c', 'd'];
+      const selectedKey = optionKeys[index];
+      const correctKey = (q.answer || '').toLowerCase();
+
       // Highlight correct answer with safety check
-      if (allBtns[q.answer]) {
-        allBtns[q.answer].classList.add('correct');
+      const correctIndex = optionKeys.indexOf(correctKey);
+      if (correctIndex !== -1 && allBtns[correctIndex]) {
+        allBtns[correctIndex].classList.add('correct');
       }
 
-      if (index === q.answer) {
+      if (selectedKey === correctKey) {
         // Correct
         correctCount++;
         score += CORRECT_MARKS;
