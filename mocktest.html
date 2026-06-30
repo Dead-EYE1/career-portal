@@ -640,12 +640,11 @@
     // ── Fetch Questions from Firestore ───────────────────
     async function fetchQuestions() {
       try {
-        const q = query(collection(db, 'questions'), orderBy('order'));
-        const snapshot = await getDocs(q);
+        const snapshot = await getDocs(collection(db, 'questions'));
         questions = snapshot.docs.map(doc => ({
           question: doc.data().questionText,
-          options: doc.data().options,
-          answer: doc.data().correctAnswer
+          options: [doc.data().a, doc.data().b, doc.data().c, doc.data().d],
+          answer: doc.data().correct
         }));
 
         if (questions.length === 0) {
