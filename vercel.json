@@ -3,7 +3,7 @@
     {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "mocktest.newjobupdates.in" }],
-      "destination": "/mock-test.html"
+      "destination": "/mocktest.html"
     },
     {
       "source": "/(.*)",

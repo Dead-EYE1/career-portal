@@ -743,7 +743,7 @@ ul { list-style: none; }
   max-width: 100%;
   white-space: normal;
 }
-.view-details-btn:hover { background: var(--primary); color: #c5b9b9; }
+.view-details-btn:hover { background: var(--primary); color: #ffffff; }
 .view-details-btn.open-btn { background: #a3a4a8; color: #c02929; border-color: #dee2e6; }
 .view-details-btn.open-btn:hover { background: #e9ecef; }
 
@@ -1915,7 +1915,7 @@ ul { list-style: none; }
     .post-details .apply-btn,
     .post-details .apply-button,
     .post-details a[class*="btn"],
-    .post-details button {
+    .post-details button:not(.action-share-btn) {
         width: 100% !important;
         max-width: 100% !important;
         display: block !important;

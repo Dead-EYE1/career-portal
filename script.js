@@ -18,6 +18,9 @@ function normaliseDate(items) {
   if (!items) return [];
   return items.map(item => ({ 
     ...item, 
+    raw_date: item.date,
+    raw_apply_date: item.apply_date,
+    raw_last_date: item.last_date,
     date: isoToDisplay(item.date),
     apply_date: isoToDisplay(item.apply_date),
     last_date: isoToDisplay(item.last_date)
@@ -105,6 +108,28 @@ function toggleJobDetails(el) {
       const uid = el.getAttribute('data-uid');
       if (uid && typeof renderComments === 'function') {
         renderComments(uid);
+      }
+    }
+  }
+}
+
+// ---- ACTIVE TAB SWITCHER HELPER ----
+function activateTabForPostItem(postItem) {
+  const tabContent = postItem.closest('.job-tab-content');
+  if (!tabContent) return;
+  const containerId = tabContent.id;
+  
+  if (containerId === 'expired-jobs-container') {
+    const btnExpired = document.getElementById("view-expired-jobs");
+    if (btnExpired) {
+      btnExpired.click();
+    }
+  } else {
+    const wrapper = tabContent.closest('.tabs-wrapper');
+    if (wrapper) {
+      const tabButton = wrapper.querySelector(`.job-tab[data-target="${containerId}"]`);
+      if (tabButton) {
+        tabButton.click();
       }
     }
   }
@@ -210,7 +235,7 @@ window.copyJobLink = function(uid, btnElement) {
 
 function generatePostHTML(data) {
   return data.map(item => {
-    const isPastDeadline = item.last_date ? isExpired(item.last_date) : false;
+    const isPastDeadline = item.raw_last_date ? isExpired(item.raw_last_date) : false;
     const safeDetails = wrapTablesInResponsiveDiv(item.other_details);
     const safeMainDetails = wrapTablesInResponsiveDiv(item.details);
     const expiredClass = isPastDeadline ? "expired-card-item" : "";
@@ -218,7 +243,7 @@ function generatePostHTML(data) {
     const badgeText = isPastDeadline ? "CLOSED" : (item.organization || item.section || getBadgeText(item.badge));
     
     return `
-    <div class="post-item ${expiredClass}" data-uid="${item.uid}" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)">
+    <div class="post-item ${expiredClass}" data-uid="${item.uid}" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { toggleJobDetails(this); event.preventDefault(); }">
       <span class="post-badge ${badgeClass}">${badgeText}</span>
       <div class="post-content">
         <div class="post-title">${highlightExamKeywords(item.title)}</div>
@@ -342,10 +367,8 @@ function doSearch(query) {
   };
 
   resultsList.innerHTML = matches.map(item => {
-    // Escape quotes for the inline handler
-    const safeTitle = item.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
     return `
-    <div class="search-result-item" role="option" tabindex="0" onclick="handleSearchResultClick('${safeTitle}')">
+    <div class="search-result-item" role="option" tabindex="0" onclick="handleSearchResultClick('${item.uid}')" onkeydown="if(event.key === 'Enter' || event.key === ' ') { handleSearchResultClick('${item.uid}'); event.preventDefault(); }">
       <span class="search-result-tag post-badge ${getBadgeClass(item.badge)}">${item.section}</span>
       <span class="search-result-title">${highlight(item.title)}</span>
     </div>
@@ -353,48 +376,51 @@ function doSearch(query) {
 }
 
 // Global handler to navigate to the clicked search result
-window.handleSearchResultClick = function(title) {
+window.handleSearchResultClick = function(uid) {
   // 1. Close overlay
   const overlay = document.getElementById("search-overlay");
   if (overlay) overlay.classList.remove("active");
 
-  // 2. Find the card in the DOM by matching title
-  const posts = document.querySelectorAll(".post-item");
-  for (let post of posts) {
-    const postTitleEl = post.querySelector(".post-title");
-    if (postTitleEl && postTitleEl.textContent.trim() === title) {
-      // 3. Scroll to it
-      post.scrollIntoView({ behavior: "smooth", block: "center" });
-      
-      // 4. Expand details if closed
-      const details = post.querySelector('.post-details');
-      if (details && !details.classList.contains('expanded')) {
-        toggleJobDetails(post);
-      }
-      
-      // 5. Highlight briefly to draw attention
-      post.style.transition = "background-color 0.4s";
-      const origBg = post.style.backgroundColor;
-      post.style.backgroundColor = "#fff3e0"; // Soft orange flash
-      setTimeout(() => {
-        post.style.backgroundColor = origBg;
-        post.style.transition = "";
-      }, 1200);
-      return;
+  // 2. Find the card in the DOM by uid
+  const post = document.querySelector(`.post-item[data-uid="${uid}"]`);
+  if (post) {
+    // 3. Activate tab containing the card
+    activateTabForPostItem(post);
+
+    // 4. Scroll to it
+    post.scrollIntoView({ behavior: "smooth", block: "center" });
+    
+    // 5. Expand details if closed
+    const details = post.querySelector('.post-details');
+    if (details && !details.classList.contains('expanded')) {
+      toggleJobDetails(post);
     }
+    
+    // 6. Highlight briefly to draw attention
+    post.style.transition = "background-color 0.4s";
+    const origBg = post.style.backgroundColor;
+    post.style.backgroundColor = "#fff3e0"; // Soft orange flash
+    setTimeout(() => {
+      post.style.backgroundColor = origBg;
+      post.style.transition = "";
+    }, 1200);
   }
 };
 
-// ---- HAMBURGER MENU / LOGO TOGGLE ----
+// ---- HAMBURGER MENU / TOGGLE ----
 function initHamburger() {
-  const logo = document.getElementById("logo-link");
+  const hamburger = document.getElementById("hamburger-btn");
   const menu = document.getElementById("nav-menu");
-  if (!logo || !menu) return;
-  logo.addEventListener("click", (e) => {
-    // Only act as a menu toggle on mobile viewports
-    if (window.innerWidth <= 1100) {
-      e.preventDefault();
-      menu.classList.toggle("open");
+  if (!hamburger || !menu) return;
+  hamburger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menu.classList.toggle("open");
+  });
+  
+  // Close menu when clicking outside
+  document.addEventListener("click", (e) => {
+    if (menu.classList.contains("open") && !menu.contains(e.target) && e.target !== hamburger) {
+      menu.classList.remove("open");
     }
   });
 }
@@ -633,9 +659,9 @@ function generateJobSchema(jobs) {
   const schema = {
     "@context": "https://schema.org",
     "@graph": jobs.filter(j => j.title).map(job => {
-      const datePosted = job.date ? new Date(job.date) : new Date();
-      let validThroughDate = job.last_date && !isNaN(new Date(job.last_date).getTime()) ? new Date(job.last_date) : 
-                               (job.apply_date && !isNaN(new Date(job.apply_date).getTime()) ? new Date(job.apply_date) : null);
+      const datePosted = job.raw_date ? new Date(job.raw_date) : new Date();
+      let validThroughDate = job.raw_last_date && !isNaN(new Date(job.raw_last_date).getTime()) ? new Date(job.raw_last_date) : 
+                               (job.raw_apply_date && !isNaN(new Date(job.raw_apply_date).getTime()) ? new Date(job.raw_apply_date) : null);
       
       // Provide a 30-day dummy fallback for "TBA" or missing dates to fix the 6th warning
       if (!validThroughDate) {
@@ -774,15 +800,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (a.featured && !b.featured) return -1;
     if (!a.featured && b.featured) return 1;
 
-    const dateA = new Date(a.apply_date || 0);
-    const dateB = new Date(b.apply_date || 0);
-    if (dateA.getTime() !== dateB.getTime()) {
-      return dateB.getTime() - dateA.getTime();
+    const getTime = (dateStr) => {
+      if (!dateStr || dateStr === 'TBA') return 0;
+      const d = new Date(dateStr);
+      return isNaN(d.getTime()) ? 0 : d.getTime();
+    };
+
+    const dateA = getTime(a.raw_apply_date);
+    const dateB = getTime(b.raw_apply_date);
+    if (dateA !== dateB) {
+      return dateB - dateA;
     }
-    const postA = new Date(a.date || 0);
-    const postB = new Date(b.date || 0);
-    if (postA.getTime() !== postB.getTime()) {
-      return postB.getTime() - postA.getTime();
+    const postA = getTime(a.raw_date);
+    const postB = getTime(b.raw_date);
+    if (postA !== postB) {
+      return postB - postA;
     }
     return b.id - a.id;
   });
@@ -795,8 +827,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     ...scholarshipData
   ];
 
-  const activeJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.last_date || !isExpired(j.last_date)));
-  const expiredJobs = jobsData.filter(j => j.status !== 'upcoming' && j.last_date && isExpired(j.last_date));
+  const activeJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)));
+  const expiredJobs = jobsData.filter(j => j.status !== 'upcoming' && j.raw_last_date && isExpired(j.raw_last_date));
   const upcomingJobs = jobsData.filter(j => j.status === 'upcoming');
   
   const activeResult = resultData.filter(r => r.status !== 'upcoming');
@@ -877,6 +909,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (shareBtn) {
         const postItem = shareBtn.closest('.post-item');
         if (postItem) {
+          activateTabForPostItem(postItem); // Activate containing tab first
           postItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
           toggleJobDetails(postItem);
           const origBg = postItem.style.backgroundColor;

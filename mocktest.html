@@ -424,6 +424,12 @@
     }
     .start-btn:hover { transform: translateY(-1px); }
     .start-btn:active { transform: translateY(0) scale(0.985); }
+    .start-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
 
     /* ── Animations ────────────────────────────────── */
     @keyframes fadeUp {
@@ -483,7 +489,7 @@
   <div class="card" id="start-screen">
     <div style="font-size:2.4rem;margin-bottom:14px;">📝</div>
     <h2 class="quiz-title">General Knowledge Quiz</h2>
-    <p class="quiz-desc">Test your knowledge with a quick 3-question mock test. Instant scoring with negative marking — just like the real exam!</p>
+    <p class="quiz-desc">Test your knowledge with a quick mock test. Instant scoring with negative marking — just like the real exam!</p>
 
     <div class="info-chips">
       <span class="chip accent">
@@ -492,7 +498,7 @@
       </span>
       <span class="chip">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-        3 Questions
+        <span id="questions-chip">Loading…</span>
       </span>
       <span class="chip green">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -504,7 +510,7 @@
       </span>
     </div>
 
-    <button class="start-btn" id="start-btn" onclick="startQuiz()">Start Quiz →</button>
+    <button class="start-btn" id="start-btn" onclick="startQuiz()" disabled>Loading Questions…</button>
   </div>
 
   <!-- ══════════════════════════════════════════════ -->
@@ -519,7 +525,7 @@
       </div>
       <div class="progress-badge">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-        <span id="progress-text">1 of 3</span>
+        <span id="progress-text">1 of X</span>
       </div>
     </div>
 
@@ -564,7 +570,7 @@
     <div class="final-score-banner">
       <div class="fs-label">Final Score</div>
       <div class="fs-value" id="res-score">0.00</div>
-      <div class="fs-total">out of <span id="res-total">3.00</span></div>
+      <div class="fs-total">out of <span id="res-total">0.00</span></div>
     </div>
 
     <button class="retry-btn" onclick="restartQuiz()">↻ Retake Quiz</button>
@@ -575,34 +581,36 @@
   </footer>
 
   <!-- ══════════════════════════════════════════════ -->
-  <!--  JAVASCRIPT                                    -->
+  <!--  JAVASCRIPT (Firebase Firestore Integration)   -->
   <!-- ══════════════════════════════════════════════ -->
-  <script>
-    // ── Hardcoded Sample Questions ───────────────────
-    const questions = [
-      {
-        question: "What is the capital of India?",
-        options: ["Mumbai", "New Delhi", "Kolkata", "Chennai"],
-        answer: 1  // index of correct option (0-based)
-      },
-      {
-        question: "Who wrote the Indian national anthem 'Jana Gana Mana'?",
-        options: ["Bankim Chandra Chattopadhyay", "Rabindranath Tagore", "Sarojini Naidu", "Mahatma Gandhi"],
-        answer: 1
-      },
-      {
-        question: "Which planet is known as the 'Red Planet'?",
-        options: ["Jupiter", "Venus", "Mars", "Saturn"],
-        answer: 2
-      }
-    ];
+  <script type="module">
+    // ── Firebase Imports ───────────────────────────────
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-    // ── Scoring Constants ────────────────────────────
+    // ── Firebase Config ─────────────────────────────────
+    const firebaseConfig = {
+      apiKey: "AIzaSyAh1dbSY0lLbYAZSzfPPpTlru3OmeZ3p_E",
+      authDomain: "newjobupdates-c234a.firebaseapp.com",
+      projectId: "newjobupdates-c234a",
+      storageBucket: "newjobupdates-c234a.firebasestorage.app",
+      messagingSenderId: "275056131922",
+      appId: "1:275056131922:web:2b44bb31cf42e3897c448b",
+      measurementId: "G-GTE4WECN4D"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    // ── Scoring Constants ────────────────────────────────
     const CORRECT_MARKS = 1;
     const WRONG_PENALTY = 0.25;
     const TIMER_SECONDS = 5 * 60; // 5 minutes
 
-    // ── State ────────────────────────────────────────
+    // ── State ────────────────────────────────────────────
+    let questions = [];
     let currentIndex = 0;
     let score = 0;
     let correctCount = 0;
@@ -612,7 +620,7 @@
     let timeLeft = TIMER_SECONDS;
     let timerInterval = null;
 
-    // ── DOM Refs ─────────────────────────────────────
+    // ── DOM Refs ─────────────────────────────────────────
     const startScreen   = document.getElementById('start-screen');
     const quizScreen    = document.getElementById('quiz-screen');
     const resultScreen  = document.getElementById('result-screen');
@@ -623,9 +631,46 @@
     const questionText  = document.getElementById('question-text');
     const optionsList   = document.getElementById('options-list');
     const nextBtn       = document.getElementById('next-btn');
+    const startBtn      = document.getElementById('start-btn');
+    const questionsChip = document.getElementById('questions-chip');
 
-    // ── Start Quiz ───────────────────────────────────
+    // ── Fetch Questions from Firestore ───────────────────
+    async function fetchQuestions() {
+      try {
+        const q = query(collection(db, 'questions'), orderBy('order'));
+        const snapshot = await getDocs(q);
+        questions = snapshot.docs.map(doc => ({
+          question: doc.data().questionText,
+          options: doc.data().options,
+          answer: doc.data().correctAnswer
+        }));
+
+        if (questions.length === 0) {
+          startBtn.textContent = 'No questions available';
+          questionsChip.textContent = '0 Questions';
+          return;
+        }
+
+        // Update UI with fetched data
+        questionsChip.textContent = `${questions.length} Questions`;
+        startBtn.textContent = 'Start Quiz →';
+        startBtn.disabled = false;
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+        startBtn.textContent = 'Error — tap to retry';
+        startBtn.disabled = false;
+        startBtn.onclick = () => {
+          startBtn.disabled = true;
+          startBtn.textContent = 'Loading Questions…';
+          fetchQuestions();
+        };
+      }
+    }
+
+    // ── Start Quiz ───────────────────────────────────────
     function startQuiz() {
+      if (questions.length === 0) return;
+      if (timerInterval) clearInterval(timerInterval); // Prevent multiple concurrent intervals
       startScreen.classList.add('hidden');
       quizScreen.classList.remove('hidden');
       resultScreen.classList.add('hidden');
@@ -638,7 +683,7 @@
       loadQuestion();
     }
 
-    // ── Timer ────────────────────────────────────────
+    // ── Timer ────────────────────────────────────────────
     function startTimer() {
       updateTimerDisplay();
       timerInterval = setInterval(() => {
@@ -660,7 +705,7 @@
       timerDisplay.textContent = `${mins}:${secs}`;
     }
 
-    // ── Load Question ────────────────────────────────
+    // ── Load Question ────────────────────────────────────
     function loadQuestion() {
       answered = false;
       selectedOption = -1;
@@ -691,7 +736,7 @@
       optionsList.classList.add('slide-in');
     }
 
-    // ── Select Option ────────────────────────────────
+    // ── Select Option ────────────────────────────────────
     function selectOption(index, btn) {
       if (answered) return;
       answered = true;
@@ -703,15 +748,17 @@
       // Disable all buttons
       allBtns.forEach(b => b.classList.add('disabled'));
 
-      // Highlight correct answer
-      allBtns[q.answer].classList.add('correct');
+      // Highlight correct answer with safety check
+      if (allBtns[q.answer]) {
+        allBtns[q.answer].classList.add('correct');
+      }
 
       if (index === q.answer) {
         // Correct
         correctCount++;
         score += CORRECT_MARKS;
       } else {
-        // Wrong — highlight the wrong pick
+        // Wrong — highlight the wrong pick & apply −0.25 penalty
         btn.classList.add('wrong');
         wrongCount++;
         score -= WRONG_PENALTY;
@@ -722,7 +769,7 @@
       nextBtn.classList.remove('hidden');
     }
 
-    // ── Next Question ────────────────────────────────
+    // ── Next Question ────────────────────────────────────
     function nextQuestion() {
       currentIndex++;
       if (currentIndex < questions.length) {
@@ -733,7 +780,7 @@
       }
     }
 
-    // ── Show Result ──────────────────────────────────
+    // ── Show Result ──────────────────────────────────────
     function showResult() {
       clearInterval(timerInterval);
       quizScreen.classList.add('hidden');
@@ -752,7 +799,7 @@
       document.getElementById('res-total').textContent = totalPossible.toFixed(2);
     }
 
-    // ── Restart ──────────────────────────────────────
+    // ── Restart ──────────────────────────────────────────
     function restartQuiz() {
       timerBadge.classList.remove('danger');
       resultScreen.classList.add('hidden');
@@ -761,29 +808,14 @@
       void startScreen.offsetWidth;
       startScreen.style.animation = 'fadeUp 0.45s ease-out';
     }
+
+    // ── Expose functions to global scope for onclick handlers ──
+    window.startQuiz = startQuiz;
+    window.nextQuestion = nextQuestion;
+    window.restartQuiz = restartQuiz;
+
+    // ── Initialize ───────────────────────────────────────
+    fetchQuestions();
   </script>
-  <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyAh1dbSY0lLbYAZSzfPPpTlru3OmeZ3p_E",
-    authDomain: "newjobupdates-c234a.firebaseapp.com",
-    projectId: "newjobupdates-c234a",
-    storageBucket: "newjobupdates-c234a.firebasestorage.app",
-    messagingSenderId: "275056131922",
-    appId: "1:275056131922:web:2b44bb31cf42e3897c448b",
-    measurementId: "G-GTE4WECN4D"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
 </body>
 </html>
