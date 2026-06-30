@@ -471,6 +471,88 @@
       text-decoration: none;
     }
 
+    /* ── Category Grid ─────────────────────────────── */
+    .category-section {
+      width: 100%;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .category-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .category-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: all 0.2s ease-out;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .category-card:hover {
+      border-color: var(--accent);
+      background: rgba(127, 90, 240, 0.08);
+      transform: translateY(-2px);
+    }
+    .category-card:active {
+      transform: translateY(0) scale(0.985);
+    }
+    .category-card.selected {
+      border-color: var(--accent);
+      background: rgba(127, 90, 240, 0.14);
+      box-shadow: 0 0 0 1px var(--accent), 0 4px 20px var(--accent-glow);
+    }
+    .category-card .icon {
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.25));
+    }
+    .category-card .name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .category-card:nth-child(7) {
+      grid-column: span 2;
+      flex-direction: row;
+      gap: 8px;
+      padding: 12px;
+    }
+    .category-card:nth-child(7) .icon {
+      margin-bottom: 0;
+    }
+    @media (max-width: 380px) {
+      .category-grid {
+        grid-template-columns: 1fr;
+      }
+      .category-card:nth-child(7) {
+        grid-column: span 1;
+        flex-direction: column;
+        gap: 0;
+        padding: 14px 10px;
+      }
+      .category-card:nth-child(7) .icon {
+        margin-bottom: 6px;
+      }
+    }
+
     /* ── Desktop polish ────────────────────────────── */
     @media (min-width: 520px) {
       body { padding-top: 48px; }
@@ -494,18 +576,53 @@
     <h2 class="quiz-title">General Knowledge Quiz</h2>
     <p class="quiz-desc">Test your knowledge with a quick mock test. Instant scoring with negative marking — just like the real exam!</p>
 
+    <!-- Category Grid Section -->
+    <div class="category-section">
+      <label class="category-label">Select Exam Category</label>
+      <div class="category-grid">
+        <button class="category-card" onclick="selectCategory('SSC GD', this)">
+          <span class="icon">🎖️</span>
+          <span class="name">SSC GD</span>
+        </button>
+        <button class="category-card" onclick="selectCategory('SSC CGL', this)">
+          <span class="icon">💼</span>
+          <span class="name">SSC CGL</span>
+        </button>
+        <button class="category-card" onclick="selectCategory('SSC CHSL', this)">
+          <span class="icon">📄</span>
+          <span class="name">SSC CHSL</span>
+        </button>
+        <button class="category-card" onclick="selectCategory('SSC MTS', this)">
+          <span class="icon">🛠️</span>
+          <span class="name">SSC MTS</span>
+        </button>
+        <button class="category-card" onclick="selectCategory('UPSC', this)">
+          <span class="icon">🏛️</span>
+          <span class="name">UPSC</span>
+        </button>
+        <button class="category-card" onclick="selectCategory('Assam Police', this)">
+          <span class="icon">👮</span>
+          <span class="name">Assam Police</span>
+        </button>
+        <button class="category-card" onclick="selectCategory('Others', this)">
+          <span class="icon">❓</span>
+          <span class="name">Others</span>
+        </button>
+      </div>
+    </div>
+
     <div class="info-chips">
       <span class="chip accent">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        5 Minutes
+        15 Minutes
       </span>
       <span class="chip">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-        <span id="questions-chip">Loading…</span>
+        <span id="questions-chip">0 Questions</span>
       </span>
       <span class="chip green">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        +1 Correct
+        +2 Correct
       </span>
       <span class="chip red">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -513,7 +630,7 @@
       </span>
     </div>
 
-    <button class="start-btn" id="start-btn" onclick="startQuiz()" disabled>Loading Questions…</button>
+    <button class="start-btn" id="start-btn" onclick="startQuiz()" disabled>Select Category to Start</button>
   </div>
 
   <!-- ══════════════════════════════════════════════ -->
@@ -524,7 +641,7 @@
     <div class="top-bar">
       <div class="timer-badge" id="timer-badge">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        <span id="timer-display">05:00</span>
+        <span id="timer-display">15:00</span>
       </div>
       <div class="progress-badge">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
@@ -590,7 +707,7 @@
     // ── Firebase Imports ───────────────────────────────
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
-    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
     // ── Firebase Config ─────────────────────────────────
     const firebaseConfig = {
@@ -608,9 +725,9 @@
     const db = getFirestore(app);
 
     // ── Scoring Constants ────────────────────────────────
-    const CORRECT_MARKS = 1;
+    const CORRECT_MARKS = 2;
     const WRONG_PENALTY = 0.25;
-    const TIMER_SECONDS = 5 * 60; // 5 minutes
+    const TIMER_SECONDS = 15 * 60; // 15 minutes
 
     // ── State ────────────────────────────────────────────
     let questions = [];
@@ -638,9 +755,13 @@
     const questionsChip = document.getElementById('questions-chip');
 
     // ── Fetch Questions from Firestore ───────────────────
-    async function fetchQuestions() {
+    async function fetchQuestions(selectedCategory) {
       try {
-        const snapshot = await getDocs(collection(db, 'questions'));
+        const q = query(
+          collection(db, 'questions'),
+          where('exam', '==', selectedCategory)
+        );
+        const snapshot = await getDocs(q);
         questions = snapshot.docs.map(doc => ({
           question: doc.data().questionText,
           options: [doc.data().a, doc.data().b, doc.data().c, doc.data().d],
@@ -650,6 +771,7 @@
         if (questions.length === 0) {
           startBtn.textContent = 'No questions available';
           questionsChip.textContent = '0 Questions';
+          startBtn.disabled = true;
           return;
         }
 
@@ -657,6 +779,7 @@
         questionsChip.textContent = `${questions.length} Questions`;
         startBtn.textContent = 'Start Quiz →';
         startBtn.disabled = false;
+        startBtn.onclick = startQuiz; // Restore click handler
       } catch (error) {
         console.error('Error fetching questions:', error);
         startBtn.textContent = 'Error — tap to retry';
@@ -664,9 +787,22 @@
         startBtn.onclick = () => {
           startBtn.disabled = true;
           startBtn.textContent = 'Loading Questions…';
-          fetchQuestions();
+          fetchQuestions(selectedCategory);
         };
       }
+    }
+
+    // ── Category Select Handler ──────────────────────────
+    async function selectCategory(category, btn) {
+      const cards = document.querySelectorAll('.category-card');
+      cards.forEach(c => c.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      startBtn.disabled = true;
+      startBtn.textContent = 'Loading Questions…';
+      questionsChip.textContent = 'Loading…';
+
+      await fetchQuestions(category);
     }
 
     // ── Start Quiz ───────────────────────────────────────
@@ -815,9 +951,10 @@
     window.startQuiz = startQuiz;
     window.nextQuestion = nextQuestion;
     window.restartQuiz = restartQuiz;
+    window.selectCategory = selectCategory;
 
     // ── Initialize ───────────────────────────────────────
-    fetchQuestions();
+    // Wait for category selection before fetching questions
   </script>
 </body>
 </html>
