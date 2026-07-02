@@ -500,6 +500,17 @@ function initScrollHeader() {
   }, { passive: true });
 }
 
+// ---- THEME TOGGLE ----
+function initThemeToggle() {
+  const toggleBtn = document.getElementById("theme-toggle");
+  if (!toggleBtn) return;
+  toggleBtn.addEventListener("click", () => {
+    document.documentElement.classList.toggle("light-theme");
+    const isLight = document.documentElement.classList.contains("light-theme");
+    localStorage.setItem("theme", isLight ? "light" : "dark");
+  });
+}
+
 // ---- SEARCH SETUP ----
 function initSearch() {
   const input = document.getElementById("search-input");
@@ -868,6 +879,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initMobileNav();
   initBackToTop();
   initScrollHeader();
+  initThemeToggle();
   initSearch();
   initJobTabs();
 
