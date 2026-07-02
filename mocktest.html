@@ -557,6 +557,173 @@
     @media (min-width: 520px) {
       body { padding-top: 48px; }
       .card { padding: 32px 28px 36px; }
+      .category-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .category-card:nth-child(7) {
+        grid-column: span 3;
+        flex-direction: row;
+        gap: 8px;
+        padding: 12px;
+      }
+      .category-card:nth-child(7) .icon {
+        margin-bottom: 0;
+      }
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding-top: 64px;
+        padding-bottom: 64px;
+      }
+      .brand {
+        margin-bottom: 32px;
+      }
+      .brand h1 {
+        font-size: 2.2rem;
+      }
+      .brand p {
+        font-size: 1rem;
+        margin-top: 6px;
+      }
+      .card {
+        max-width: 768px;
+        padding: 40px 48px 48px;
+      }
+      .category-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .category-card:nth-child(7) {
+        grid-column: span 2;
+        flex-direction: row;
+        gap: 8px;
+        padding: 12px;
+      }
+      .category-card:nth-child(7) .icon {
+        margin-bottom: 0;
+      }
+      .options-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+    }
+
+    /* ── Sub-Category Screen ──────────────────────── */
+    .sub-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-primary);
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--accent-light);
+    }
+    .back-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+    }
+    .exam-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-light);
+      background: var(--accent-glow);
+      padding: 4px 12px;
+      border-radius: 100px;
+      border: 1px solid rgba(127, 90, 240, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .sub-category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+      margin-bottom: 12px;
+    }
+    .sub-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      padding: 20px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sub-card:hover {
+      border-color: var(--accent);
+      background: rgba(127, 90, 240, 0.08);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(127, 90, 240, 0.15);
+    }
+    .sub-card:active {
+      transform: translateY(0) scale(0.98);
+    }
+    .sub-card .sub-icon {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.25));
+    }
+    .sub-card .sub-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .sub-card .sub-desc {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      line-height: 1.3;
+    }
+
+    #sub-loading-status {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 24px 0;
+      animation: fadeUp 0.3s ease-out;
+    }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--accent-light);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 480px) {
+      .sub-category-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
     }
   </style>
 </head>
@@ -573,7 +740,7 @@
   <!-- ══════════════════════════════════════════════ -->
   <div class="card" id="start-screen">
     <div style="font-size:2.4rem;margin-bottom:14px;">📝</div>
-    <h2 class="quiz-title">General Knowledge Quiz</h2>
+    <h2 class="quiz-title"> MOck Test</h2>
     <p class="quiz-desc">Test your knowledge with a quick mock test. Instant scoring with negative marking — just like the real exam!</p>
 
     <!-- Category Grid Section -->
@@ -611,7 +778,29 @@
       </div>
     </div>
 
-    <div class="info-chips">
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!--  SUB-CATEGORY SCREEN                           -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="card hidden" id="sub-category-screen">
+    <!-- Back Header -->
+    <div class="sub-header">
+      <button class="back-btn" onclick="goBackToCategories()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back
+      </button>
+      <span class="exam-badge" id="sub-exam-badge">-</span>
+    </div>
+
+    <h2 class="quiz-title">Select Test Type</h2>
+    <p class="quiz-desc">Choose a sub-category to begin your practice test. Instant results with detailed scoring.</p>
+
+    <!-- Info Chips moved to Sub-Category Screen -->
+    <div class="info-chips" style="margin-bottom: 24px;">
       <span class="chip accent">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         15 Minutes
@@ -630,7 +819,35 @@
       </span>
     </div>
 
-    <button class="start-btn" id="start-btn" onclick="startQuiz()" disabled>Select Category to Start</button>
+    <!-- Sub-Category Grid -->
+    <div class="sub-category-grid">
+      <button class="sub-card" onclick="selectSubCategory('full_mock')">
+        <span class="sub-icon">🏆</span>
+        <span class="sub-name">Full Mock Test</span>
+        <span class="sub-desc">Full length practice paper</span>
+      </button>
+      <button class="sub-card" onclick="selectSubCategory('subject_wise')">
+        <span class="sub-icon">📚</span>
+        <span class="sub-name">Subject-Wise Test</span>
+        <span class="sub-desc">Target specific subjects</span>
+      </button>
+      <button class="sub-card" onclick="selectSubCategory('previous_year')">
+        <span class="sub-icon">📄</span>
+        <span class="sub-name">Previous Year Papers</span>
+        <span class="sub-desc">Real exam questions</span>
+      </button>
+      <button class="sub-card" onclick="selectSubCategory('speed_booster')">
+        <span class="sub-icon">⚡</span>
+        <span class="sub-name">Speed Boosters</span>
+        <span class="sub-desc">Timed rapid fire round</span>
+      </button>
+    </div>
+
+    <!-- Loading Overlay/Status inside Sub-Category Screen -->
+    <div id="sub-loading-status" class="hidden">
+      <div class="spinner"></div>
+      <p id="sub-loading-text">Preparing questions...</p>
+    </div>
   </div>
 
   <!-- ══════════════════════════════════════════════ -->
@@ -739,9 +956,22 @@
     let answered = false;
     let timeLeft = TIMER_SECONDS;
     let timerInterval = null;
+    let selectedCategory = '';
+    let selectedSubCategory = '';
+
+    const categoryNames = {
+      'ssc_gd': 'SSC GD',
+      'ssc_cgl': 'SSC CGL',
+      'ssc_chsl': 'SSC CHSL',
+      'ssc_mts': 'SSC MTS',
+      'upsc': 'UPSC',
+      'assam_police': 'Assam Police',
+      'others': 'Others'
+    };
 
     // ── DOM Refs ─────────────────────────────────────────
     const startScreen   = document.getElementById('start-screen');
+    const subScreen     = document.getElementById('sub-category-screen');
     const quizScreen    = document.getElementById('quiz-screen');
     const resultScreen  = document.getElementById('result-screen');
     const timerDisplay  = document.getElementById('timer-display');
@@ -751,58 +981,128 @@
     const questionText  = document.getElementById('question-text');
     const optionsList   = document.getElementById('options-list');
     const nextBtn       = document.getElementById('next-btn');
-    const startBtn      = document.getElementById('start-btn');
     const questionsChip = document.getElementById('questions-chip');
+    const subExamBadge  = document.getElementById('sub-exam-badge');
+    const subLoading    = document.getElementById('sub-loading-status');
+    const subLoadingTxt = document.getElementById('sub-loading-text');
 
     // ── Fetch Questions from Firestore ───────────────────
-    async function fetchQuestions(selectedCategory) {
+    async function fetchQuestions(category, subCategory) {
       try {
-        const q = query(
+        // Try querying the subcategory. If no documents found, fallback to category only.
+        let q = query(
           collection(db, 'questions'),
-          where('exam', '==', selectedCategory)
+          where('exam', '==', category),
+          where('subCategory', '==', subCategory)
         );
-        const snapshot = await getDocs(q);
+        
+        let snapshot = await getDocs(q);
+        
+        // Fallback: if no questions found for this specific subcategory, query the category general pool
+        if (snapshot.empty) {
+          console.log(`No questions found for sub-category ${subCategory}. Falling back to general ${category} questions.`);
+          q = query(
+            collection(db, 'questions'),
+            where('exam', '==', category)
+          );
+          snapshot = await getDocs(q);
+        }
+
         questions = snapshot.docs.map(doc => ({
           question: doc.data().questionText,
           options: [doc.data().a, doc.data().b, doc.data().c, doc.data().d],
           answer: doc.data().correct
         }));
 
+        if (subLoading) {
+          subLoading.classList.add('hidden');
+        }
+
         if (questions.length === 0) {
-          startBtn.textContent = 'No questions available';
-          questionsChip.textContent = '0 Questions';
-          startBtn.disabled = true;
+          alert(`No questions available in category "${categoryNames[category] || category}".`);
           return;
         }
 
-        // Update UI with fetched data
-        questionsChip.textContent = `${questions.length} Questions`;
-        startBtn.textContent = 'Start Quiz →';
-        startBtn.disabled = false;
-        startBtn.onclick = startQuiz; // Restore click handler
+        // Hide sub-category screen and show quiz screen
+        if (subScreen) subScreen.classList.add('hidden');
+        quizScreen.classList.remove('hidden');
+        
+        startQuiz();
       } catch (error) {
         console.error('Error fetching questions:', error);
-        startBtn.textContent = 'Error — tap to retry';
-        startBtn.disabled = false;
-        startBtn.onclick = () => {
-          startBtn.disabled = true;
-          startBtn.textContent = 'Loading Questions…';
-          fetchQuestions(selectedCategory);
-        };
+        if (subLoadingTxt) {
+          subLoadingTxt.innerHTML = `<span style="color:var(--red);">Error loading questions. Tap a card to retry.</span>`;
+        }
       }
     }
 
     // ── Category Select Handler ──────────────────────────
-    async function selectCategory(category, btn) {
+    function selectCategory(category, btn) {
       const cards = document.querySelectorAll('.category-card');
       cards.forEach(c => c.classList.remove('selected'));
       btn.classList.add('selected');
 
-      startBtn.disabled = true;
-      startBtn.textContent = 'Loading Questions…';
-      questionsChip.textContent = 'Loading…';
+      selectedCategory = category;
 
-      await fetchQuestions(category);
+      // Update badge
+      if (subExamBadge) {
+        subExamBadge.textContent = categoryNames[category] || category.toUpperCase();
+      }
+
+      // Hide category screen and show sub-category screen
+      startScreen.classList.add('hidden');
+      if (subScreen) {
+        subScreen.classList.remove('hidden');
+      }
+
+      // Query database for general question count in background
+      updateQuestionCount(category);
+    }
+
+    // ── Update Question Count (in Background) ─────────────
+    async function updateQuestionCount(category) {
+      if (questionsChip) {
+        questionsChip.textContent = 'Loading...';
+      }
+      try {
+        const q = query(
+          collection(db, 'questions'),
+          where('exam', '==', category)
+        );
+        const snapshot = await getDocs(q);
+        if (questionsChip) {
+          questionsChip.textContent = `${snapshot.size} Questions`;
+        }
+      } catch (error) {
+        console.error('Error updating question count:', error);
+        if (questionsChip) {
+          questionsChip.textContent = '— Questions';
+        }
+      }
+    }
+
+    // ── Back Button Action ────────────────────────────────
+    function goBackToCategories() {
+      if (subScreen) subScreen.classList.add('hidden');
+      startScreen.classList.remove('hidden');
+      
+      // Reset selected highlighting
+      const cards = document.querySelectorAll('.category-card');
+      cards.forEach(c => c.classList.remove('selected'));
+    }
+
+    // ── Sub-Category Card Select Action ──────────────────
+    async function selectSubCategory(subCategory) {
+      selectedSubCategory = subCategory;
+
+      if (subLoading) {
+        subLoading.classList.remove('hidden');
+      }
+      if (subLoadingTxt) {
+        subLoadingTxt.textContent = `Loading questions for ${categoryNames[selectedCategory] || selectedCategory}...`;
+      }
+
+      await fetchQuestions(selectedCategory, subCategory);
     }
 
     // ── Start Quiz ───────────────────────────────────────
@@ -958,6 +1258,8 @@
     window.nextQuestion = nextQuestion;
     window.restartQuiz = restartQuiz;
     window.selectCategory = selectCategory;
+    window.goBackToCategories = goBackToCategories;
+    window.selectSubCategory = selectSubCategory;
 
     // ── Initialize ───────────────────────────────────────
     // Wait for category selection before fetching questions

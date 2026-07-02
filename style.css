@@ -47,7 +47,12 @@ html {
 
 body {
   font-family: var(--font-main);
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(0, 53, 128, 0.04) 0px, transparent 50%),
+    radial-gradient(at 50% 0%, rgba(230, 57, 70, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(0, 150, 199, 0.04) 0px, transparent 50%);
+  background-attachment: fixed;
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
@@ -729,23 +734,43 @@ ul { list-style: none; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-top: 10px;
-  padding: 8px 16px;
-  background: #cbcdd5;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 8px 18px;
+  background: rgba(0, 53, 128, 0.05);
   color: var(--primary);
-  border: 1px solid rgba(0, 53, 128, 0.15);
+  border: 1.5px solid rgba(0, 53, 128, 0.1);
   border-radius: 50px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
+  font-weight: 600;
   font-family: var(--font-main);
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   width: max-content;
   max-width: 100%;
-  white-space: normal;
+  white-space: nowrap;
 }
-.view-details-btn:hover { background: var(--primary); color: #ffffff; }
-.view-details-btn.open-btn { background: #a3a4a8; color: #c02929; border-color: #dee2e6; }
-.view-details-btn.open-btn:hover { background: #e9ecef; }
+.view-details-btn:hover {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0, 53, 128, 0.15);
+  transform: translateY(-1px);
+}
+.view-details-btn:active {
+  transform: translateY(0);
+}
+.view-details-btn.open-btn {
+  background: rgba(230, 57, 70, 0.08);
+  color: var(--accent-dark);
+  border-color: rgba(230, 57, 70, 0.2);
+}
+.view-details-btn.open-btn:hover {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.18);
+}
 
 .extended-details-content {
   border-top: 1px dashed var(--border-light);
@@ -767,8 +792,9 @@ ul { list-style: none; }
 
 /* Job Details Accordion */
 .post-item.expanded-card {
-  background: #fdfefe;
-  border-left: 3px solid var(--accent);
+  background: #ffffff;
+  border-left: 4px solid var(--primary);
+  box-shadow: inset 0 0 12px rgba(0, 53, 128, 0.02), 0 8px 24px rgba(0, 53, 128, 0.08);
 }
 .post-details {
   max-height: 0;
