@@ -1,17 +1,20 @@
 {
-  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/mock-test.html",
+      "destination": "/mocktest.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/mock-test",
+      "destination": "/mocktest.html",
+      "statusCode": 301
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "mocktest.newjobupdates.in" }],
-      "destination": "/mocktest.html"
-    },
-    {
-      "source": "/mock-test",
-      "destination": "/mocktest.html"
-    },
-    {
-      "source": "/mock-test.html",
       "destination": "/mocktest.html"
     }
   ]
