@@ -13,18 +13,6 @@
     {
       "source": "/mock-test.html",
       "destination": "/mocktest.html"
-    },
-    {
-      "source": "/mocktest",
-      "destination": "/mocktest.html"
-    },
-    {
-      "source": "/mocktest.html",
-      "destination": "/mocktest.html"
-    },
-    {
-      "source": "/((?!style\\.css|script\\.js|favicon\\.svg|.*\\.png|.*\\.jpg|.*\\.jpeg|mocktest\\.html).*)",
-      "destination": "/index.html"
     }
   ]
 }
