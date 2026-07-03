@@ -150,8 +150,9 @@
       font-weight: 600;
       padding: 6px 14px;
       border-radius: 100px;
-      background: #e2e8f0;
+      background: var(--bg-badge);
       border: 1px solid var(--border);
+      color: var(--text-primary);
     }
     .timer-badge svg, .progress-badge svg {
       width: 16px;
@@ -291,6 +292,31 @@
     }
     .next-btn:active {
       transform: translateY(0) scale(0.985);
+    }
+
+    /* ── Previous Button ───────────────────────────── */
+    .prev-btn {
+      padding: 16px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      background: var(--bg-badge);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .prev-btn:hover {
+      background: var(--bg-key);
+    }
+    .prev-btn:active {
+      transform: scale(0.985);
     }
 
     /* ── Result Screen ─────────────────────────────── */
@@ -1109,6 +1135,18 @@
     <div class="quiz-layout">
       <!-- Left Column: Quiz Main Content -->
       <div class="quiz-main-content">
+        <!-- Back Header -->
+        <div class="sub-header" style="margin-bottom: 20px;">
+          <button class="back-btn" onclick="confirmExitQuiz()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Exit Test
+          </button>
+          <span class="exam-badge" id="quiz-exam-badge">-</span>
+        </div>
+
         <!-- Top Bar -->
         <div class="top-bar">
           <div class="timer-badge" id="timer-badge">
@@ -1134,7 +1172,14 @@
 
         <!-- Submit / Next Button -->
         <div style="display: flex; gap: 12px; width: 100%; margin-top: 24px;">
-          <button class="next-btn" id="next-btn" onclick="handleNextClick()" style="background: linear-gradient(135deg, var(--accent), #6c3ce0); width: 100%;">Skip Question →</button>
+          <button class="prev-btn" id="prev-question-btn" onclick="handlePrevClick()" style="display: none; width: 35%;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; stroke: currentColor;">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back
+          </button>
+          <button class="next-btn" id="next-btn" onclick="handleNextClick()" style="background: linear-gradient(135deg, var(--accent), #6c3ce0); flex-grow: 1;">Skip Question →</button>
         </div>
       </div>
 
@@ -1201,8 +1246,8 @@
   <!-- ══════════════════════════════════════════════ -->
   <!--  JAVASCRIPT (Firebase Firestore Integration)   -->
   <!-- ══════════════════════════════════════════════ -->
-  <script type="module">
-    // ── Firebase Imports ───────────────────────────────
+   <script type="module">
+  // ── Firebase Imports ───────────────────────────────
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
     import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
@@ -1222,24 +1267,35 @@
     const analytics = getAnalytics(app);
     const db = getFirestore(app);
 
-    // ── Scoring Constants ────────────────────────────────
+    // ── Scoring & Sectional Constants ────────────────────
     const CORRECT_MARKS = 2;
     const WRONG_PENALTY = 0.25;
-    const TIMER_SECONDS = 15 * 60; // 15 minutes
+    
+    // Define the sequence of sections and timing (e.g., 15 minutes per section)
+    const SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english'];
+    const SECTION_NAMES = {
+      'reasoning': 'Reasoning',
+      'gk': 'General Awareness',
+      'quant': 'Quantitative Aptitude',
+      'english': 'English'
+    };
+    const TIME_PER_SECTION = 15 * 60; // 15 minutes in seconds
 
     // ── State ────────────────────────────────────────────
-    let questions = [];
+    let allQuestionsBySection = {}; // Organizes questions by subject
+    let activeSectionIndex = 0;     // Tracks active subject index (0 to 3)
+    let questions = [];             // Current active section's questions
     let currentIndex = 0;
     let score = 0;
     let correctCount = 0;
     let wrongCount = 0;
     let selectedOption = -1;
     let answered = false;
-    let timeLeft = TIMER_SECONDS;
+    let sectionTimeLeft = TIME_PER_SECTION;
     let timerInterval = null;
     let selectedCategory = '';
     let selectedSubCategory = '';
-    let quizState = []; // tracks: { status: 'not-visited' | 'answered' | 'skipped', selectedIdx: -1, isCorrect: boolean }
+    let quizState = [];             // Global state tracking array for tracking answers
 
     const categoryNames = {
       'ssc_gd': 'SSC GD',
@@ -1269,46 +1325,69 @@
     const subLoadingTxt = document.getElementById('sub-loading-text');
     const paletteGrid   = document.getElementById('palette-grid');
 
-    // ── Fetch Questions from Firestore ───────────────────
+    // Map UI subCategory values to Firestore DB subCategory values
+    const dbSubCategoryMap = {
+      'full_mock': 'full_mock',
+      'subject_wise': 'subject_wise',
+      'previous_year': 'previous_year',
+      'speed_booster': 'speed_boost',
+      'speed_boost': 'speed_boost'
+    };
+
+    // ── Fetch & Sort Sectional Questions ─────────────────
     async function fetchQuestions(category, subCategory) {
       try {
-        let q = query(
+        const dbSubCategory = dbSubCategoryMap[subCategory] || subCategory;
+        const q = query(
           collection(db, 'questions'),
           where('exam', '==', category),
-          where('subCategory', '==', subCategory)
+          where('subCategory', '==', dbSubCategory)
         );
         
-        let snapshot = await getDocs(q);
+        const snapshot = await getDocs(q);
         
         if (snapshot.empty) {
-          console.log(`No questions found for sub-category ${subCategory}. Falling back to general ${category} questions.`);
-          q = query(
-            collection(db, 'questions'),
-            where('exam', '==', category)
-          );
-          snapshot = await getDocs(q);
+          alert(`No questions available in category "${categoryNames[category] || category}" for ${subCategory.replace('_', ' ')}.`);
+          if (subLoading) subLoading.classList.add('hidden');
+          return;
         }
 
-        questions = snapshot.docs.map(doc => ({
-          question: doc.data().questionText,
-          options: [doc.data().a, doc.data().b, doc.data().c, doc.data().d],
-          answer: doc.data().correct
-        }));
+        // Initialize empty arrays for sections
+        allQuestionsBySection = { reasoning: [], gk: [], quant: [], english: [] };
 
-        if (subLoading) {
-          subLoading.classList.add('hidden');
-        }
+        snapshot.docs.forEach(doc => {
+          const data = doc.data();
+          const questionObj = {
+            id: doc.id,
+            question: data.questionText,
+            options: [data.a, data.b, data.c, data.d],
+            answer: data.correct,
+            section: data.section || 'reasoning' // defaults to reasoning if field is blank
+          };
+          
+          if (allQuestionsBySection[questionObj.section]) {
+            allQuestionsBySection[questionObj.section].push(questionObj);
+          } else {
+            allQuestionsBySection['reasoning'].push(questionObj);
+          }
+        });
 
-        if (questions.length === 0) {
+        if (subLoading) subLoading.classList.add('hidden');
+
+        // Check if we have any questions across all arrays
+        const totalFetched = Object.values(allQuestionsBySection).reduce((a, b) => a + b.length, 0);
+        if (totalFetched === 0) {
           alert(`No questions available in category "${categoryNames[category] || category}".`);
           return;
         }
 
-        // Hide sub-category screen and show quiz screen
         if (subScreen) subScreen.classList.add('hidden');
         quizScreen.classList.remove('hidden');
         
-        startQuiz();
+        // Setup initial sequence tracking logic
+        activeSectionIndex = 0;
+        initializeQuizState();
+        startSectionQuiz();
       } catch (error) {
         console.error('Error fetching questions:', error);
         if (subLoadingTxt) {
@@ -1317,125 +1396,99 @@
       }
     }
 
-    // ── Category Select Handler ──────────────────────────
-    function selectCategory(category, btn) {
-      const cards = document.querySelectorAll('.category-card');
-      cards.forEach(c => c.classList.remove('selected'));
-      btn.classList.add('selected');
-
-      selectedCategory = category;
-
-      if (subExamBadge) {
-        subExamBadge.textContent = categoryNames[category] || category.toUpperCase();
-      }
-
-      startScreen.classList.add('hidden');
-      if (subScreen) {
-        subScreen.classList.remove('hidden');
-      }
-
-      updateQuestionCount(category);
+    // ── Initialize Global State Tracking ─────────────────
+    function initializeQuizState() {
+      quizState = {};
+      SECTION_ORDER.forEach(secKey => {
+        quizState[secKey] = allQuestionsBySection[secKey].map(() => ({
+          status: 'not-visited',
+          selectedIdx: -1,
+          isCorrect: null
+        }));
+      });
     }
 
-    // ── Update Question Count (in Background) ─────────────
-    async function updateQuestionCount(category) {
-      if (questionsChip) {
-        questionsChip.textContent = 'Loading...';
-      }
-      try {
-        const q = query(
-          collection(db, 'questions'),
-          where('exam', '==', category)
-        );
-        const snapshot = await getDocs(q);
-        if (questionsChip) {
-          questionsChip.textContent = `${snapshot.size} Questions`;
-        }
-      } catch (error) {
-        console.error('Error updating question count:', error);
-        if (questionsChip) {
-          questionsChip.textContent = '— Questions';
-        }
-      }
-    }
-
-    // ── Back Button Action ────────────────────────────────
-    function goBackToCategories() {
-      if (subScreen) subScreen.classList.add('hidden');
-      startScreen.classList.remove('hidden');
-      
-      const cards = document.querySelectorAll('.category-card');
-      cards.forEach(c => c.classList.remove('selected'));
-    }
-
-    // ── Sub-Category Card Select Action ──────────────────
-    async function selectSubCategory(subCategory) {
-      selectedSubCategory = subCategory;
-
-      if (subLoading) {
-        subLoading.classList.remove('hidden');
-      }
-      if (subLoadingTxt) {
-        subLoadingTxt.textContent = `Loading questions for ${categoryNames[selectedCategory] || selectedCategory}...`;
-      }
-
-      await fetchQuestions(selectedCategory, subCategory);
-    }
-
-    // ── Start Quiz ───────────────────────────────────────
-    function startQuiz() {
-      if (questions.length === 0) return;
+    // ── Start A Specific Section ─────────────────────────
+    function startSectionQuiz() {
       if (timerInterval) clearInterval(timerInterval);
       
-      startScreen.classList.add('hidden');
-      quizScreen.classList.remove('hidden');
-      resultScreen.classList.add('hidden');
+      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+      questions = allQuestionsBySection[currentSectionKey];
       
+      // If a section is empty, automatically jump to next valid section
+      if (questions.length === 0 && activeSectionIndex < SECTION_ORDER.length - 1) {
+        activeSectionIndex++;
+        startSectionQuiz();
+        return;
+      } else if (questions.length === 0) {
+        showResult();
+        return;
+      }
+
       currentIndex = 0;
-      score = 0;
-      correctCount = 0;
-      wrongCount = 0;
-      timeLeft = TIMER_SECONDS;
-      
-      // Initialize state tracking array
-      quizState = questions.map(() => ({
-        status: 'not-visited',
-        selectedIdx: -1,
-        isCorrect: null
-      }));
-      
-      startTimer();
+      sectionTimeLeft = TIME_PER_SECTION;
+      timerBadge.classList.remove('danger');
+
+      // Update Header with Active Section Banner Info
+      const titleElement = document.querySelector('.sidebar-title');
+      if (titleElement) {
+        titleElement.textContent = `Subject: ${SECTION_NAMES[currentSectionKey]}`;
+      }
+
+      const quizExamBadge = document.getElementById('quiz-exam-badge');
+      if (quizExamBadge) {
+        quizExamBadge.textContent = `${categoryNames[selectedCategory] || selectedCategory.toUpperCase()} - ${SECTION_NAMES[currentSectionKey]}`;
+      }
+
+      startSectionTimer();
       loadQuestion();
       renderPalette();
     }
 
-    // ── Timer ────────────────────────────────────────────
-    function startTimer() {
+    // ── Sectional Countdown Logic ────────────────────────
+    function startSectionTimer() {
       updateTimerDisplay();
       timerInterval = setInterval(() => {
-        timeLeft--;
+        sectionTimeLeft--;
         updateTimerDisplay();
-        if (timeLeft <= 60) {
+        if (sectionTimeLeft <= 60) {
           timerBadge.classList.add('danger');
         }
-        if (timeLeft <= 0) {
+        if (sectionTimeLeft <= 0) {
           clearInterval(timerInterval);
-          showResult();
+          handleSectionTimeout();
         }
       }, 1000);
     }
 
     function updateTimerDisplay() {
-      const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-      const secs = (timeLeft % 60).toString().padStart(2, '0');
-      timerDisplay.textContent = `${mins}:${secs}`;
+      const mins = Math.floor(sectionTimeLeft / 60).toString().padStart(2, '0');
+      const secs = (sectionTimeLeft % 60).toString().padStart(2, '0');
+      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+      timerDisplay.textContent = `[${SECTION_NAMES[currentSectionKey]}] ${mins}:${secs}`;
+    }
+
+    // ── Handle Section Timeout (Auto-Locks) ───────────────
+    function handleSectionTimeout() {
+      alert(`Time is up for ${SECTION_NAMES[SECTION_ORDER[activeSectionIndex]]}! Moving to next subject.`);
+      moveToNextSection();
+    }
+
+    function moveToNextSection() {
+      if (activeSectionIndex < SECTION_ORDER.length - 1) {
+        activeSectionIndex++;
+        startSectionQuiz();
+      } else {
+        clearInterval(timerInterval);
+        showResult();
+      }
     }
 
     // ── Load Question ────────────────────────────────────
     function loadQuestion() {
-      const state = quizState[currentIndex];
+      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+      const state = quizState[currentSectionKey][currentIndex];
       
-      // Sync local control variables with the saved state
       answered = (state.status === 'answered');
       selectedOption = state.selectedIdx;
 
@@ -1445,7 +1498,6 @@
 
       questionText.textContent = `Q${currentIndex + 1}. ${q.question}`;
 
-      // Build option buttons
       optionsList.innerHTML = '';
       const keys = ['A', 'B', 'C', 'D'];
       const optionKeys = ['a', 'b', 'c', 'd'];
@@ -1475,22 +1527,31 @@
         optionsList.appendChild(btn);
       });
 
+      const prevBtn = document.getElementById('prev-question-btn');
+      if (prevBtn) {
+        prevBtn.style.display = (currentIndex > 0) ? 'flex' : 'none';
+      }
+
       updateNextButtonText();
 
-      // Slide-in animation
       questionText.classList.remove('slide-in');
       optionsList.classList.remove('slide-in');
-      void questionText.offsetWidth; // trigger reflow
+      void questionText.offsetWidth; 
       questionText.classList.add('slide-in');
       optionsList.classList.add('slide-in');
     }
 
     // ── Update Submit/Next Button Text ────────────────────
     function updateNextButtonText() {
+      const isLastQuestion = (currentIndex === questions.length - 1);
+      const isLastSection = (activeSectionIndex === SECTION_ORDER.length - 1);
+
       if (answered) {
-        nextBtn.textContent = currentIndex < questions.length - 1 ? 'Next Question →' : 'View Results →';
+        if (!isLastQuestion) nextBtn.textContent = 'Next Question →';
+        else nextBtn.textContent = isLastSection ? 'View Results →' : 'Submit Subject & Continue →';
       } else {
-        nextBtn.textContent = currentIndex < questions.length - 1 ? 'Skip Question →' : 'Finish Quiz →';
+        if (!isLastQuestion) nextBtn.textContent = 'Skip Question →';
+        else nextBtn.textContent = isLastSection ? 'Finish Quiz →' : 'Submit Subject & Continue →';
       }
     }
 
@@ -1503,7 +1564,6 @@
 
       const q = questions[currentIndex];
       const allBtns = optionsList.querySelectorAll('.option-btn');
-
       allBtns.forEach(b => b.classList.add('disabled'));
 
       const optionKeys = ['a', 'b', 'c', 'd'];
@@ -1511,7 +1571,8 @@
       const correctKey = (q.answer || '').toLowerCase();
       const isCorrect = (selectedKey === correctKey);
 
-      quizState[currentIndex] = {
+      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+      quizState[currentSectionKey][currentIndex] = {
         status: 'answered',
         selectedIdx: index,
         isCorrect: isCorrect
@@ -1534,20 +1595,21 @@
 
     // ── Skip or Next Click Trigger ────────────────────────
     function handleNextClick() {
-      const state = quizState[currentIndex];
+      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+      const state = quizState[currentSectionKey][currentIndex];
       
       if (state.status === 'not-visited') {
-        quizState[currentIndex].status = 'skipped';
+        quizState[currentSectionKey][currentIndex].status = 'skipped';
         renderPalette();
       }
 
-      currentIndex++;
-      if (currentIndex < questions.length) {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
         loadQuestion();
         renderPalette();
       } else {
-        clearInterval(timerInterval);
-        showResult();
+        // Last question handling inside a sectional environment
+        moveToNextSection();
       }
     }
 
@@ -1556,7 +1618,10 @@
       if (!paletteGrid) return;
       paletteGrid.innerHTML = '';
       
-      quizState.forEach((state, i) => {
+      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+      const currentSectionState = quizState[currentSectionKey];
+      
+      currentSectionState.forEach((state, i) => {
         const btn = document.createElement('button');
         btn.className = 'palette-btn';
         btn.textContent = i + 1;
@@ -1580,9 +1645,10 @@
     function jumpToQuestion(index) {
       if (index === currentIndex) return;
 
-      const currentState = quizState[currentIndex];
+      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+      const currentState = quizState[currentSectionKey][currentIndex];
       if (currentState.status === 'not-visited') {
-        quizState[currentIndex].status = 'skipped';
+        quizState[currentSectionKey][currentIndex].status = 'skipped';
       }
 
       currentIndex = index;
@@ -1590,33 +1656,36 @@
       renderPalette();
     }
 
-    // ── Show Result ──────────────────────────────────────
+    // ── Show Final Score Breakdown ───────────────────────
     function showResult() {
       clearInterval(timerInterval);
       quizScreen.classList.add('hidden');
       resultScreen.classList.remove('hidden');
-      resultScreen.style.animation = 'none';
-      void resultScreen.offsetWidth;
-      resultScreen.style.animation = 'fadeUp 0.45s ease-out';
 
       correctCount = 0;
       wrongCount = 0;
       score = 0;
+      let totalQuestionsAcrossQuiz = 0;
 
-      quizState.forEach(state => {
-        if (state.status === 'answered') {
-          if (state.isCorrect) {
-            correctCount++;
-            score += CORRECT_MARKS;
-          } else {
-            wrongCount++;
-            score -= WRONG_PENALTY;
+      SECTION_ORDER.forEach(secKey => {
+        const sectState = quizState[secKey] || [];
+        totalQuestionsAcrossQuiz += sectState.length;
+        
+        sectState.forEach(state => {
+          if (state.status === 'answered') {
+            if (state.isCorrect) {
+              correctCount++;
+              score += CORRECT_MARKS;
+            } else {
+              wrongCount++;
+              score -= WRONG_PENALTY;
+            }
           }
-        }
+        });
       });
 
-      const unanswered = questions.length - correctCount - wrongCount;
-      const totalPossible = questions.length * CORRECT_MARKS;
+      const unanswered = totalQuestionsAcrossQuiz - correctCount - wrongCount;
+      const totalPossible = totalQuestionsAcrossQuiz * CORRECT_MARKS;
 
       document.getElementById('res-correct').textContent = correctCount;
       document.getElementById('res-wrong').textContent = wrongCount;
@@ -1625,24 +1694,105 @@
       document.getElementById('res-total').textContent = totalPossible.toFixed(2);
     }
 
+    // ── Category Select Handler ──────────────────────────
+    function selectCategory(category, btn) {
+      const cards = document.querySelectorAll('.category-card');
+      cards.forEach(c => c.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      selectedCategory = category;
+
+      if (subExamBadge) {
+        subExamBadge.textContent = categoryNames[category] || category.toUpperCase();
+      }
+
+      startScreen.classList.add('hidden');
+      if (subScreen) {
+        subScreen.classList.remove('hidden');
+      }
+
+      updateQuestionCount(category);
+    }
+
+    // ── Update Question Count (in Background) ─────────────
+    async function updateQuestionCount(category) {
+      if (questionsChip) {
+        questionsChip.textContent = 'Loading...';
+      }
+      try {
+        const q = query(collection(db, 'questions'), where('exam', '==', category));
+        const snapshot = await getDocs(q);
+        if (questionsChip) {
+          questionsChip.textContent = `${snapshot.size} Questions`;
+        }
+      } catch (error) {
+        console.error('Error updating question count:', error);
+        if (questionsChip) {
+          questionsChip.textContent = '— Questions';
+        }
+      }
+    }
+
+    // ── Back Button Action ────────────────────────────────
+    function goBackToCategories() {
+      if (subScreen) subScreen.classList.add('hidden');
+      startScreen.classList.remove('hidden');
+      
+      const cards = document.querySelectorAll('.category-card');
+      cards.forEach(c => c.classList.remove('selected'));
+    }
+
+    // ── Sub-Category Card Select Action ──────────────────
+    async function selectSubCategory(subCategory) {
+      selectedSubCategory = subCategory;
+
+      if (subLoading) {
+        subLoading.classList.remove('hidden');
+      }
+      if (subLoadingTxt) {
+        subLoadingTxt.textContent = `Loading content for ${categoryNames[selectedCategory] || selectedCategory}...`;
+      }
+
+      await fetchQuestions(selectedCategory, subCategory);
+    }
+
     // ── Restart ──────────────────────────────────────────
     function restartQuiz() {
       timerBadge.classList.remove('danger');
       resultScreen.classList.add('hidden');
       startScreen.classList.remove('hidden');
-      startScreen.style.animation = 'none';
-      void startScreen.offsetWidth;
-      startScreen.style.animation = 'fadeUp 0.45s ease-out';
     }
 
-    // ── Expose functions to global scope for onclick handlers ──
-    window.startQuiz = startQuiz;
+    // ── Previous Button Action ───────────────────────────
+    function handlePrevClick() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        loadQuestion();
+        renderPalette();
+      }
+    }
+
+    // ── Exit Test Back Action ────────────────────────────
+    function confirmExitQuiz() {
+      if (confirm("Are you sure you want to exit the test? Your progress will be lost.")) {
+        if (timerInterval) clearInterval(timerInterval);
+        quizScreen.classList.add('hidden');
+        if (subScreen) subScreen.classList.remove('hidden');
+        
+        activeSectionIndex = 0;
+        currentIndex = 0;
+      }
+    }
+
+    // ── Expose functions globally for native inline HTML onclick properties ──
     window.handleNextClick = handleNextClick;
     window.restartQuiz = restartQuiz;
     window.selectCategory = selectCategory;
     window.goBackToCategories = goBackToCategories;
     window.selectSubCategory = selectSubCategory;
     window.jumpToQuestion = jumpToQuestion;
+    window.handlePrevClick = handlePrevClick;
+    window.confirmExitQuiz = confirmExitQuiz;
 
     // ── Theme Toggle Event Listener ──────────────────────
     const themeToggleBtn = document.getElementById('theme-toggle');
@@ -1653,9 +1803,6 @@
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
       });
     }
-
-    // ── Initialize ───────────────────────────────────────
-    // Wait for category selection before fetching questions
   </script>
 </body>
 </html>
