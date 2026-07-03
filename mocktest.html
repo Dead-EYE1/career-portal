@@ -226,44 +226,41 @@
       background: var(--bg-option-hover);
     }
     .option-btn .key {
-      width: 32px;
-      height: 32px;
+      width: 22px;
+      height: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 8px;
-      background: var(--bg-key);
-      font-weight: 700;
-      font-size: 0.8rem;
+      border-radius: 50%;
+      border: 2px solid var(--text-secondary);
+      background: transparent;
+      color: transparent;
       flex-shrink: 0;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .option-btn .key::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      opacity: 0;
+      transform: scale(0);
       transition: all 0.2s ease;
     }
     .option-btn.selected {
       border-color: var(--accent);
-      background: var(--accent-glow);
-      box-shadow: 0 0 0 1px var(--accent), 0 4px 20px var(--accent-glow);
+      background: var(--bg-option);
     }
     .option-btn.selected .key {
+      border-color: var(--accent);
       background: var(--accent);
-      color: #fff;
     }
-    .option-btn.correct {
-      border-color: var(--green);
-      background: rgba(44, 182, 125, 0.12);
-      box-shadow: 0 0 0 1px var(--green), 0 4px 20px var(--green-glow);
-    }
-    .option-btn.correct .key {
-      background: var(--green);
-      color: #fff;
-    }
-    .option-btn.wrong {
-      border-color: var(--red);
-      background: rgba(228, 88, 88, 0.1);
-      box-shadow: 0 0 0 1px var(--red), 0 4px 20px var(--red-glow);
-    }
-    .option-btn.wrong .key {
-      background: var(--red);
-      color: #fff;
+    .option-btn.selected .key::after {
+      opacity: 1;
+      transform: scale(1);
     }
     .option-btn.disabled {
       pointer-events: none;
@@ -348,7 +345,7 @@
 
     .score-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
       gap: 10px;
       margin-bottom: 24px;
     }
@@ -380,6 +377,116 @@
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
+    /* ── Solutions Review ────────────────────────── */
+    .solutions-container {
+      margin-top: 32px;
+      text-align: left;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+    .solutions-container h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .review-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .review-question {
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .review-status-label {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .review-status-label.not-attempted { background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border); }
+    .review-status-label.correct { background: rgba(44, 182, 125, 0.1); color: var(--green); border: 1px solid rgba(44, 182, 125, 0.3); }
+    .review-status-label.wrong { background: rgba(228, 88, 88, 0.1); color: var(--red); border: 1px solid rgba(228, 88, 88, 0.3); }
+    
+    .review-opt {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--border-option);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 0.88rem;
+      background: var(--bg-option);
+      transition: all 0.2s ease;
+    }
+    .review-opt.is-correct {
+      background: rgba(44, 182, 125, 0.08);
+      border-color: var(--green);
+    }
+    .review-opt.is-wrong {
+      background: rgba(228, 88, 88, 0.08);
+      border-color: var(--red);
+    }
+    .review-opt-icon {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      font-weight: bold;
+      background: var(--bg-card);
+      border: 1px solid var(--border-option);
+    }
+    .review-opt.is-correct .review-opt-icon { background: var(--green); color: #fff; border-color: var(--green); }
+    .review-opt.is-wrong .review-opt-icon { background: var(--red); color: #fff; border-color: var(--red); }
+
+    /* Solutions Tabs */
+    .review-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+    .review-tabs::-webkit-scrollbar { height: 4px; }
+    .review-tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    
+    .review-tab-btn {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .review-tab-btn:hover { background: rgba(255, 255, 255, 0.1); }
+    .review-tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    
+    .review-tab-content { display: none; }
+    .review-tab-content.active { display: block; }
 
     .final-score-banner {
       text-align: center;
@@ -1216,27 +1323,37 @@
     <p class="subtitle">Here's your performance breakdown</p>
 
     <div class="score-grid">
+      <div class="score-item">
+        <span class="value" id="res-total">0</span>
+        <span class="label">Total</span>
+      </div>
+      <div class="score-item">
+        <span class="value" id="res-attempted">0</span>
+        <span class="label">Att.</span>
+      </div>
+      <div class="score-item">
+        <span class="value" id="res-unanswered">0</span>
+        <span class="label">Skip</span>
+      </div>
       <div class="score-item green">
         <span class="value" id="res-correct">0</span>
-        <span class="label">Correct</span>
+        <span class="label">Right</span>
       </div>
       <div class="score-item red">
         <span class="value" id="res-wrong">0</span>
         <span class="label">Wrong</span>
       </div>
-      <div class="score-item">
-        <span class="value" id="res-unanswered">0</span>
-        <span class="label">Skipped</span>
-      </div>
     </div>
 
     <div class="final-score-banner">
-      <div class="fs-label">Final Score</div>
+      <div class="fs-label">Final Net Score</div>
       <div class="fs-value" id="res-score">0.00</div>
-      <div class="fs-total">out of <span id="res-total">0.00</span></div>
+      <div class="fs-total">out of <span id="res-total-marks">0.00</span></div>
     </div>
 
-    <button class="retry-btn" onclick="restartQuiz()">↻ Retake Quiz</button>
+    <div class="solutions-container" id="solutions-container"></div>
+
+    <button class="retry-btn" onclick="restartQuiz()" style="margin-top: 24px;">↻ Retake Quiz</button>
   </div>
 
   <footer class="footer">
@@ -1507,23 +1624,12 @@
       q.options.forEach((opt, i) => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
-        btn.innerHTML = `<span class="key">${keys[i]}</span><span>${opt}</span>`;
+        btn.innerHTML = `<span class="key"></span><span>${opt}</span>`;
         
-        if (answered) {
-          btn.classList.add('disabled');
-          if (i === selectedOption) {
-            if (state.isCorrect) {
-              btn.classList.add('correct');
-            } else {
-              btn.classList.add('wrong');
-            }
-          }
-          if (i === correctIndex) {
-            btn.classList.add('correct');
-          }
-        } else {
-          btn.addEventListener('click', () => selectOption(i, btn));
+        if (answered && i === selectedOption) {
+          btn.classList.add('selected');
         }
+        btn.addEventListener('click', () => selectOption(i, btn));
         optionsList.appendChild(btn);
       });
 
@@ -1557,14 +1663,14 @@
 
     // ── Select Option ────────────────────────────────────
     function selectOption(index, btn) {
-      if (answered) return;
-      
       answered = true;
       selectedOption = index;
 
       const q = questions[currentIndex];
       const allBtns = optionsList.querySelectorAll('.option-btn');
-      allBtns.forEach(b => b.classList.add('disabled'));
+      
+      allBtns.forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
 
       const optionKeys = ['a', 'b', 'c', 'd'];
       const selectedKey = optionKeys[index];
@@ -1577,17 +1683,6 @@
         selectedIdx: index,
         isCorrect: isCorrect
       };
-
-      const correctIndex = optionKeys.indexOf(correctKey);
-      if (correctIndex !== -1 && allBtns[correctIndex]) {
-        allBtns[correctIndex].classList.add('correct');
-      }
-
-      if (isCorrect) {
-        btn.classList.add('correct');
-      } else {
-        btn.classList.add('wrong');
-      }
 
       renderPalette();
       updateNextButtonText();
@@ -1664,6 +1759,7 @@
 
       correctCount = 0;
       wrongCount = 0;
+      let attemptedCount = 0;
       score = 0;
       let totalQuestionsAcrossQuiz = 0;
 
@@ -1673,6 +1769,7 @@
         
         sectState.forEach(state => {
           if (state.status === 'answered') {
+            attemptedCount++;
             if (state.isCorrect) {
               correctCount++;
               score += CORRECT_MARKS;
@@ -1684,21 +1781,125 @@
         });
       });
 
-      const unanswered = totalQuestionsAcrossQuiz - correctCount - wrongCount;
+      const unanswered = totalQuestionsAcrossQuiz - attemptedCount;
       const totalPossible = totalQuestionsAcrossQuiz * CORRECT_MARKS;
 
+      document.getElementById('res-total').textContent = totalQuestionsAcrossQuiz;
+      document.getElementById('res-attempted').textContent = attemptedCount;
+      document.getElementById('res-unanswered').textContent = unanswered;
       document.getElementById('res-correct').textContent = correctCount;
       document.getElementById('res-wrong').textContent = wrongCount;
-      document.getElementById('res-unanswered').textContent = unanswered;
       document.getElementById('res-score').textContent = score.toFixed(2);
-      document.getElementById('res-total').textContent = totalPossible.toFixed(2);
+      document.getElementById('res-total-marks').textContent = totalPossible.toFixed(2);
+
+      renderSolutionsReview();
+    }
+
+    // ── Render Solutions Review ───────────────────────────
+    function renderSolutionsReview() {
+      const container = document.getElementById('solutions-container');
+      container.innerHTML = '<h3>Solutions Review</h3>';
+      
+      const optionLabels = ['A', 'B', 'C', 'D'];
+      const optionKeys = ['a', 'b', 'c', 'd'];
+      
+      const tabsContainer = document.createElement('div');
+      tabsContainer.className = 'review-tabs';
+      container.appendChild(tabsContainer);
+      
+      let globalQuestionNumber = 1;
+      let firstTab = true;
+      
+      SECTION_ORDER.forEach(secKey => {
+        const questionsArr = allQuestionsBySection[secKey] || [];
+        const stateArr = quizState[secKey] || [];
+        
+        if (questionsArr.length > 0) {
+          const tabBtn = document.createElement('button');
+          tabBtn.className = `review-tab-btn ${firstTab ? 'active' : ''}`;
+          tabBtn.textContent = SECTION_NAMES[secKey] || secKey;
+          tabBtn.onclick = () => {
+            document.querySelectorAll('.review-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.review-tab-content').forEach(content => content.classList.remove('active'));
+            tabBtn.classList.add('active');
+            document.getElementById(`review-content-${secKey}`).classList.add('active');
+          };
+          tabsContainer.appendChild(tabBtn);
+          
+          const tabContent = document.createElement('div');
+          tabContent.className = `review-tab-content ${firstTab ? 'active' : ''}`;
+          tabContent.id = `review-content-${secKey}`;
+          
+          questionsArr.forEach((q, idx) => {
+            const state = stateArr[idx];
+            const isAnswered = state && state.status === 'answered';
+            const userSelectedIdx = state ? state.selectedIdx : -1;
+            
+            const correctKey = (q.answer || '').toLowerCase();
+            const correctIdx = optionKeys.indexOf(correctKey);
+            
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            
+            let statusHtml = '';
+            if (!isAnswered) {
+              statusHtml = `<span class="review-status-label not-attempted">Not Attempted</span>`;
+            } else if (state.isCorrect) {
+              statusHtml = `<span class="review-status-label correct">✓ Correct</span>`;
+            } else {
+              statusHtml = `<span class="review-status-label wrong">✗ Wrong</span>`;
+            }
+            
+            let optionsHtml = '';
+            q.options.forEach((opt, optIdx) => {
+              let optClass = 'review-opt';
+              let icon = optionLabels[optIdx];
+              
+              if (optIdx === correctIdx) {
+                optClass += ' is-correct';
+                icon = '✓';
+              } else if (isAnswered && optIdx === userSelectedIdx) {
+                optClass += ' is-wrong';
+                icon = '✗';
+              }
+              
+              optionsHtml += `
+                <div class="${optClass}">
+                  <div class="review-opt-icon">${icon}</div>
+                  <span>${opt}</span>
+                </div>
+              `;
+            });
+            
+            card.innerHTML = `
+              ${statusHtml}
+              <div class="review-question">Q${globalQuestionNumber}. ${q.question}</div>
+              <div class="review-options">
+                ${optionsHtml}
+              </div>
+            `;
+            
+            tabContent.appendChild(card);
+            globalQuestionNumber++;
+          });
+          
+          container.appendChild(tabContent);
+          firstTab = false;
+        }
+      });
     }
 
     // ── Category Select Handler ──────────────────────────
     function selectCategory(category, btn) {
       const cards = document.querySelectorAll('.category-card');
       cards.forEach(c => c.classList.remove('selected'));
-      btn.classList.add('selected');
+      
+      if (btn) {
+        btn.classList.add('selected');
+      } else {
+        const targetBtn = Array.from(cards).find(c => c.getAttribute('onclick') && c.getAttribute('onclick').includes(`'${category}'`));
+        if (targetBtn) targetBtn.classList.add('selected');
+      }
 
       selectedCategory = category;
 
@@ -1793,6 +1994,20 @@
     window.jumpToQuestion = jumpToQuestion;
     window.handlePrevClick = handlePrevClick;
     window.confirmExitQuiz = confirmExitQuiz;
+
+    // ── Check URL Params for Direct Exam Linking ─────────
+    const initFromURL = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const examParam = urlParams.get('exam');
+      if (examParam) {
+        selectCategory(examParam, null);
+      }
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initFromURL);
+    } else {
+      initFromURL();
+    }
 
     // ── Theme Toggle Event Listener ──────────────────────
     const themeToggleBtn = document.getElementById('theme-toggle');
