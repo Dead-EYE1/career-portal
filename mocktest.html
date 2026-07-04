@@ -1337,6 +1337,20 @@
     <h2 class="quiz-title"> Mock Test</h2>
     <p class="quiz-desc">Test your knowledge with a quick mock test. Instant scoring with negative marking — just like the real exam!</p>
 
+    <!-- Language & Instructions -->
+    <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 24px; text-align: left;">
+      <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px;">Choose your default language:</label>
+      <select id="default-lang-select" style="width: 100%; padding: 10px; margin-bottom: 16px; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer;">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+      </select>
+      
+      <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; line-height: 1.4;">
+        <input type="checkbox" id="instructions-checkbox" style="margin-top: 2px; accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; flex-shrink: 0;" />
+        <span>I have read and understood all the instructions. I agree that in case of any discrepancy, the English version will prevail.</span>
+      </label>
+    </div>
+
     <!-- Category Grid Section -->
     <div class="category-section">
       <label class="category-label">Select Exam Category</label>
@@ -1461,6 +1475,10 @@
             Exit Test
           </button>
           <div style="display: flex; gap: 8px; align-items: center;">
+            <select id="live-lang-toggle" onchange="toggleLanguage(this.value)" style="background: var(--bg-badge); color: var(--text-primary); border: 1px solid var(--border); border-radius: 100px; padding: 4px 10px; font-size: 0.75rem; font-weight: 700; outline: none; cursor: pointer; text-transform: uppercase;">
+              <option value="en">English</option>
+              <option value="hi">हिन्दी</option>
+            </select>
             <button class="palette-toggle-btn" onclick="document.querySelector('.quiz-sidebar').classList.toggle('show-mobile')" title="Toggle Palette">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             </button>
@@ -1493,14 +1511,17 @@
 
         <!-- Submit / Next Button -->
         <div style="display: flex; gap: 12px; width: 100%; margin-top: 24px;">
-          <button class="prev-btn" id="prev-question-btn" onclick="handlePrevClick()" style="display: none; width: 20%; padding: 12px;">
+          <button class="prev-btn" id="prev-question-btn" style="display: none; width: 15%; padding: 12px;" onclick="handlePrevClick()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; stroke: currentColor;">
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
           </button>
-          <button class="review-btn" id="review-btn" onclick="handleReviewClick()" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1.5px solid #8b5cf6; border-radius: var(--radius-sm); font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; flex-grow: 1; padding: 12px; transition: all 0.2s ease;">Mark for Review</button>
-          <button class="next-btn" id="next-btn" onclick="handleNextClick()" style="background: linear-gradient(135deg, var(--accent), #6c3ce0); flex-grow: 1; padding: 12px;">Save & Next →</button>
+          
+          <button type="button" class="clear-btn" id="clear-btn" onclick="clearResponse()" style="display: none; background: rgba(228, 88, 88, 0.15); color: #e45858; border: 1.5px solid #e45858; border-radius: var(--radius-sm); font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 12px; transition: all 0.2s ease;">Clear</button>
+
+          <button class="review-btn" id="review-btn" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1.5px solid #8b5cf6; border-radius: var(--radius-sm); font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; flex-grow: 1; padding: 12px; transition: all 0.2s ease;">Mark for Review</button>
+          <button class="next-btn" id="next-btn" style="background: linear-gradient(135deg, var(--accent), #6c3ce0); flex-grow: 1; padding: 12px;">Save & Next →</button>
         </div>
       </div>
 
@@ -1640,6 +1661,7 @@
     let selectedCategory = '';
     let selectedSubCategory = '';
     let quizState = [];             // Global state tracking array for tracking answers
+    let currentLanguage = 'en';     // Tracks the selected default language
 
     const categoryNames = {
       'ssc_gd': 'SSC GD',
@@ -1698,18 +1720,29 @@
 
         // Initialize empty arrays for sections
         allQuestionsBySection = { reasoning: [], gk: [], quant: [], english: [] };
-
+        
         snapshot.docs.forEach(doc => {
           const data = doc.data();
           const questionObj = {
             id: doc.id,
-            question: data.questionText,
-            options: [data.a, data.b, data.c, data.d],
+            section: data.section || 'reasoning',
+            question: {
+              en: data.questionText_en || data.questionText || '',
+              hi: data.questionText_hi || ''
+            },
+            options: [
+              { en: data.a_en || data.a || '', hi: data.a_hi || '' },
+              { en: data.b_en || data.b || '', hi: data.b_hi || '' },
+              { en: data.c_en || data.c || '', hi: data.c_hi || '' },
+              { en: data.d_en || data.d || '', hi: data.d_hi || '' }
+            ],
             answer: data.correct,
-            section: data.section || 'reasoning', // defaults to reasoning if field is blank
-            explanation: data.explanation || ''
+            explanation: {
+              en: data.explanation_en || data.explanation || '',
+              hi: data.explanation_hi || ''
+            }
           };
-          
+
           if (allQuestionsBySection[questionObj.section]) {
             allQuestionsBySection[questionObj.section].push(questionObj);
           } else {
@@ -1732,6 +1765,13 @@
         // Setup initial sequence tracking logic
         activeSectionIndex = 0;
         initializeQuizState();
+        
+        const langSelect = document.getElementById('default-lang-select');
+        if (langSelect) currentLanguage = langSelect.value;
+        
+        const liveToggle = document.getElementById('live-lang-toggle');
+        if (liveToggle) liveToggle.value = currentLanguage;
+        
         startSectionQuiz();
       } catch (error) {
         console.error('Error fetching questions:', error);
@@ -1837,7 +1877,8 @@
       progressText.textContent = `${currentIndex + 1} of ${questions.length}`;
       progressFill.style.width = `${((currentIndex) / questions.length) * 100}%`;
 
-      questionText.textContent = `Q${currentIndex + 1}. ${q.question}`;
+      const questionLangText = typeof q.question === 'object' ? (q.question[currentLanguage] || q.question['en'] || '') : q.question;
+      questionText.textContent = `Q${currentIndex + 1}. ${questionLangText}`;
 
       optionsList.innerHTML = '';
       const keys = ['A', 'B', 'C', 'D'];
@@ -1848,7 +1889,9 @@
       q.options.forEach((opt, i) => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
-        btn.innerHTML = `<span class="key"></span><span>${opt}</span>`;
+        
+        const optionLangText = typeof opt === 'object' ? (opt[currentLanguage] || opt['en'] || '') : opt;
+        btn.innerHTML = `<span class="key">${keys[i]}</span><span>${optionLangText}</span>`;
         
         if (answered && i === selectedOption) {
           btn.classList.add('selected');
@@ -1860,6 +1903,11 @@
       const prevBtn = document.getElementById('prev-question-btn');
       if (prevBtn) {
         prevBtn.style.display = (currentIndex > 0) ? 'flex' : 'none';
+      }
+      
+      const clearBtn = document.getElementById('clear-btn');
+      if (clearBtn) {
+        clearBtn.style.display = answered ? 'block' : 'none';
       }
 
       updateNextButtonText();
@@ -1910,6 +1958,11 @@
         selectedIdx: index,
         isCorrect: isCorrect
       };
+
+      const clearBtn = document.getElementById('clear-btn');
+      if (clearBtn) {
+        clearBtn.style.display = 'block';
+      }
 
       renderPalette();
       updateNextButtonText();
@@ -2104,6 +2157,9 @@
               statusHtml = `<span class="review-status-label wrong">✗ Wrong</span>`;
             }
             
+            const questionLangText = typeof q.question === 'object' ? (q.question[currentLanguage] || q.question['en'] || '') : q.question;
+            const explanationLangText = typeof q.explanation === 'object' ? (q.explanation[currentLanguage] || q.explanation['en'] || '') : q.explanation;
+            
             let optionsHtml = '';
             q.options.forEach((opt, optIdx) => {
               let optClass = 'review-opt';
@@ -2117,14 +2173,16 @@
                 icon = '✗';
               }
               
+              const optionLangText = typeof opt === 'object' ? (opt[currentLanguage] || opt['en'] || '') : opt;
+              
               optionsHtml += `
                 <div class="${optClass}">
                   <div class="review-opt-icon">${icon}</div>
-                  <span>${opt}</span>
+                  <span>${optionLangText}</span>
                 </div>
               `;
               // Insert explanation toggle button + hidden content after the correct option
-              if (optIdx === correctIdx && q.explanation) {
+              if (optIdx === correctIdx && explanationLangText) {
                 const explId = `expl-${secKey}-${idx}`;
                 optionsHtml += `
                   <button type="button" class="explanation-toggle-btn" onclick="toggleExplanation('${explId}', this)">
@@ -2133,7 +2191,7 @@
                   </button>
                   <div class="review-explanation" id="${explId}">
                     <strong>Explanation</strong>
-                    ${q.explanation}
+                    ${explanationLangText}
                   </div>
                 `;
               }
@@ -2141,7 +2199,7 @@
             
             card.innerHTML = `
               ${statusHtml}
-              <div class="review-question">Q${globalQuestionNumber}. ${q.question}</div>
+              <div class="review-question">Q${globalQuestionNumber}. ${questionLangText}</div>
               <div class="review-options">
                 ${optionsHtml}
               </div>
@@ -2159,6 +2217,12 @@
 
     // ── Category Select Handler ──────────────────────────
     function selectCategory(category, btn) {
+      const instructionsCheck = document.getElementById('instructions-checkbox');
+      if (instructionsCheck && !instructionsCheck.checked) {
+        alert("Please confirm that you have read and understood all instructions before proceeding.");
+        return;
+      }
+
       const cards = document.querySelectorAll('.category-card');
       cards.forEach(c => c.classList.remove('selected'));
       
@@ -2266,6 +2330,53 @@
         : `${svgIcon} View Explanation`;
     }
 
+    // ── Clear Response ───────────────────────────────────
+    function clearResponse() {
+      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+      const state = quizState[currentSectionKey][currentIndex];
+      
+      if (state.status === 'answered') {
+        quizState[currentSectionKey][currentIndex] = {
+          ...state,
+          status: 'not-visited',
+          selectedIdx: -1,
+          isCorrect: null
+        };
+        
+        answered = false;
+        selectedOption = -1;
+        
+        const allBtns = optionsList.querySelectorAll('.option-btn');
+        allBtns.forEach(b => b.classList.remove('selected'));
+        
+        const clearBtn = document.getElementById('clear-btn');
+        if (clearBtn) clearBtn.style.display = 'none';
+        
+        renderPalette();
+        updateNextButtonText();
+      }
+    }
+
+    // ── Live Language Toggle ──────────────────────────────
+    function toggleLanguage(lang) {
+      currentLanguage = lang;
+      
+      const startLangSelect = document.getElementById('default-lang-select');
+      if (startLangSelect) startLangSelect.value = lang;
+      
+      // Re-render based on which screen is active
+      if (!quizScreen.classList.contains('hidden')) {
+        loadQuestion();
+      } else if (!resultScreen.classList.contains('hidden')) {
+        renderSolutionsReview();
+      }
+    }
+
+    // ── Event Listeners ──────────────────────────────────
+    if (nextBtn) nextBtn.addEventListener('click', handleNextClick);
+    const reviewBtn = document.getElementById('review-btn');
+    if (reviewBtn) reviewBtn.addEventListener('click', handleReviewClick);
+
     // ── Expose functions globally for native inline HTML onclick properties ──
     window.handleNextClick = handleNextClick;
     window.restartQuiz = restartQuiz;
@@ -2277,6 +2388,8 @@
     window.handleReviewClick = handleReviewClick;
     window.confirmExitQuiz = confirmExitQuiz;
     window.toggleExplanation = toggleExplanation;
+    window.clearResponse = clearResponse;
+    window.toggleLanguage = toggleLanguage;
 
     // ── Check URL Params for Direct Exam Linking ─────────
     const initFromURL = () => {
