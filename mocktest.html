@@ -1006,17 +1006,224 @@
       }
     }
 
-    /* ── Quiz Layout Grid ─────────────────────────── */
     .quiz-layout {
       display: flex;
       flex-direction: column;
       gap: 20px;
+      position: relative;
     }
     .quiz-main-content {
       width: 100%;
     }
     .quiz-sidebar {
-      display: none;
+      position: absolute;
+      top: 130px; /* start below top bars */
+      left: 0;
+      width: 100%;
+      height: calc(100% - 130px);
+      background: #2b2d31; /* matches image */
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 24px;
+      z-index: 50;
+      transform: translateX(110%);
+      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+      overflow-y: auto;
+    }
+    .light-theme .quiz-sidebar {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+    
+    /* ── Question Palette Styles (Mobile & Desktop) ── */
+    .sidebar-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .light-theme .sidebar-title {
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border);
+    }
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .palette-btn {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: #36393f;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: inherit;
+    }
+    .light-theme .palette-btn {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+    .palette-btn:hover {
+      background: #404249;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .light-theme .palette-btn:hover {
+      background: #cbd5e1;
+    }
+    .palette-btn:active {
+      transform: translateY(0);
+    }
+    .palette-btn.active {
+      border: 1px solid #7f5af0;
+      background: rgba(127, 90, 240, 0.2);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(127, 90, 240, 0.4), inset 0 0 0 1px #7f5af0;
+    }
+    .light-theme .palette-btn.active {
+      border-color: #6d28d9;
+      background: rgba(109, 40, 217, 0.1);
+      color: #6d28d9;
+    }
+    .palette-btn.answered {
+      background: #2cb67d;
+      border-color: #2cb67d;
+      color: #fff;
+    }
+    .palette-btn.skipped {
+      background: #e45858;
+      border-color: #e45858;
+      color: #fff;
+    }
+    .palette-btn.review {
+      background: #f59e0b;
+      border-color: #f59e0b;
+      color: #fff;
+    }
+    .palette-btn.review-answered {
+      background: #f59e0b;
+      border-color: #f59e0b;
+      color: #fff;
+      position: relative;
+    }
+    .palette-btn.review-answered::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 8px;
+      height: 8px;
+      background: #2cb67d;
+      border-radius: 50%;
+      border: 2px solid #2b2d31;
+    }
+    .light-theme .palette-btn.review-answered::after {
+      border-color: #f8fafc;
+    }
+    .palette-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.7);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 24px;
+    }
+    .light-theme .palette-legend {
+      color: var(--text-secondary);
+      border-top-color: var(--border);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+    }
+    .legend-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .legend-dot.green { background: #2cb67d; }
+    .legend-dot.red { background: #e45858; }
+    .legend-dot.gray { background: #36393f; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .light-theme .legend-dot.gray { background: #e2e8f0; border-color: #cbd5e1; }
+    .legend-dot.yellow { background: #f59e0b; }
+    .legend-dot.yellow-green { 
+      background: #f59e0b; 
+      position: relative; 
+    }
+    .legend-dot.yellow-green::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      right: -3px;
+      width: 8px;
+      height: 8px;
+      background: #2cb67d;
+      border-radius: 50%;
+      border: 2px solid #2b2d31;
+    }
+    .light-theme .legend-dot.yellow-green::after {
+      border-color: #f8fafc;
+    }
+    .light-theme .quiz-sidebar {
+      box-shadow: -4px 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    .quiz-sidebar.show-mobile {
+      transform: translateX(0);
+    }
+    .palette-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .palette-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-badge);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .palette-toggle-btn:hover {
+      background: var(--bg-key);
+      border-color: var(--accent-light);
+    }
+    .palette-toggle-btn svg {
+      width: 16px;
+      height: 16px;
     }
 
     @media (min-width: 1024px) {
@@ -1028,140 +1235,33 @@
         grid-template-columns: 72% 28%;
         gap: 32px;
         align-items: start;
+        position: static;
       }
       .quiz-sidebar {
-        display: block;
-        background: var(--bg-option);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 24px;
         position: sticky;
         top: 24px;
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        right: auto;
+        left: auto;
+        width: auto;
+        height: auto;
+        max-width: none;
+        background: #2b2d31; /* match mobile image background on desktop too */
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: none;
+        transform: translateX(0);
+        transition: none;
+        z-index: auto;
+        overflow-y: visible;
       }
-      .sidebar-title {
-        font-size: 0.95rem;
-        font-weight: 700;
-        margin-bottom: 18px;
-        color: var(--text-primary);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 12px;
+      .light-theme .quiz-sidebar {
+        background: #f8fafc;
       }
-      .palette-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 10px;
-        margin-bottom: 24px;
+      .palette-close-btn {
+        display: none;
       }
-      .palette-btn {
-        aspect-ratio: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        border: 1.5px solid var(--border-option);
-        background: var(--bg-option);
-        color: var(--text-secondary);
-        cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        font-family: inherit;
-      }
-      .palette-btn:hover {
-        border-color: var(--accent);
-        color: var(--text-primary);
-        background: var(--bg-option-hover);
-        transform: translateY(-1px);
-      }
-      .palette-btn:active {
-        transform: translateY(0);
-      }
-      .palette-btn.active {
-        border-color: var(--accent-light);
-        background: var(--accent-glow);
-        color: var(--text-primary);
-        box-shadow: 0 0 12px var(--accent-glow);
-      }
-      .palette-btn.answered {
-        background: var(--green);
-        border-color: var(--green);
-        color: #fff;
-        box-shadow: 0 0 10px var(--green-glow);
-      }
-      .palette-btn.skipped {
-        background: var(--red);
-        border-color: var(--red);
-        color: #fff;
-        box-shadow: 0 0 10px var(--red-glow);
-      }
-      .palette-btn.review {
-        background: #f59e0b;
-        border-color: #f59e0b;
-        color: #fff;
-        box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
-      }
-      .palette-btn.review-answered {
-        background: #f59e0b;
-        border-color: #f59e0b;
-        color: #fff;
-        position: relative;
-        box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
-      }
-      .palette-btn.review-answered::after {
-        content: '';
-        position: absolute;
-        bottom: 2px;
-        right: 2px;
-        width: 8px;
-        height: 8px;
-        background: var(--green);
-        border-radius: 50%;
-        border: 1px solid #fff;
-      }
-      .palette-legend {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        font-size: 0.8rem;
-        color: var(--text-secondary);
-        border-top: 1px solid var(--border);
-        padding-top: 20px;
-      }
-      .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 500;
-      }
-      .legend-dot {
-        width: 14px;
-        height: 14px;
-        border-radius: 4px;
-        display: inline-block;
-        flex-shrink: 0;
-      }
-      .legend-dot.green { background: var(--green); }
-      .legend-dot.red { background: var(--red); }
-      .legend-dot.gray { background: rgba(255, 255, 255, 0.03); border: 1.5px solid rgba(255, 255, 255, 0.1); }
-      .legend-dot.yellow { background: #f59e0b; }
-      .legend-dot.yellow-green { 
-        background: #f59e0b; 
-        position: relative; 
-      }
-      .legend-dot.yellow-green::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        right: -2px;
-        width: 6px;
-        height: 6px;
-        background: var(--green);
-        border-radius: 50%;
-        border: 1px solid #fff;
+      .palette-toggle-btn {
+        display: none;
       }
     }
     
@@ -1360,7 +1460,12 @@
             </svg>
             Exit Test
           </button>
-          <span class="exam-badge" id="quiz-exam-badge">-</span>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button class="palette-toggle-btn" onclick="document.querySelector('.quiz-sidebar').classList.toggle('show-mobile')" title="Toggle Palette">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </button>
+            <span class="exam-badge" id="quiz-exam-badge">-</span>
+          </div>
         </div>
 
         <!-- Top Bar -->
@@ -1401,7 +1506,12 @@
 
       <!-- Right Column: Sidebar Palette (PC monitors only) -->
       <div class="quiz-sidebar">
-        <h3 class="sidebar-title">Question Palette</h3>
+        <h3 class="sidebar-title">
+          <span id="sidebar-subject-title">SUBJECT: REASONING</span>
+          <button class="palette-close-btn" onclick="document.querySelector('.quiz-sidebar').classList.remove('show-mobile')" title="Close Palette">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </h3>
         <div class="palette-grid" id="palette-grid">
           <!-- Dynamically populated numbered buttons -->
         </div>
