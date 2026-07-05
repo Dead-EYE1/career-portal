@@ -609,6 +609,29 @@
       transform: translateY(0) scale(0.985);
     }
 
+    .back-select-btn {
+      width: 100%;
+      padding: 16px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      background: var(--bg-badge);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      -webkit-tap-highlight-color: transparent;
+      text-align: center;
+    }
+    .back-select-btn:hover {
+      background: var(--bg-key);
+      border-color: var(--accent-light);
+    }
+    .back-select-btn:active {
+      transform: translateY(0) scale(0.985);
+    }
+
     /* ── Start Screen ─────────────────────────────── */
     #start-screen { text-align: center; }
     #start-screen .quiz-title {
@@ -1291,6 +1314,28 @@
     }
     html:not(.light-theme) .theme-icon-sun { display: none; }
     html.light-theme .theme-icon-moon { display: none; }
+
+    #live-lang-toggle {
+      background: var(--bg-card-solid);
+      color: var(--text-primary);
+      border: 1.5px solid var(--accent);
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+    }
+    #live-lang-toggle:hover {
+      border-color: var(--accent-light);
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+    #live-lang-toggle option {
+      background: var(--bg-card-solid);
+      color: var(--text-primary);
+    }
   </style>
   <script>
     (function() {
@@ -1336,20 +1381,6 @@
     <div style="font-size:2.4rem;margin-bottom:14px;">📝</div>
     <h2 class="quiz-title"> Mock Test</h2>
     <p class="quiz-desc">Test your knowledge with a quick mock test. Instant scoring with negative marking — just like the real exam!</p>
-
-    <!-- Language & Instructions -->
-    <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 24px; text-align: left;">
-      <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px;">Choose your default language:</label>
-      <select id="default-lang-select" style="width: 100%; padding: 10px; margin-bottom: 16px; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer;">
-        <option value="en">English</option>
-        <option value="hi">Hindi</option>
-      </select>
-      
-      <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; line-height: 1.4;">
-        <input type="checkbox" id="instructions-checkbox" style="margin-top: 2px; accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; flex-shrink: 0;" />
-        <span>I have read and understood all the instructions. I agree that in case of any discrepancy, the English version will prevail.</span>
-      </label>
-    </div>
 
     <!-- Category Grid Section -->
     <div class="category-section">
@@ -1427,6 +1458,20 @@
       </span>
     </div>
 
+    <!-- Language & Instructions -->
+    <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 24px; text-align: left;">
+      <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px;">Choose your default language:</label>
+      <select id="default-lang-select" style="width: 100%; padding: 10px; margin-bottom: 16px; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer;">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+      </select>
+      
+      <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; line-height: 1.4;">
+        <input type="checkbox" id="instructions-checkbox" style="margin-top: 2px; accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; flex-shrink: 0;" />
+        <span>I have read and understood all the instructions. I agree that in case of any discrepancy, the English version will prevail.</span>
+      </label>
+    </div>
+
     <!-- Sub-Category Grid -->
     <div class="sub-category-grid">
       <button class="sub-card" onclick="selectSubCategory('full_mock')">
@@ -1459,6 +1504,37 @@
   </div>
 
   <!-- ══════════════════════════════════════════════ -->
+  <!--  TEST SELECTION SCREEN                         -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="card hidden" id="test-selection-screen">
+    <!-- Back Header -->
+    <div class="sub-header">
+      <button class="back-btn" onclick="goBackToSubCategories()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back
+      </button>
+      <span class="exam-badge" id="test-selection-exam-badge">-</span>
+    </div>
+
+    <h2 class="quiz-title">Select Test</h2>
+    <p class="quiz-desc">Choose a test to begin your practice. Instant results with detailed scoring.</p>
+
+    <!-- Dynamic Test List Wrapper -->
+    <div id="dynamic-test-list" class="sub-category-grid">
+      <!-- Buttons will be injected here -->
+    </div>
+
+    <!-- Loading Overlay/Status inside Test Selection Screen -->
+    <div id="test-selection-loading-status" class="hidden">
+      <div class="spinner"></div>
+      <p id="test-selection-loading-text">Preparing questions...</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
   <!--  QUIZ SCREEN                                   -->
   <!-- ══════════════════════════════════════════════ -->
   <div class="card hidden" id="quiz-screen">
@@ -1475,7 +1551,7 @@
             Exit Test
           </button>
           <div style="display: flex; gap: 8px; align-items: center;">
-            <select id="live-lang-toggle" onchange="toggleLanguage(this.value)" style="background: var(--bg-badge); color: var(--text-primary); border: 1px solid var(--border); border-radius: 100px; padding: 4px 10px; font-size: 0.75rem; font-weight: 700; outline: none; cursor: pointer; text-transform: uppercase;">
+            <select id="live-lang-toggle" onchange="toggleLanguage(this.value)">
               <option value="en">English</option>
               <option value="hi">हिन्दी</option>
             </select>
@@ -1566,6 +1642,18 @@
   <!--  RESULT SCREEN                                 -->
   <!-- ══════════════════════════════════════════════ -->
   <div class="card hidden" id="result-screen">
+    <!-- Back Header -->
+    <div class="sub-header">
+      <button class="back-btn" onclick="goBackToTestSelection()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back
+      </button>
+      <span class="exam-badge" id="result-exam-badge">-</span>
+    </div>
+
     <div class="result-icon">🏆</div>
     <h2>Quiz Completed!</h2>
     <p class="subtitle">Here's your performance breakdown</p>
@@ -1601,7 +1689,10 @@
 
     <div class="solutions-container" id="solutions-container"></div>
 
-    <button class="retry-btn" onclick="restartQuiz()" style="margin-top: 24px;">↻ Retake Quiz</button>
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 24px;">
+      <button class="retry-btn" onclick="restartQuiz()" style="margin-top: 0;">↻ Retake Quiz</button>
+      <button class="back-select-btn" onclick="goBackToTestSelection()">← Back to Test Selection</button>
+    </div>
   </div>
 
   <footer class="footer">
@@ -1691,6 +1782,13 @@
     const subLoadingTxt = document.getElementById('sub-loading-text');
     const paletteGrid   = document.getElementById('palette-grid');
 
+    // Test selection screen DOM references
+    const testSelectionScreen     = document.getElementById('test-selection-screen');
+    const testSelectionExamBadge  = document.getElementById('test-selection-exam-badge');
+    const testSelectionLoading     = document.getElementById('test-selection-loading-status');
+    const testSelectionLoadingTxt  = document.getElementById('test-selection-loading-text');
+    const resultExamBadge         = document.getElementById('result-exam-badge');
+
     // Map UI subCategory values to Firestore DB subCategory values
     const dbSubCategoryMap = {
       'full_mock': 'full_mock',
@@ -1701,20 +1799,22 @@
     };
 
     // ── Fetch & Sort Sectional Questions ─────────────────
-    async function fetchQuestions(category, subCategory) {
+    async function fetchQuestions(category, subCategory, testId) {
       try {
         const dbSubCategory = dbSubCategoryMap[subCategory] || subCategory;
         const q = query(
           collection(db, 'questions'),
           where('exam', '==', category),
-          where('subCategory', '==', dbSubCategory)
+          where('subCategory', '==', dbSubCategory),
+          where('testId', '==', testId)
         );
         
         const snapshot = await getDocs(q);
         
         if (snapshot.empty) {
-          alert(`No questions available in category "${categoryNames[category] || category}" for ${subCategory.replace('_', ' ')}.`);
+          alert(`No questions available in category "${categoryNames[category] || category}" for ${subCategory.replace('_', ' ')} (${testId}).`);
           if (subLoading) subLoading.classList.add('hidden');
+          if (testSelectionLoading) testSelectionLoading.classList.add('hidden');
           return;
         }
 
@@ -1751,6 +1851,7 @@
         });
 
         if (subLoading) subLoading.classList.add('hidden');
+        if (testSelectionLoading) testSelectionLoading.classList.add('hidden');
 
         // Check if we have any questions across all arrays
         const totalFetched = Object.values(allQuestionsBySection).reduce((a, b) => a + b.length, 0);
@@ -1760,6 +1861,7 @@
         }
 
         if (subScreen) subScreen.classList.add('hidden');
+        if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
         quizScreen.classList.remove('hidden');
         
         // Setup initial sequence tracking logic
@@ -1777,6 +1879,9 @@
         console.error('Error fetching questions:', error);
         if (subLoadingTxt) {
           subLoadingTxt.innerHTML = `<span style="color:var(--red);">Error loading questions. Tap a card to retry.</span>`;
+        }
+        if (testSelectionLoadingTxt) {
+          testSelectionLoadingTxt.innerHTML = `<span style="color:var(--red);">Error loading questions. Tap a card to retry.</span>`;
         }
       }
     }
@@ -1823,7 +1928,7 @@
 
       const quizExamBadge = document.getElementById('quiz-exam-badge');
       if (quizExamBadge) {
-        quizExamBadge.textContent = `${categoryNames[selectedCategory] || selectedCategory.toUpperCase()} - ${SECTION_NAMES[currentSectionKey]}`;
+        quizExamBadge.textContent = SECTION_NAMES[currentSectionKey];
       }
 
       startSectionTimer();
@@ -2099,6 +2204,12 @@
       document.getElementById('res-score').textContent = score.toFixed(2);
       document.getElementById('res-total-marks').textContent = totalPossible.toFixed(2);
 
+      if (resultExamBadge) {
+        const catName = categoryNames[selectedCategory] || selectedCategory.toUpperCase();
+        const subName = selectedSubCategory.replace('_', ' ').toUpperCase();
+        resultExamBadge.textContent = `${catName} - ${subName}`;
+      }
+
       renderSolutionsReview();
     }
 
@@ -2217,12 +2328,6 @@
 
     // ── Category Select Handler ──────────────────────────
     function selectCategory(category, btn) {
-      const instructionsCheck = document.getElementById('instructions-checkbox');
-      if (instructionsCheck && !instructionsCheck.checked) {
-        alert("Please confirm that you have read and understood all instructions before proceeding.");
-        return;
-      }
-
       const cards = document.querySelectorAll('.category-card');
       cards.forEach(c => c.classList.remove('selected'));
       
@@ -2276,17 +2381,98 @@
     }
 
     // ── Sub-Category Card Select Action ──────────────────
-    async function selectSubCategory(subCategory) {
+    function selectSubCategory(subCategory) {
+      const instructionsCheck = document.getElementById('instructions-checkbox');
+      if (instructionsCheck && !instructionsCheck.checked) {
+        alert("Please confirm that you have read and understood all instructions before proceeding.");
+        return;
+      }
+
       selectedSubCategory = subCategory;
+      loadTestsDynamically(selectedCategory, subCategory);
+    }
 
-      if (subLoading) {
-        subLoading.classList.remove('hidden');
-      }
-      if (subLoadingTxt) {
-        subLoadingTxt.textContent = `Loading content for ${categoryNames[selectedCategory] || selectedCategory}...`;
+    // ── Dynamic Test Loader Action ───────────────────────
+    async function loadTestsDynamically(category, subCategory) {
+      if (subScreen) subScreen.classList.add('hidden');
+      if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
+
+      if (testSelectionExamBadge) {
+        const catName = categoryNames[category] || category.toUpperCase();
+        const subName = subCategory.replace('_', ' ').toUpperCase();
+        testSelectionExamBadge.textContent = `${catName} - ${subName}`;
       }
 
-      await fetchQuestions(selectedCategory, subCategory);
+      const listContainer = document.getElementById('dynamic-test-list');
+      if (!listContainer) return;
+      listContainer.innerHTML = ''; // Clear previous content
+
+      if (testSelectionLoading) {
+        testSelectionLoading.classList.remove('hidden');
+      }
+      if (testSelectionLoadingTxt) {
+        testSelectionLoadingTxt.textContent = `Loading available tests...`;
+      }
+
+      try {
+        const dbSubCategory = dbSubCategoryMap[subCategory] || subCategory;
+        const q = query(
+          collection(db, 'tests'),
+          where('exam', '==', category),
+          where('subCategory', '==', dbSubCategory)
+        );
+
+        const snapshot = await getDocs(q);
+
+        if (testSelectionLoading) {
+          testSelectionLoading.classList.add('hidden');
+        }
+
+        if (snapshot.empty) {
+          listContainer.innerHTML = `<div style="grid-column: span 2; text-align: center; color: var(--text-secondary); padding: 20px;">No tests available for this selection.</div>`;
+          return;
+        }
+
+        snapshot.docs.forEach(doc => {
+          const testData = doc.data();
+          const btn = document.createElement('button');
+          btn.className = 'sub-card';
+          btn.innerHTML = `
+            <span class="sub-icon">📝</span>
+            <span class="sub-name">${testData.testName || 'Practice Test'}</span>
+            <span class="sub-desc">Start practice mock test</span>
+          `;
+          btn.onclick = () => {
+            if (testSelectionLoading) {
+              testSelectionLoading.classList.remove('hidden');
+            }
+            if (testSelectionLoadingTxt) {
+              testSelectionLoadingTxt.textContent = `Preparing questions for ${testData.testName}...`;
+            }
+            fetchQuestions(category, subCategory, testData.testId);
+          };
+          listContainer.appendChild(btn);
+        });
+      } catch (error) {
+        console.error('Error loading tests:', error);
+        if (testSelectionLoading) {
+          testSelectionLoading.classList.add('hidden');
+        }
+        listContainer.innerHTML = `<div style="grid-column: span 2; text-align: center; color: var(--red); padding: 20px;">Failed to load tests. Tap to retry.</div>`;
+      }
+    }
+
+    // ── Test Selection Back Button Action ─────────────────
+    function goBackToSubCategories() {
+      if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
+      if (subScreen) subScreen.classList.remove('hidden');
+    }
+
+    // ── Result Screen Back Button Action ──────────────────
+    function goBackToTestSelection() {
+      if (timerBadge) timerBadge.classList.remove('danger');
+      if (resultScreen) resultScreen.classList.add('hidden');
+      if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
     }
 
     // ── Restart ──────────────────────────────────────────
@@ -2310,7 +2496,7 @@
       if (confirm("Are you sure you want to exit the test? Your progress will be lost.")) {
         if (timerInterval) clearInterval(timerInterval);
         quizScreen.classList.add('hidden');
-        if (subScreen) subScreen.classList.remove('hidden');
+        if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
         
         activeSectionIndex = 0;
         currentIndex = 0;
@@ -2383,6 +2569,9 @@
     window.selectCategory = selectCategory;
     window.goBackToCategories = goBackToCategories;
     window.selectSubCategory = selectSubCategory;
+    window.loadTestsDynamically = loadTestsDynamically;
+    window.goBackToSubCategories = goBackToSubCategories;
+    window.goBackToTestSelection = goBackToTestSelection;
     window.jumpToQuestion = jumpToQuestion;
     window.handlePrevClick = handlePrevClick;
     window.handleReviewClick = handleReviewClick;
