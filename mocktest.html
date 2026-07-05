@@ -1728,12 +1728,13 @@
     const WRONG_PENALTY = 0.25;
     
     // Define the sequence of sections and timing (e.g., 15 minutes per section)
-    const SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english'];
+    let SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english'];
     const SECTION_NAMES = {
       'reasoning': 'Reasoning',
       'gk': 'General Awareness',
       'quant': 'Quantitative Aptitude',
-      'english': 'English'
+      'english': 'English',
+      'hindi': 'Hindi'
     };
     const TIME_PER_SECTION = 15 * 60; // 15 minutes in seconds
 
@@ -1801,6 +1802,19 @@
     // ── Fetch & Sort Sectional Questions ─────────────────
     async function fetchQuestions(category, subCategory, testId) {
       try {
+        // Read selected default language
+        const langSelect = document.getElementById('default-lang-select');
+        if (langSelect) {
+          currentLanguage = langSelect.value;
+        }
+
+        // Dynamically update SECTION_ORDER before quiz begins
+        if (currentLanguage === 'hi') {
+          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'hindi'];
+        } else {
+          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english'];
+        }
+
         const dbSubCategory = dbSubCategoryMap[subCategory] || subCategory;
         const q = query(
           collection(db, 'questions'),
@@ -1818,8 +1832,11 @@
           return;
         }
 
-        // Initialize empty arrays for sections
-        allQuestionsBySection = { reasoning: [], gk: [], quant: [], english: [] };
+        // Initialize empty arrays dynamically based on SECTION_ORDER
+        allQuestionsBySection = {};
+        SECTION_ORDER.forEach(sec => {
+          allQuestionsBySection[sec] = [];
+        });
         
         snapshot.docs.forEach(doc => {
           const data = doc.data();
@@ -1846,7 +1863,7 @@
           if (allQuestionsBySection[questionObj.section]) {
             allQuestionsBySection[questionObj.section].push(questionObj);
           } else {
-            allQuestionsBySection['reasoning'].push(questionObj);
+            allQuestionsBySection[SECTION_ORDER[0]].push(questionObj);
           }
         });
 
@@ -1868,9 +1885,7 @@
         activeSectionIndex = 0;
         initializeQuizState();
         
-        const langSelect = document.getElementById('default-lang-select');
-        if (langSelect) currentLanguage = langSelect.value;
-        
+        // Sync the live language toggle to match the selected default language
         const liveToggle = document.getElementById('live-lang-toggle');
         if (liveToggle) liveToggle.value = currentLanguage;
         
@@ -2150,6 +2165,12 @@
 
     // ── Jump to Question Palette Navigation ──────────────
     function jumpToQuestion(index) {
+      // Auto-hide the quiz slider/sidebar on mobile when a question number is clicked
+      const sidebar = document.querySelector('.quiz-sidebar');
+      if (sidebar) {
+        sidebar.classList.remove('show-mobile');
+      }
+
       if (index === currentIndex) return;
 
       const currentSectionKey = SECTION_ORDER[activeSectionIndex];
