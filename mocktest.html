@@ -1840,28 +1840,23 @@
         
         snapshot.docs.forEach(doc => {
           const data = doc.data();
-          // Detect whether the legacy unsuffixed fields (questionText, a, b, etc.)
-          // are English or Hindi. If explicit _en fields exist, the unsuffixed ones
-          // are ambiguous so we ignore them for English. If only unsuffixed fields
-          // exist (no _en), they are likely Hindi — map them to 'hi' only.
-          const hasExplicitEn = !!(data.questionText_en || data.a_en);
           const questionObj = {
             id: doc.id,
             section: data.section || 'reasoning',
             question: {
-              en: data.questionText_en || (hasExplicitEn ? '' : '') ,
-              hi: data.questionText_hi || (hasExplicitEn ? '' : (data.questionText || ''))
+              en: data.questionText_en || '',
+              hi: data.questionText_hi || data.questionText || ''
             },
             options: [
-              { en: data.a_en || '', hi: data.a_hi || (hasExplicitEn ? '' : (data.a || '')) },
-              { en: data.b_en || '', hi: data.b_hi || (hasExplicitEn ? '' : (data.b || '')) },
-              { en: data.c_en || '', hi: data.c_hi || (hasExplicitEn ? '' : (data.c || '')) },
-              { en: data.d_en || '', hi: data.d_hi || (hasExplicitEn ? '' : (data.d || '')) }
+              { en: data.a_en || '', hi: data.a_hi || data.a || '' },
+              { en: data.b_en || '', hi: data.b_hi || data.b || '' },
+              { en: data.c_en || '', hi: data.c_hi || data.c || '' },
+              { en: data.d_en || '', hi: data.d_hi || data.d || '' }
             ],
             answer: data.correct,
             explanation: {
               en: data.explanation_en || '',
-              hi: data.explanation_hi || (hasExplicitEn ? '' : (data.explanation || ''))
+              hi: data.explanation_hi || data.explanation || ''
             }
           };
 
@@ -1870,6 +1865,15 @@
           } else {
             allQuestionsBySection[SECTION_ORDER[0]].push(questionObj);
           }
+        });
+
+        // ── Filter: hide questions that have no text in the selected language ──
+        // e.g. if English is selected, remove any question whose English text is empty.
+        SECTION_ORDER.forEach(sec => {
+          allQuestionsBySection[sec] = allQuestionsBySection[sec].filter(q => {
+            const txt = (typeof q.question === 'object') ? q.question[currentLanguage] : q.question;
+            return txt && txt.trim().length > 0;
+          });
         });
 
         if (subLoading) subLoading.classList.add('hidden');
