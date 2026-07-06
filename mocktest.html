@@ -1874,9 +1874,12 @@
         
         snapshot.docs.forEach(doc => {
           const data = doc.data();
+          let rawSec = (data.section || 'reasoning').toLowerCase();
+          if (rawSec === 'math' || rawSec === 'mathematics' || rawSec === 'maths') rawSec = 'quant';
+
           const questionObj = {
             id: doc.id,
-            section: data.section || 'reasoning',
+            section: rawSec,
             imageUrl: data.imageUrl || '',
             question: {
               en: data.questionText_en || '',
