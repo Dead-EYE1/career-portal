@@ -1908,12 +1908,13 @@
           }
         });
 
-        // ── Filter: hide questions that have no text in the selected language ──
-        // e.g. if English is selected, remove any question whose English text is empty.
+        // ── Filter: hide questions that have no text and no image in the selected language ──
         SECTION_ORDER.forEach(sec => {
           allQuestionsBySection[sec] = allQuestionsBySection[sec].filter(q => {
             const txt = (typeof q.question === 'object') ? q.question[currentLanguage] : q.question;
-            return txt && txt.trim().length > 0;
+            const hasText = txt && txt.trim().length > 0;
+            const hasImage = q.imageUrl && q.imageUrl.trim().length > 0;
+            return hasText || hasImage;
           });
         });
 
