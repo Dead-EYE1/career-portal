@@ -2260,6 +2260,7 @@
       clearInterval(timerInterval);
       quizScreen.classList.add('hidden');
       resultScreen.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
       correctCount = 0;
       wrongCount = 0;
