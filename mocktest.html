@@ -1383,6 +1383,234 @@
       background: var(--bg-card-solid);
       color: var(--text-primary);
     }
+
+    /* ── Auth UI ──────────────────────────────────── */
+    /* Header Login Button (shown when logged out) */
+    .header-login-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), #6c3ce0);
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      box-shadow: 0 2px 12px var(--accent-glow);
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+      animation: fadeDown 0.3s ease-out;
+    }
+    .header-login-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+    .header-login-btn:active {
+      transform: translateY(0) scale(0.97);
+    }
+    .header-login-btn svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    /* User Bar (shown when logged in) */
+    .user-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px;
+      background: var(--bg-badge);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      animation: fadeDown 0.3s ease-out;
+    }
+    .user-bar .user-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      object-fit: cover;
+    }
+    .user-bar .user-name {
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .user-bar .user-logout-btn {
+      background: none;
+      border: none;
+      color: var(--red);
+      cursor: pointer;
+      padding: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s;
+      font-family: inherit;
+      font-size: 0.68rem;
+      font-weight: 700;
+      gap: 3px;
+    }
+    .user-bar .user-logout-btn:hover {
+      opacity: 0.7;
+    }
+
+    /* Login Required Modal */
+    .login-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding: 20px;
+      animation: fadeUp 0.25s ease-out;
+    }
+    .login-modal {
+      width: 100%;
+      max-width: 380px;
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.35s ease-out;
+    }
+    .login-modal::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(160deg, rgba(109, 40, 217, 0.2), transparent 50%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    .login-modal .modal-icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+    }
+    .login-modal h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .login-modal p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .login-modal .google-login-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 13px 20px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), #6c3ce0);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 24px var(--accent-glow);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .login-modal .google-login-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 32px var(--accent-glow);
+    }
+    .login-modal .google-login-btn svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+    .login-modal .modal-close-btn {
+      display: block;
+      margin: 12px auto 0;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 8px;
+      transition: color 0.2s ease;
+    }
+    .login-modal .modal-close-btn:hover {
+      color: var(--text-primary);
+    }
+
+    /* Logout button on result screen */
+    .logout-result-btn {
+      width: 100%;
+      padding: 14px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--red);
+      background: rgba(228, 88, 88, 0.08);
+      border: 1.5px solid rgba(228, 88, 88, 0.25);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .logout-result-btn:hover {
+      background: rgba(228, 88, 88, 0.15);
+      border-color: rgba(228, 88, 88, 0.4);
+    }
+
+    .save-status {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 100px;
+      margin-bottom: 16px;
+      animation: fadeUp 0.3s ease-out;
+    }
+    .save-status.success {
+      color: var(--green);
+      background: var(--green-glow);
+      border: 1px solid rgba(44, 182, 125, 0.3);
+    }
+    .save-status.error {
+      color: var(--red);
+      background: var(--red-glow);
+      border: 1px solid rgba(228, 88, 88, 0.3);
+    }
+    .save-status.info {
+      color: var(--accent-light);
+      background: var(--accent-glow);
+      border: 1px solid rgba(127, 90, 240, 0.3);
+    }
   </style>
   <script>
     (function() {
@@ -1395,6 +1623,20 @@
 </head>
 <body>
 
+  <!-- Login Required Modal (hidden by default) -->
+  <div class="login-modal-overlay hidden" id="login-modal">
+    <div class="login-modal">
+      <div class="modal-icon">🔒</div>
+      <h3>Login Required</h3>
+      <p>Please sign in with Google to save your test results and track your progress.</p>
+      <button class="google-login-btn" id="modal-login-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Sign in with Google
+      </button>
+      <button class="modal-close-btn" id="modal-close-btn" type="button">Skip — view results without saving</button>
+    </div>
+  </div>
+
   <!-- Branding -->
   <header class="brand">
     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 480px;">
@@ -1402,22 +1644,38 @@
         <h1>newjobupdates.in</h1>
         <p>Free Mock Test Series</p>
       </div>
-      <button type="button" class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme" style="margin-left: auto;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon-moon">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon-sun">
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line>
-          <line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-      </button>
+      <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+        <!-- Header Login Button (shown when logged out) -->
+        <button class="header-login-btn" id="header-login-btn" type="button" onclick="handleGoogleLogin()">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Login
+        </button>
+        <!-- User Bar (shown when logged in) -->
+        <div class="user-bar hidden" id="user-bar">
+          <img class="user-avatar" id="user-avatar" src="" alt="User" />
+          <span class="user-name" id="user-name"></span>
+          <button class="user-logout-btn" id="header-logout-btn" title="Sign Out">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Logout
+          </button>
+        </div>
+        <button type="button" class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon-moon">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon-sun">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -1566,7 +1824,7 @@
       <span class="exam-badge" id="test-selection-exam-badge">-</span>
     </div>
 
-    <h2 class="quiz-title">Select Test</h2>
+    <h2 class="quiz-title">Mini Mock Test</h2>
     <p class="quiz-desc">Choose a test to begin your practice. Instant results with detailed scoring.</p>
 
     <!-- Dynamic Test List Wrapper -->
@@ -1739,9 +1997,17 @@
 
     <div class="solutions-container" id="solutions-container"></div>
 
+    <!-- Score Save Status -->
+    <div id="save-status-container"></div>
+
     <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 24px;">
-      <button class="retry-btn" onclick="restartQuiz()" style="margin-top: 0;">↻ Retake Quiz</button>
+      <button class="retry-btn" id="reattempt-btn" onclick="reattemptTest()" style="margin-top: 0;">🔄 Reattempt Test</button>
+      <button class="back-select-btn" onclick="restartQuiz()">↻ Choose Another Test</button>
       <button class="back-select-btn" onclick="goBackToTestSelection()">← Back to Test Selection</button>
+      <button class="logout-result-btn hidden" id="result-logout-btn" onclick="handleLogout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
     </div>
   </div>
 
@@ -1756,7 +2022,8 @@
   // ── Firebase Imports ───────────────────────────────
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
-    import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
     // ── Firebase Config ─────────────────────────────────
     const firebaseConfig = {
@@ -1772,6 +2039,142 @@
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const db = getFirestore(app);
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    // ── Auth State ───────────────────────────────────────
+    let currentUser = null; // { uid, displayName, email, photoURL }
+
+    // ── Auth DOM Refs ────────────────────────────────────
+    const headerLoginBtn   = document.getElementById('header-login-btn');
+    const userBar          = document.getElementById('user-bar');
+    const userAvatar       = document.getElementById('user-avatar');
+    const userName         = document.getElementById('user-name');
+    const headerLogoutBtn  = document.getElementById('header-logout-btn');
+    const resultLogoutBtn  = document.getElementById('result-logout-btn');
+    const loginModal       = document.getElementById('login-modal');
+    const modalLoginBtn    = document.getElementById('modal-login-btn');
+    const modalCloseBtn    = document.getElementById('modal-close-btn');
+
+    // Pending result data to save after login
+    let pendingResultData  = null;
+
+    // ── Listen for Auth State Changes ────────────────────
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = {
+          uid: user.uid,
+          displayName: user.displayName || 'User',
+          email: user.email || '',
+          photoURL: user.photoURL || ''
+        };
+        // Update header UI: hide login btn, show user bar
+        if (headerLoginBtn) headerLoginBtn.classList.add('hidden');
+        if (userBar) userBar.classList.remove('hidden');
+        if (userName) userName.textContent = currentUser.displayName;
+        if (userAvatar) {
+          userAvatar.src = currentUser.photoURL || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%237f5af0"><circle cx="12" cy="8" r="4"/><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/></svg>';
+          userAvatar.onerror = () => { userAvatar.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%237f5af0"><circle cx="12" cy="8" r="4"/><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/></svg>'; };
+        }
+        if (resultLogoutBtn) resultLogoutBtn.classList.remove('hidden');
+
+        // If we just logged in via the modal, dismiss it and save the pending result
+        if (loginModal && !loginModal.classList.contains('hidden')) {
+          loginModal.classList.add('hidden');
+          if (pendingResultData) {
+            saveResultToFirestore(pendingResultData);
+            pendingResultData = null;
+          }
+        }
+      } else {
+        currentUser = null;
+        // Update header UI: show login btn, hide user bar
+        if (headerLoginBtn) headerLoginBtn.classList.remove('hidden');
+        if (userBar) userBar.classList.add('hidden');
+        if (resultLogoutBtn) resultLogoutBtn.classList.add('hidden');
+      }
+    });
+
+    // ── Google Sign In ───────────────────────────────────
+    async function handleGoogleLogin() {
+      try {
+        await signInWithPopup(auth, googleProvider);
+        // onAuthStateChanged callback will handle the rest
+      } catch (error) {
+        console.error('Google sign-in error:', error);
+        if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+          alert('Sign-in failed. Please try again.');
+        }
+      }
+    }
+
+    // ── Logout ────────────────────────────────────────────
+    async function handleLogout() {
+      try {
+        await signOut(auth);
+        // onAuthStateChanged will reset currentUser and toggle header UI
+      } catch (error) {
+        console.error('Sign-out error:', error);
+      }
+    }
+
+    // ── Login Modal Controls ─────────────────────────────
+    function showLoginModal(resultData) {
+      pendingResultData = resultData;
+      if (loginModal) loginModal.classList.remove('hidden');
+    }
+
+    function dismissLoginModal() {
+      if (loginModal) loginModal.classList.add('hidden');
+      pendingResultData = null;
+      // Show info status that score was not saved
+      const statusContainer = document.getElementById('save-status-container');
+      if (statusContainer) {
+        statusContainer.innerHTML = '<div class="save-status info">Score not saved. Login to save your results next time.</div>';
+      }
+    }
+
+    // ── Auth Event Listeners ─────────────────────────────
+    if (headerLogoutBtn) headerLogoutBtn.addEventListener('click', handleLogout);
+    if (modalLoginBtn) modalLoginBtn.addEventListener('click', handleGoogleLogin);
+    if (modalCloseBtn) modalCloseBtn.addEventListener('click', dismissLoginModal);
+
+    // ── Save Result to Firestore ─────────────────────────
+    async function saveResultToFirestore(resultData) {
+      const statusContainer = document.getElementById('save-status-container');
+      if (!statusContainer) return;
+      statusContainer.innerHTML = '';
+
+      if (!currentUser) {
+        // Should not reach here (modal gates it), but just in case
+        statusContainer.innerHTML = '<div class="save-status info">Login to save your scores.</div>';
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, 'user_results'), {
+          userId: currentUser.uid,
+          studentName: currentUser.displayName,
+          email: currentUser.email,
+          exam: resultData.exam,
+          subCategory: resultData.subCategory,
+          testId: resultData.testId || '',
+          totalQuestions: resultData.totalQuestions,
+          attempted: resultData.attempted,
+          correct: resultData.correct,
+          wrong: resultData.wrong,
+          score: resultData.score,
+          totalMarks: resultData.totalMarks,
+          percentage: resultData.percentage,
+          sectionBreakdown: resultData.sectionBreakdown || {},
+          submittedAt: serverTimestamp()
+        });
+        statusContainer.innerHTML = '<div class="save-status success">✓ Score saved to your account</div>';
+      } catch (error) {
+        console.error('Error saving result:', error);
+        statusContainer.innerHTML = '<div class="save-status error">⚠ Could not save score. Please try again.</div>';
+      }
+    }
 
     // ── Scoring & Sectional Constants ────────────────────
     const CORRECT_MARKS = 2;
@@ -1802,6 +2205,7 @@
     let timerInterval = null;
     let selectedCategory = '';
     let selectedSubCategory = '';
+    let selectedTestId = '';         // Tracks the active test ID
     let quizState = [];             // Global state tracking array for tracking answers
     let currentLanguage = 'en';     // Tracks the selected default language
 
@@ -1852,6 +2256,7 @@
 
     // ── Fetch & Sort Sectional Questions ─────────────────
     async function fetchQuestions(category, subCategory, testId) {
+      selectedTestId = testId || '';
       try {
         // Read selected default language
         const langSelect = document.getElementById('default-lang-select');
@@ -2284,23 +2689,36 @@
       let attemptedCount = 0;
       score = 0;
       let totalQuestionsAcrossQuiz = 0;
+      const sectionBreakdown = {};
 
       SECTION_ORDER.forEach(secKey => {
         const sectState = quizState[secKey] || [];
         totalQuestionsAcrossQuiz += sectState.length;
+        let secCorrect = 0, secWrong = 0, secAttempted = 0;
         
         sectState.forEach(state => {
           if (state.status === 'answered') {
             attemptedCount++;
+            secAttempted++;
             if (state.isCorrect) {
               correctCount++;
+              secCorrect++;
               score += CORRECT_MARKS;
             } else {
               wrongCount++;
+              secWrong++;
               score -= WRONG_PENALTY;
             }
           }
         });
+
+        sectionBreakdown[secKey] = {
+          total: sectState.length,
+          attempted: secAttempted,
+          correct: secCorrect,
+          wrong: secWrong,
+          score: parseFloat((secCorrect * CORRECT_MARKS - secWrong * WRONG_PENALTY).toFixed(2))
+        };
       });
 
       const unanswered = totalQuestionsAcrossQuiz - attemptedCount;
@@ -2318,6 +2736,34 @@
         const catName = categoryNames[selectedCategory] || selectedCategory.toUpperCase();
         const subName = selectedSubCategory.replace('_', ' ').toUpperCase();
         resultExamBadge.textContent = `${catName} - ${subName}`;
+      }
+
+      // Show/hide result logout button based on auth state
+      if (resultLogoutBtn) {
+        resultLogoutBtn.classList.toggle('hidden', !currentUser);
+      }
+
+      // Build the result data object
+      const percentage = totalPossible > 0 ? parseFloat(((score / totalPossible) * 100).toFixed(2)) : 0;
+      const resultData = {
+        exam: selectedCategory,
+        subCategory: selectedSubCategory,
+        testId: selectedTestId || '',
+        totalQuestions: totalQuestionsAcrossQuiz,
+        attempted: attemptedCount,
+        correct: correctCount,
+        wrong: wrongCount,
+        score: parseFloat(score.toFixed(2)),
+        totalMarks: totalPossible,
+        percentage: percentage,
+        sectionBreakdown: sectionBreakdown
+      };
+
+      // If logged in → save immediately. If not → show login modal.
+      if (currentUser) {
+        saveResultToFirestore(resultData);
+      } else {
+        showLoginModal(resultData);
       }
 
       renderSolutionsReview();
@@ -2598,11 +3044,48 @@
       if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
     }
 
-    // ── Restart ──────────────────────────────────────────
+    // ── Restart (go back to start screen) ────────────────
     function restartQuiz() {
+      if (timerInterval) clearInterval(timerInterval);
       timerBadge.classList.remove('danger');
       resultScreen.classList.add('hidden');
       startScreen.classList.remove('hidden');
+    }
+
+    // ── Reattempt Test (same test, reset all state) ──────
+    function reattemptTest() {
+      // Clear any running timer
+      if (timerInterval) clearInterval(timerInterval);
+      timerBadge.classList.remove('danger');
+
+      // Reset scoring
+      score = 0;
+      correctCount = 0;
+      wrongCount = 0;
+      currentIndex = 0;
+      activeSectionIndex = 0;
+      selectedOption = -1;
+      answered = false;
+      sectionTimeLeft = TIME_PER_SECTION;
+
+      // Re-initialize quiz state (clears all saved answers)
+      initializeQuizState();
+
+      // Clear save status from previous attempt
+      const statusContainer = document.getElementById('save-status-container');
+      if (statusContainer) statusContainer.innerHTML = '';
+
+      // Switch screens
+      resultScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Re-sync the live language toggle
+      const liveToggle = document.getElementById('live-lang-toggle');
+      if (liveToggle) liveToggle.value = currentLanguage;
+
+      // Start fresh from section 1, question 1
+      startSectionQuiz();
     }
 
     // ── Previous Button Action ───────────────────────────
@@ -2688,6 +3171,7 @@
     // ── Expose functions globally for native inline HTML onclick properties ──
     window.handleNextClick = handleNextClick;
     window.restartQuiz = restartQuiz;
+    window.reattemptTest = reattemptTest;
     window.selectCategory = selectCategory;
     window.goBackToCategories = goBackToCategories;
     window.selectSubCategory = selectSubCategory;
@@ -2701,6 +3185,8 @@
     window.toggleExplanation = toggleExplanation;
     window.clearResponse = clearResponse;
     window.toggleLanguage = toggleLanguage;
+    window.handleLogout = handleLogout;
+    window.handleGoogleLogin = handleGoogleLogin;
 
     // ── Check URL Params for Direct Exam Linking ─────────
     const initFromURL = () => {
