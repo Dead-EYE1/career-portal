@@ -535,7 +535,24 @@
       font-size: 0.84rem;
       line-height: 1.6;
       color: var(--text-secondary);
+      white-space: pre-wrap;
       animation: fadeUp 0.3s ease-out;
+    }
+    .review-explanation .expl-bullet {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin: 4px 0;
+      white-space: normal;
+    }
+    .review-explanation .expl-bullet::before {
+      content: '';
+      flex-shrink: 0;
+      width: 6px;
+      height: 6px;
+      margin-top: 7px;
+      border-radius: 50%;
+      background: var(--green);
     }
     .review-explanation.open {
       display: block;
@@ -2306,6 +2323,19 @@
       renderSolutionsReview();
     }
 
+    // ── Format Explanation Text ────────────────────────────
+    function formatExplanation(text) {
+      if (!text) return '';
+      return text.split('\n').map(line => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('*')) {
+          const content = trimmed.replace(/^\*+\s*/, '');
+          return `<div class="expl-bullet">${content}</div>`;
+        }
+        return line;
+      }).join('\n');
+    }
+
     // ── Render Solutions Review ───────────────────────────
     function renderSolutionsReview() {
       const container = document.getElementById('solutions-container');
@@ -2395,7 +2425,7 @@
                   </button>
                   <div class="review-explanation" id="${explId}">
                     <strong>Explanation</strong>
-                    ${explanationLangText}
+                    ${formatExplanation(explanationLangText)}
                   </div>
                 `;
               }
