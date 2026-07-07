@@ -149,6 +149,10 @@
 .light-theme .badge-scholarship { background: #f3e5f5; color: #7b2d8b; border: 1px solid #e1bee7; }
 .light-theme .badge-expired { background: #f8d7da; color: var(--accent-dark); border: 1px solid #f5c6cb; }
 
+.light-theme .section-title {
+  color: var(--text-primary);
+}
+
 .light-theme .search-overlay-box { background: #ffffff; border-color: var(--border); }
 .light-theme #overlay-search-input { background: #f8fafc; }
 .light-theme #overlay-search-input:focus { background: #fff; box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.1); }
