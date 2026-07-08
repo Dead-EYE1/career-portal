@@ -2304,7 +2304,7 @@
 
       try {
         const testId = resultData.testId || '';
-        await setDoc(doc(db, 'scores', currentUser.uid + '_' + testId), {
+        await setDoc(doc(db, 'scores', currentUser.uid + '_' + resultData.exam + '_' + testId), {
           userId: currentUser.uid,
           studentName: currentUser.displayName,
           email: currentUser.email,
@@ -2514,7 +2514,7 @@
         let hasSavedScore = false;
         if (currentUser) {
           try {
-            const scoreDocRef = doc(db, 'scores', currentUser.uid + '_' + (testId || ''));
+            const scoreDocRef = doc(db, 'scores', currentUser.uid + '_' + category + '_' + (testId || ''));
             const scoreDocSnap = await getDoc(scoreDocRef);
             if (scoreDocSnap.exists()) {
               const savedData = scoreDocSnap.data();
