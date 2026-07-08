@@ -408,6 +408,89 @@
       -webkit-text-fill-color: transparent;
     }
 
+    /* ── Section-Wise Breakdown ──────────────────── */
+    .section-breakdown {
+      margin-top: 8px;
+      margin-bottom: 24px;
+    }
+    .section-breakdown h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+    .section-breakdown-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    @media (min-width: 520px) {
+      .section-breakdown-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .section-break-item {
+      text-align: center;
+      padding: 16px 10px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease;
+    }
+    .section-break-item:hover {
+      transform: translateY(-2px);
+    }
+    .section-break-item .sb-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .section-break-item .sb-score {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-light), var(--green));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 2px;
+    }
+    .section-break-item .sb-correct {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    /* ── Time Spent Badge ─────────────────────────── */
+    .time-spent-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 100px;
+      background: rgba(127, 90, 240, 0.1);
+      border: 1px solid rgba(127, 90, 240, 0.25);
+      color: var(--accent-light);
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .time-spent-badge svg {
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
+    }
+    .light-theme .time-spent-badge {
+      background: rgba(109, 40, 217, 0.06);
+      border-color: rgba(109, 40, 217, 0.18);
+    }
+
     /* ── Solutions Review ────────────────────────── */
     .solutions-container {
       margin-top: 32px;
@@ -2093,7 +2176,7 @@
       </div>
       <div class="score-item">
         <span class="value" id="res-attempted">0</span>
-        <span class="label">Att.</span>
+        <span class="label">Attempt</span>
       </div>
       <div class="score-item">
         <span class="value" id="res-unanswered">0</span>
@@ -2115,13 +2198,17 @@
       <div class="fs-total">out of <span id="res-total-marks">0.00</span></div>
     </div>
 
+    <!-- Section-Wise Breakdown -->
+    <div class="section-breakdown" id="section-breakdown"></div>
+
+    <button class="retry-btn" id="reattempt-btn" onclick="reattemptTest()" style="margin-bottom: 8px;">🔄 Reattempt Test</button>
+
     <div class="solutions-container" id="solutions-container"></div>
 
     <!-- Score Save Status -->
     <div id="save-status-container"></div>
 
     <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 24px;">
-      <button class="retry-btn" id="reattempt-btn" onclick="reattemptTest()" style="margin-top: 0;">🔄 Reattempt Test</button>
       <button class="back-select-btn" onclick="restartQuiz()">↻ Choose Another Test</button>
       <button class="back-select-btn" onclick="goBackToTestSelection()">← Back to Test Selection</button>
       <button class="logout-result-btn hidden" id="result-logout-btn" onclick="handleLogout()">
@@ -2360,6 +2447,8 @@
     let selectedTestId = '';         // Tracks the active test ID
     let quizState = [];             // Global state tracking array for tracking answers
     let currentLanguage = 'en';     // Tracks the selected default language
+    let questionStartTime = 0;      // Timestamp when current question was loaded
+    let timeSpentPerQuestion = {};  // { sectionKey: [seconds, ...] }
 
     const categoryNames = {
       'ssc_gd': 'SSC GD',
@@ -2590,6 +2679,7 @@
     // ── Initialize Global State Tracking ─────────────────
     function initializeQuizState() {
       quizState = {};
+      timeSpentPerQuestion = {};
       SECTION_ORDER.forEach(secKey => {
         quizState[secKey] = allQuestionsBySection[secKey].map(() => ({
           status: 'not-visited',
@@ -2597,6 +2687,7 @@
           isCorrect: null,
           isReviewed: false
         }));
+        timeSpentPerQuestion[secKey] = allQuestionsBySection[secKey].map(() => 0);
       });
     }
 
@@ -2740,6 +2831,9 @@
       void questionText.offsetWidth; 
       questionText.classList.add('slide-in');
       optionsList.classList.add('slide-in');
+
+      // Record start time for time-per-question tracking
+      questionStartTime = Date.now();
     }
 
     // ── Update Submit/Next Button Text ────────────────────
@@ -2796,6 +2890,9 @@
       const currentSectionKey = SECTION_ORDER[activeSectionIndex];
       const state = quizState[currentSectionKey][currentIndex];
       
+      // Accumulate time spent on this question
+      recordTimeSpent(currentSectionKey, currentIndex);
+
       quizState[currentSectionKey][currentIndex].isReviewed = true;
       
       if (state.status === 'not-visited') {
@@ -2816,6 +2913,9 @@
       const currentSectionKey = SECTION_ORDER[activeSectionIndex];
       const state = quizState[currentSectionKey][currentIndex];
       
+      // Accumulate time spent on this question
+      recordTimeSpent(currentSectionKey, currentIndex);
+
       quizState[currentSectionKey][currentIndex].isReviewed = false; // Clear review on normal next
       
       if (state.status === 'not-visited') {
@@ -2877,6 +2977,10 @@
       if (index === currentIndex) return;
 
       const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+
+      // Accumulate time spent on the question we're leaving
+      recordTimeSpent(currentSectionKey, currentIndex);
+
       const currentState = quizState[currentSectionKey][currentIndex];
       if (currentState.status === 'not-visited') {
         quizState[currentSectionKey][currentIndex].status = 'skipped';
@@ -2887,9 +2991,25 @@
       renderPalette();
     }
 
+    // ── Record Time Spent on Current Question ────────────
+    function recordTimeSpent(sectionKey, qIndex) {
+      if (questionStartTime > 0) {
+        const elapsed = Math.round((Date.now() - questionStartTime) / 1000);
+        if (timeSpentPerQuestion[sectionKey] && timeSpentPerQuestion[sectionKey][qIndex] !== undefined) {
+          timeSpentPerQuestion[sectionKey][qIndex] += elapsed;
+        }
+        questionStartTime = 0;
+      }
+    }
+
     // ── Show Final Score Breakdown ───────────────────────
     function showResult() {
       clearInterval(timerInterval);
+
+      // Record time for the last question being viewed
+      const lastSectionKey = SECTION_ORDER[activeSectionIndex];
+      recordTimeSpent(lastSectionKey, currentIndex);
+
       quizScreen.classList.add('hidden');
       resultScreen.classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2966,7 +3086,8 @@
         score: parseFloat(score.toFixed(2)),
         totalMarks: totalPossible,
         percentage: percentage,
-        sectionBreakdown: sectionBreakdown
+        sectionBreakdown: sectionBreakdown,
+        timeSpentPerQuestion: timeSpentPerQuestion
       };
 
       // If logged in → save immediately. If not → show login modal.
@@ -2976,7 +3097,38 @@
         showLoginModal(resultData);
       }
 
+      renderSectionBreakdown(sectionBreakdown);
       renderSolutionsReview();
+    }
+
+    // ── Render Section-Wise Marks Breakdown ──────────────
+    function renderSectionBreakdown(breakdown) {
+      const container = document.getElementById('section-breakdown');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const heading = document.createElement('h3');
+      heading.textContent = 'Section-Wise Breakdown';
+      container.appendChild(heading);
+
+      const grid = document.createElement('div');
+      grid.className = 'section-breakdown-grid';
+
+      SECTION_ORDER.forEach(secKey => {
+        const data = breakdown[secKey];
+        if (!data || data.total === 0) return;
+
+        const item = document.createElement('div');
+        item.className = 'section-break-item';
+        item.innerHTML = `
+          <div class="sb-name">${SECTION_NAMES[secKey] || secKey}</div>
+          <div class="sb-score">${data.score}</div>
+          <div class="sb-correct">(${data.correct} Correct)</div>
+        `;
+        grid.appendChild(item);
+      });
+
+      container.appendChild(grid);
     }
 
     // ── Format Explanation Text ────────────────────────────
@@ -3087,8 +3239,15 @@
               }
             });
             
+            // Get time spent for this question
+            const qTime = (timeSpentPerQuestion[secKey] && timeSpentPerQuestion[secKey][idx] !== undefined)
+              ? timeSpentPerQuestion[secKey][idx] : 0;
+            const timeHtml = qTime > 0
+              ? `<span class="time-spent-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>${qTime}s</span>`
+              : '';
+
             card.innerHTML = `
-              ${statusHtml}
+              ${statusHtml}${timeHtml}
               <div class="review-question">Q${globalQuestionNumber}. ${questionLangText}</div>
               <div class="review-options">
                 ${optionsHtml}
@@ -3278,12 +3437,15 @@
       answered = false;
       sectionTimeLeft = TIME_PER_SECTION;
 
-      // Re-initialize quiz state (clears all saved answers)
+      // Re-initialize quiz state (clears all saved answers + time tracking)
       initializeQuizState();
+      questionStartTime = 0;
 
-      // Clear save status from previous attempt
+      // Clear save status and section breakdown from previous attempt
       const statusContainer = document.getElementById('save-status-container');
       if (statusContainer) statusContainer.innerHTML = '';
+      const sectionBreakdownEl = document.getElementById('section-breakdown');
+      if (sectionBreakdownEl) sectionBreakdownEl.innerHTML = '';
 
       // Switch screens
       resultScreen.classList.add('hidden');
