@@ -1094,20 +1094,16 @@ ${formatExplanation(explanationLangText)}</div>
         subExamBadge.textContent = categoryNames[category] || category.toUpperCase();
       }
 
-      showGlobalLoader('Loading Category...', selectCategory, category, null);
-
-      updateQuestionCount(category).then(() => {
-        hideGlobalLoader();
-        startScreen.classList.add('hidden');
-        if (category === 'weekly_test') {
-          selectedSubCategory = 'weekly_test';
-          loadTestsDynamically(category, 'weekly_test');
-        } else {
-          if (subScreen) subScreen.classList.remove('hidden');
-        }
-      }).catch(err => {
-        showGlobalError('Failed to load category data. Please check your connection.');
-      });
+      startScreen.classList.add('hidden');
+      if (category === 'weekly_test') {
+        selectedSubCategory = 'weekly_test';
+        loadTestsDynamically(category, 'weekly_test');
+      } else {
+        if (subScreen) subScreen.classList.remove('hidden');
+      }
+      
+      // Update count asynchronously without blocking the UI
+      updateQuestionCount(category).catch(console.error);
     }
 
     // ── Update Question Count (in Background) ─────────────
