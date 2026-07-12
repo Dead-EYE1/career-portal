@@ -139,7 +139,13 @@ function activateTabForPostItem(postItem) {
 function isExpired(dateStr) {
   if (!dateStr) return false;
   // Try parsing the date. (e.g. '24 May 2026' or '2026-05-24')
-  const d = new Date(dateStr);
+  let d;
+  if (dateStr.includes('-') && dateStr.split('-').length === 3) {
+    const [y, m, day] = dateStr.split('-');
+    d = new Date(y, m - 1, day);
+  } else {
+    d = new Date(dateStr);
+  }
   if (isNaN(d.getTime())) return false;
   // Treat as expired if today is past the last date (ignoring time)
   const today = new Date();
