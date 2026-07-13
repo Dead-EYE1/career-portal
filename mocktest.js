@@ -248,7 +248,7 @@
     let selectedSubCategory = '';
     let selectedTestId = '';         // Tracks the active test ID
     let quizState = [];             // Global state tracking array for tracking answers
-    let currentLanguage = 'en';     // Tracks the selected default language
+    let selectedMockTestLanguage = 'en'; // Tracks the selected default language for mocks
     let questionStartTime = 0;      // Timestamp when current question was loaded
     let timeSpentPerQuestion = {};  // { sectionKey: [seconds, ...] }
 
@@ -294,18 +294,18 @@
     };
 
     // ── Fetch & Sort Sectional Questions ─────────────────
-    async function fetchQuestions(category, subCategory, testId) {
+    async function fetchQuestions(category, subCategory, testId, testLang = 'en') {
       selectedTestId = testId || '';
-      showGlobalLoader('Preparing questions...', fetchQuestions, category, subCategory, testId);
+      showGlobalLoader('Preparing questions...', fetchQuestions, category, subCategory, testId, testLang);
       try {
-        // Read selected default language
-        const langSelect = document.getElementById('default-lang-select');
-        if (langSelect) {
-          currentLanguage = langSelect.value;
+        if (subCategory === 'full_mock' || subCategory === 'previous_year') {
+          selectedMockTestLanguage = testLang;
+        } else {
+          selectedMockTestLanguage = 'en'; // Default for subject-wise etc.
         }
 
         // Dynamically update SECTION_ORDER before quiz begins
-        if (currentLanguage === 'hi') {
+        if (selectedMockTestLanguage === 'hi') {
           SECTION_ORDER = ['reasoning', 'gk', 'quant', 'hindi'];
         } else {
           SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english'];
@@ -456,11 +456,20 @@
         if (!hasSavedScore) {
           if (subScreen) subScreen.classList.add('hidden');
           if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
-          hideGlobalLoader();
           quizScreen.classList.remove('hidden');
           
           const liveToggle = document.getElementById('live-lang-toggle');
-          if (liveToggle) liveToggle.value = currentLanguage;
+          if (liveToggle) {
+             liveToggle.value = selectedMockTestLanguage;
+             // Disable live toggle if not a full mock or previous year
+             if (subCategory !== 'full_mock' && subCategory !== 'previous_year') {
+               liveToggle.disabled = true;
+               liveToggle.title = "Language selection is only available for full mock tests";
+             } else {
+               liveToggle.disabled = false;
+               liveToggle.title = "";
+             }
+          }
           
           startSectionQuiz();
         }
@@ -568,7 +577,9 @@
       progressText.textContent = `${currentIndex + 1} of ${questions.length}`;
       progressFill.style.width = `${((currentIndex) / questions.length) * 100}%`;
 
-      const questionLangText = typeof q.question === 'object' ? (q.question[currentLanguage] || q.question['hi'] || q.question['en'] || '') : (q.question || '');
+      const applyLang = (selectedSubCategory === 'full_mock' || selectedSubCategory === 'previous_year') ? selectedMockTestLanguage : 'en';
+
+      const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['hi'] || q.question['en'] || '') : (q.question || '');
       questionText.textContent = `Q${currentIndex + 1}. ${questionLangText}`;
 
       // Show/hide question image
@@ -597,7 +608,8 @@
           btn.classList.add('has-image');
           btn.innerHTML = `<span class="key">${keys[i]}</span><img class="option-image" src="${optImgUrl}" alt="Option ${keys[i]}" />`;
         } else {
-          const optionLangText = typeof opt === 'object' ? (opt[currentLanguage] || opt['hi'] || opt['en'] || '') : (opt || '');
+          const applyLang = (selectedSubCategory === 'full_mock' || selectedSubCategory === 'previous_year') ? selectedMockTestLanguage : 'en';
+          const optionLangText = typeof opt === 'object' ? (opt[applyLang] || opt['hi'] || opt['en'] || '') : (opt || '');
           btn.innerHTML = `<span class="key">${keys[i]}</span><span>${optionLangText}</span>`;
         }
         
@@ -1009,8 +1021,9 @@
               statusHtml = `<span class="review-status-label wrong">✗ Wrong</span>`;
             }
             
-            const questionLangText = typeof q.question === 'object' ? (q.question[currentLanguage] || q.question['hi'] || q.question['en'] || '') : q.question;
-            const explanationLangText = typeof q.explanation === 'object' ? (q.explanation[currentLanguage] || q.explanation['hi'] || q.explanation['en'] || '') : q.explanation;
+            const applyLang = (selectedSubCategory === 'full_mock' || selectedSubCategory === 'previous_year') ? selectedMockTestLanguage : 'en';
+            const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['hi'] || q.question['en'] || '') : q.question;
+            const explanationLangText = typeof q.explanation === 'object' ? (q.explanation[applyLang] || q.explanation['hi'] || q.explanation['en'] || '') : q.explanation;
             
             let optionsHtml = '';
             q.options.forEach((opt, optIdx) => {
@@ -1025,7 +1038,8 @@
                 icon = '✗';
               }
               
-              const optionLangText = typeof opt === 'object' ? (opt[currentLanguage] || opt['hi'] || opt['en'] || '') : opt;
+              const applyLang = (selectedSubCategory === 'full_mock' || selectedSubCategory === 'previous_year') ? selectedMockTestLanguage : 'en';
+              const optionLangText = typeof opt === 'object' ? (opt[applyLang] || opt['hi'] || opt['en'] || '') : opt;
               
               optionsHtml += `
                 <div class="${optClass}">
@@ -1127,14 +1141,7 @@ ${formatExplanation(explanationLangText)}</div>
       cards.forEach(c => c.classList.remove('selected'));
     }
 
-    // ── Sub-Category Card Select Action ──────────────────
     function selectSubCategory(subCategory) {
-      const instructionsCheck = document.getElementById('instructions-checkbox');
-      if (instructionsCheck && !instructionsCheck.checked) {
-        alert("Please confirm that you have read and understood all instructions before proceeding.");
-        return;
-      }
-
       selectedSubCategory = subCategory;
       loadTestsDynamically(selectedCategory, subCategory);
     }
@@ -1148,6 +1155,15 @@ ${formatExplanation(explanationLangText)}</div>
         const catName = categoryNames[category] || category.toUpperCase();
         const subName = (subCategory && subCategory !== 'weekly_test') ? ` - ${subCategory.replace('_', ' ').toUpperCase()}` : '';
         testSelectionExamBadge.textContent = `${catName}${subName}`;
+      }
+
+      const mockLangContainer = document.getElementById('mock-lang-container');
+      if (mockLangContainer) {
+        if (subCategory === 'full_mock' || subCategory === 'previous_year') {
+          mockLangContainer.style.display = 'block';
+        } else {
+          mockLangContainer.style.display = 'none';
+        }
       }
 
       const listContainer = document.getElementById('dynamic-test-list');
@@ -1187,7 +1203,12 @@ ${formatExplanation(explanationLangText)}</div>
               <span class="sub-desc">Start practice mock test</span>
             `;
             btn.onclick = () => {
-              fetchQuestions(category, subCategory, testData.testId);
+              let testLang = 'en';
+              if (subCategory === 'full_mock' || subCategory === 'previous_year') {
+                const langSelect = document.getElementById('mock-lang-select');
+                if (langSelect) testLang = langSelect.value;
+              }
+              fetchQuestions(category, subCategory, testData.testId, testLang);
             };
             listContainer.appendChild(btn);
           });
@@ -1259,7 +1280,7 @@ ${formatExplanation(explanationLangText)}</div>
 
       // Re-sync the live language toggle
       const liveToggle = document.getElementById('live-lang-toggle');
-      if (liveToggle) liveToggle.value = currentLanguage;
+      if (liveToggle) liveToggle.value = selectedMockTestLanguage;
 
       // Start fresh from section 1, question 1
       startSectionQuiz();
@@ -1328,9 +1349,9 @@ ${formatExplanation(explanationLangText)}</div>
 
     // ── Live Language Toggle ──────────────────────────────
     // Only changes the display language for the current quiz session.
-    // Does NOT modify the default language selector on the start screen.
     function toggleLanguage(lang) {
-      currentLanguage = lang;
+      if (selectedSubCategory !== 'full_mock' && selectedSubCategory !== 'previous_year') return;
+      selectedMockTestLanguage = lang;
       
       // Re-render based on which screen is active
       if (!quizScreen.classList.contains('hidden')) {

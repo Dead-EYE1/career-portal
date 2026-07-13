@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mock Test | newjobupdates.in</title>
-  <meta name="description" content="Take a free mock test on newjobupdates.in. Practice General Knowledge questions with instant scoring and negative marking." />
+  <meta name="description"
+    content="Take a free mock test on newjobupdates.in. Practice General Knowledge questions with instant scoring and negative marking." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -19,7 +21,7 @@
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <link rel="stylesheet" href="mocktest.css" />
   <script>
-    (function() {
+    (function () {
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'light') {
         document.documentElement.classList.add('light-theme');
@@ -27,6 +29,7 @@
     })();
   </script>
 </head>
+
 <body>
 
   <!-- Login Required Modal (hidden by default) -->
@@ -36,7 +39,20 @@
       <h3>Login Required</h3>
       <p>Please sign in with Google to save your test results and track your progress.</p>
       <button class="google-login-btn" id="modal-login-btn" type="button">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"
+            fill="#4285F4" />
+          <path
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+            fill="#34A853" />
+          <path
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+            fill="#FBBC05" />
+          <path
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+            fill="#EA4335" />
+        </svg>
         Sign in
       </button>
       <button class="modal-close-btn" id="modal-close-btn" type="button">Skip — view results without saving</button>
@@ -69,10 +85,12 @@
   <!-- Fixed Auth Bar (top-right corner) -->
   <div class="auth-fixed-bar" id="auth-fixed-bar">
     <button type="button" class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon-moon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+        stroke-linejoin="round" class="theme-icon-moon">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
       </svg>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon-sun">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+        stroke-linejoin="round" class="theme-icon-sun">
         <circle cx="12" cy="12" r="5"></circle>
         <line x1="12" y1="1" x2="12" y2="3"></line>
         <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -86,7 +104,20 @@
     </button>
     <!-- Login Button (shown when logged out) -->
     <button class="header-login-btn" id="header-login-btn" type="button" onclick="handleGoogleLogin()" title="Login">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"
+          fill="#4285F4" />
+        <path
+          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+          fill="#34A853" />
+        <path
+          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+          fill="#FBBC05" />
+        <path
+          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+          fill="#EA4335" />
+      </svg>
     </button>
     <!-- Profile Avatar + Dropdown (shown when logged in) -->
     <div class="profile-wrapper hidden" id="profile-wrapper">
@@ -97,15 +128,28 @@
           <span class="dropdown-name" id="dropdown-name"></span>
         </div>
         <a href="/" class="dropdown-item" id="dropdown-home">
-          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
           Home
         </a>
         <a href="/mocktest.html" class="dropdown-item" id="dropdown-result">
-          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <polyline points="10 9 9 9 8 9" />
+          </svg>
           Result
         </a>
         <button class="dropdown-item logout-item" id="dropdown-logout" type="button">
-          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
           Logout
         </button>
       </div>
@@ -118,7 +162,8 @@
   <div class="card" id="start-screen">
     <div class="start-screen-icon">📝</div>
     <h2 class="quiz-title"> Mock Test</h2>
-    <p class="quiz-desc">Test your knowledge with a quick mock test. Instant scoring with negative marking — just like the real exam!</p>
+    <p class="quiz-desc">Test your knowledge with a quick mock test. Instant scoring with negative marking — just like
+      the real exam!</p>
 
     <!-- Category Grid Section -->
     <div class="category-section">
@@ -164,7 +209,8 @@
     <!-- Back Header -->
     <div class="sub-header">
       <button class="back-btn" onclick="goBackToCategories()" aria-label="Go back to categories">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
@@ -178,37 +224,37 @@
     <!-- Info Chips moved to Sub-Category Screen -->
     <div class="info-chips sub-category-info-chips">
       <span class="chip accent">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 6v6l4 2" />
+        </svg>
         15 Minutes
       </span>
       <span class="chip">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4" />
+          <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+        </svg>
         <span id="questions-chip">0 Questions</span>
       </span>
       <span class="chip green">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
         +2 Correct
       </span>
       <span class="chip red">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
         −0.25 Wrong
       </span>
     </div>
-
-    <!-- Language & Instructions -->
-    <div class="instructions-box">
-      <label class="lang-select-label">Choose your default language:</label>
-      <select id="default-lang-select" class="lang-select">
-        <option value="en">English</option>
-        <option value="hi">Hindi</option>
-      </select>
-      
-      <label class="instructions-label">
-        <input type="checkbox" id="instructions-checkbox" class="instructions-checkbox" />
-        <span>I have read and understood all the instructions. I agree that in case of any discrepancy, the English version will prevail.</span>
-      </label>
-    </div>
-
     <!-- Sub-Category Grid -->
     <div class="sub-category-grid">
       <button class="sub-card" onclick="selectSubCategory('full_mock')">
@@ -242,7 +288,8 @@
     <!-- Back Header -->
     <div class="sub-header">
       <button class="back-btn" onclick="goBackToSubCategories()" aria-label="Go back to sub-categories">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
@@ -252,6 +299,18 @@
 
     <h2 class="quiz-title">Select Test</h2>
     <p class="quiz-desc">Choose a test to begin your practice. Instant results with detailed scoring.</p>
+
+    <!-- Language Selector for Mock Tests -->
+    <div id="mock-lang-container"
+      style="display: none; margin-bottom: 20px; padding: 15px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border);">
+      <label class="lang-select-label" style="display: block; margin-bottom: 8px; font-weight: 600;">Choose your test
+        language:</label>
+      <select id="mock-lang-select" class="lang-select"
+        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card-solid); color: var(--text-primary);">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+      </select>
+    </div>
 
     <!-- Dynamic Test List Wrapper -->
     <div id="dynamic-test-list" class="sub-category-grid">
@@ -270,7 +329,8 @@
         <!-- Back Header -->
         <div class="sub-header quiz-sub-header">
           <button class="back-btn" onclick="confirmExitQuiz()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
@@ -281,8 +341,15 @@
               <option value="en">English</option>
               <option value="hi">हिन्दी</option>
             </select>
-            <button class="palette-toggle-btn" onclick="document.querySelector('.quiz-sidebar').classList.toggle('show-mobile')" title="Toggle Palette">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <button class="palette-toggle-btn"
+              onclick="document.querySelector('.quiz-sidebar').classList.toggle('show-mobile')" title="Toggle Palette">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
             </button>
           </div>
         </div>
@@ -290,11 +357,19 @@
         <!-- Top Bar -->
         <div class="top-bar">
           <div class="timer-badge" id="timer-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
             <span id="timer-display">15:00</span>
           </div>
           <div class="progress-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+            </svg>
             <span id="progress-text">1 of X</span>
           </div>
         </div>
@@ -315,14 +390,17 @@
 
         <!-- Submit / Next Button -->
         <div class="quiz-action-buttons">
-          <button class="prev-btn quiz-nav-btn" id="prev-question-btn" style="display: none;" onclick="handlePrevClick()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="quiz-nav-icon">
+          <button class="prev-btn quiz-nav-btn" id="prev-question-btn" style="display: none;"
+            onclick="handlePrevClick()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round" class="quiz-nav-icon">
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
           </button>
-          
-          <button type="button" class="clear-btn" id="clear-btn" onclick="clearResponse()" style="display: none;">Clear</button>
+
+          <button type="button" class="clear-btn" id="clear-btn" onclick="clearResponse()"
+            style="display: none;">Clear</button>
 
           <button class="review-btn" id="review-btn">Mark for Review</button>
           <button class="next-btn save-next-btn" id="next-btn">Save & Next →</button>
@@ -333,8 +411,13 @@
       <div class="quiz-sidebar">
         <h3 class="sidebar-title">
           <span id="sidebar-subject-title">SUBJECT: REASONING</span>
-          <button class="palette-close-btn" onclick="document.querySelector('.quiz-sidebar').classList.remove('show-mobile')" title="Close Palette">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="palette-close-icon"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <button class="palette-close-btn"
+            onclick="document.querySelector('.quiz-sidebar').classList.remove('show-mobile')" title="Close Palette">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round" class="palette-close-icon">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </h3>
         <div class="palette-grid" id="palette-grid">
@@ -373,7 +456,8 @@
     <!-- Back Header -->
     <div class="sub-header">
       <button class="back-btn" onclick="goBackToTestSelection()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
@@ -429,7 +513,12 @@
       <button class="back-select-btn" onclick="restartQuiz()">↻ Choose Another Test</button>
       <button class="back-select-btn" onclick="goBackToTestSelection()">← Back to Test Selection</button>
       <button class="logout-result-btn hidden" id="result-logout-btn" onclick="handleLogout()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="logout-result-icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round" class="logout-result-icon">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
         Sign Out
       </button>
     </div>
@@ -442,6 +531,7 @@
   <!-- ══════════════════════════════════════════════ -->
   <!--  JAVASCRIPT (Firebase Firestore Integration)   -->
   <!-- ══════════════════════════════════════════════ -->
-   <script type="module" src="mocktest.js"></script>
+  <script type="module" src="mocktest.js"></script>
 </body>
+
 </html>
