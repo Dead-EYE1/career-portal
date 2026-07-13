@@ -301,12 +301,10 @@
     <p class="quiz-desc">Choose a test to begin your practice. Instant results with detailed scoring.</p>
 
     <!-- Language Selector for Mock Tests -->
-    <div id="mock-lang-container"
-      style="display: none; margin-bottom: 20px; padding: 15px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border);">
-      <label class="lang-select-label" style="display: block; margin-bottom: 8px; font-weight: 600;">Choose your test
+    <div id="mock-lang-container" class="mock-lang-container">
+      <label class="lang-select-label">Choose your test
         language:</label>
-      <select id="mock-lang-select" class="lang-select"
-        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card-solid); color: var(--text-primary);">
+      <select id="mock-lang-select" class="lang-select" title="Select language for the mock test">
         <option value="en">English</option>
         <option value="hi">Hindi</option>
       </select>
@@ -337,7 +335,7 @@
             Exit Test
           </button>
           <div class="quiz-header-actions">
-            <select id="live-lang-toggle" onchange="toggleLanguage(this.value)">
+            <select id="live-lang-toggle" onchange="toggleLanguage(this.value)" title="Toggle test language between English and Hindi">
               <option value="en">English</option>
               <option value="hi">हिन्दी</option>
             </select>
@@ -390,7 +388,7 @@
 
         <!-- Submit / Next Button -->
         <div class="quiz-action-buttons">
-          <button class="prev-btn quiz-nav-btn" id="prev-question-btn" style="display: none;"
+          <button class="prev-btn quiz-nav-btn" id="prev-question-btn" title="Go to previous question"
             onclick="handlePrevClick()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
               stroke-linejoin="round" class="quiz-nav-icon">
@@ -399,8 +397,7 @@
             </svg>
           </button>
 
-          <button type="button" class="clear-btn" id="clear-btn" onclick="clearResponse()"
-            style="display: none;">Clear</button>
+          <button type="button" class="clear-btn" id="clear-btn" onclick="clearResponse()">Clear</button>
 
           <button class="review-btn" id="review-btn">Mark for Review</button>
           <button class="next-btn save-next-btn" id="next-btn">Save & Next →</button>

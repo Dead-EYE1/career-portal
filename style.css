@@ -844,6 +844,12 @@ html.light-theme .theme-icon-moon { display: none; }
 
 .join-icon svg { width: 28px; height: 28px; flex-shrink: 0; }
 
+.mocktest-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--text-primary);
+}
+
 .join-text {
   display: flex;
   flex-direction: column;
@@ -875,6 +881,20 @@ html.light-theme .theme-icon-moon { display: none; }
    POSTS LIST
    ============================================= */
 .posts-list { padding: 6px 0; }
+
+.empty-state {
+  padding: 30px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+.empty-state-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+.empty-state-hint {
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
 
 .post-item {
   display: flex;
@@ -1094,7 +1114,6 @@ html.light-theme .theme-icon-moon { display: none; }
 .table-responsive {
   width: 100%;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
   margin-bottom: 12px;
 }
 .table-responsive table {
@@ -1303,6 +1322,9 @@ html.light-theme .theme-icon-moon { display: none; }
 .qnav-scholarship:hover { background: linear-gradient(135deg, #f57f17, #fbbf24); }
 .qnav-scholarship:hover .qnav-label, .qnav-scholarship:hover .qnav-count { color: #fff; }
 .qnav-private:hover { background: linear-gradient(135deg, #22c55e, #16a34a); }
+.qnav-mocktest { border-top: 3px solid #7f5af0; }
+.qnav-mocktest:hover { background: linear-gradient(135deg, #7f5af0, #8b5cf6); }
+.qnav-mocktest:hover .qnav-label, .qnav-mocktest:hover .qnav-count { color: #fff; }
 .qnav-private:hover .qnav-label, .qnav-private:hover .qnav-count { color: #fff; }
 
 /* =============================================
@@ -2167,13 +2189,7 @@ html.light-theme .theme-icon-moon { display: none; }
    NUCLEAR MOBILE FALLBACK
    ============================================= */
 @media screen and (max-width: 768px) {
-    /* Lightweight performance fix for mobile scrolling */
-    html, body {
-        width: 100%;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        scroll-behavior: smooth;
-    }
+    /* Lightweight performance fix for mobile scrolling */\n    html, body {\n        width: 100%;\n        overflow-x: hidden;\n        scroll-behavior: smooth;\n    }
     
     /* Ensure fixed headers or absolute icons do not stall the scroll paint layout thread */
     header, .main-nav, .header-actions {

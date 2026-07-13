@@ -298,11 +298,7 @@
       selectedTestId = testId || '';
       showGlobalLoader('Preparing questions...', fetchQuestions, category, subCategory, testId, testLang);
       try {
-        if (subCategory === 'full_mock' || subCategory === 'previous_year') {
-          selectedMockTestLanguage = testLang;
-        } else {
-          selectedMockTestLanguage = 'en'; // Default for subject-wise etc.
-        }
+        selectedMockTestLanguage = testLang;
 
         // Dynamically update SECTION_ORDER before quiz begins
         if (selectedMockTestLanguage === 'hi') {
@@ -374,9 +370,12 @@
         // ── Filter: hide questions that have no text and no image across all languages ──
         SECTION_ORDER.forEach(sec => {
           allQuestionsBySection[sec] = allQuestionsBySection[sec].filter(q => {
-            const txtEn = (typeof q.question === 'object') ? (q.question['en'] || '') : (q.question || '');
-            const txtHi = (typeof q.question === 'object') ? (q.question['hi'] || '') : '';
-            const hasText = (txtEn && txtEn.trim().length > 0) || (txtHi && txtHi.trim().length > 0);
+            let applyLang = selectedMockTestLanguage;
+            if (q.section === 'hindi') applyLang = 'hi';
+            if (q.section === 'english') applyLang = 'en';
+
+            const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['hi'] || q.question['en'] || '') : (q.question || '');
+            const hasText = questionLangText && questionLangText.trim().length > 0;
             const hasImage = q.imageUrl && q.imageUrl.trim().length > 0;
             return hasText || hasImage;
           });
@@ -456,19 +455,14 @@
         if (!hasSavedScore) {
           if (subScreen) subScreen.classList.add('hidden');
           if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
+          hideGlobalLoader();
           quizScreen.classList.remove('hidden');
           
           const liveToggle = document.getElementById('live-lang-toggle');
           if (liveToggle) {
              liveToggle.value = selectedMockTestLanguage;
-             // Disable live toggle if not a full mock or previous year
-             if (subCategory !== 'full_mock' && subCategory !== 'previous_year') {
-               liveToggle.disabled = true;
-               liveToggle.title = "Language selection is only available for full mock tests";
-             } else {
-               liveToggle.disabled = false;
-               liveToggle.title = "";
-             }
+             liveToggle.disabled = false;
+             liveToggle.title = "";
           }
           
           startSectionQuiz();
@@ -543,6 +537,8 @@
         if (sectionTimeLeft <= 0) {
           clearInterval(timerInterval);
           alert(`Time is up for ${SECTION_NAMES[SECTION_ORDER[activeSectionIndex]]}! Moving to next subject.`);
+          const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+          recordTimeSpent(currentSectionKey, currentIndex);
           moveToNextSection();
         }
       }, 1000);
@@ -577,7 +573,9 @@
       progressText.textContent = `${currentIndex + 1} of ${questions.length}`;
       progressFill.style.width = `${((currentIndex) / questions.length) * 100}%`;
 
-      const applyLang = (selectedSubCategory === 'full_mock' || selectedSubCategory === 'previous_year') ? selectedMockTestLanguage : 'en';
+      let applyLang = selectedMockTestLanguage;
+      if (q.section === 'hindi') applyLang = 'hi';
+      if (q.section === 'english') applyLang = 'en';
 
       const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['hi'] || q.question['en'] || '') : (q.question || '');
       questionText.textContent = `Q${currentIndex + 1}. ${questionLangText}`;
@@ -608,7 +606,10 @@
           btn.classList.add('has-image');
           btn.innerHTML = `<span class="key">${keys[i]}</span><img class="option-image" src="${optImgUrl}" alt="Option ${keys[i]}" />`;
         } else {
-          const applyLang = (selectedSubCategory === 'full_mock' || selectedSubCategory === 'previous_year') ? selectedMockTestLanguage : 'en';
+          let applyLang = selectedMockTestLanguage;
+          if (q.section === 'hindi') applyLang = 'hi';
+          if (q.section === 'english') applyLang = 'en';
+          
           const optionLangText = typeof opt === 'object' ? (opt[applyLang] || opt['hi'] || opt['en'] || '') : (opt || '');
           btn.innerHTML = `<span class="key">${keys[i]}</span><span>${optionLangText}</span>`;
         }
@@ -1021,7 +1022,10 @@
               statusHtml = `<span class="review-status-label wrong">✗ Wrong</span>`;
             }
             
-            const applyLang = (selectedSubCategory === 'full_mock' || selectedSubCategory === 'previous_year') ? selectedMockTestLanguage : 'en';
+            let applyLang = selectedMockTestLanguage;
+            if (q.section === 'hindi') applyLang = 'hi';
+            if (q.section === 'english') applyLang = 'en';
+            
             const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['hi'] || q.question['en'] || '') : q.question;
             const explanationLangText = typeof q.explanation === 'object' ? (q.explanation[applyLang] || q.explanation['hi'] || q.explanation['en'] || '') : q.explanation;
             
@@ -1038,8 +1042,11 @@
                 icon = '✗';
               }
               
-              const applyLang = (selectedSubCategory === 'full_mock' || selectedSubCategory === 'previous_year') ? selectedMockTestLanguage : 'en';
-              const optionLangText = typeof opt === 'object' ? (opt[applyLang] || opt['hi'] || opt['en'] || '') : opt;
+              let applyLangOpt = selectedMockTestLanguage;
+              if (q.section === 'hindi') applyLangOpt = 'hi';
+              if (q.section === 'english') applyLangOpt = 'en';
+              
+              const optionLangText = typeof opt === 'object' ? (opt[applyLangOpt] || opt['hi'] || opt['en'] || '') : opt;
               
               optionsHtml += `
                 <div class="${optClass}">
@@ -1207,6 +1214,12 @@ ${formatExplanation(explanationLangText)}</div>
               if (subCategory === 'full_mock' || subCategory === 'previous_year') {
                 const langSelect = document.getElementById('mock-lang-select');
                 if (langSelect) testLang = langSelect.value;
+              } else {
+                const testNameLower = (testData.testName || '').toLowerCase();
+                const subjectLower = (testData.subject || '').toLowerCase();
+                if (testNameLower.includes('hindi') || subjectLower.includes('hindi')) {
+                  testLang = 'hi';
+                }
               }
               fetchQuestions(category, subCategory, testData.testId, testLang);
             };
@@ -1236,6 +1249,10 @@ ${formatExplanation(explanationLangText)}</div>
     function goBackToTestSelection() {
       if (timerBadge) timerBadge.classList.remove('danger');
       if (resultScreen) resultScreen.classList.add('hidden');
+      
+      const statusContainer = document.getElementById('save-status-container');
+      if (statusContainer) statusContainer.innerHTML = '';
+      
       if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
     }
 
@@ -1244,6 +1261,10 @@ ${formatExplanation(explanationLangText)}</div>
       if (timerInterval) clearInterval(timerInterval);
       timerBadge.classList.remove('danger');
       resultScreen.classList.add('hidden');
+      
+      const statusContainer = document.getElementById('save-status-container');
+      if (statusContainer) statusContainer.innerHTML = '';
+      
       startScreen.classList.remove('hidden');
     }
 
@@ -1328,7 +1349,7 @@ ${formatExplanation(explanationLangText)}</div>
       if (state.status === 'answered') {
         quizState[currentSectionKey][currentIndex] = {
           ...state,
-          status: 'not-visited',
+          status: 'skipped',
           selectedIdx: -1,
           isCorrect: null
         };
@@ -1390,7 +1411,15 @@ ${formatExplanation(explanationLangText)}</div>
     const initFromURL = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const examParam = urlParams.get('exam');
-      if (examParam) {
+      const subParam = urlParams.get('sub');
+      const testParam = urlParams.get('test');
+      
+      if (examParam && subParam && testParam) {
+        selectedCategory = examParam;
+        selectedSubCategory = subParam;
+        startScreen.classList.add('hidden');
+        fetchQuestions(examParam, subParam, testParam, 'en');
+      } else if (examParam) {
         selectCategory(examParam, null);
       }
     };

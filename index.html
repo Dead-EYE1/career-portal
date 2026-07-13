@@ -209,10 +209,10 @@
       </div>
 
       <div class="join-banner mobile-top-join" id="mock-test-banner">
-        <a href="/mocktest.html" class="join-card mocktest-card" id="mocktest-join" style="text-decoration: none;">
+        <a href="/mocktest.html" class="join-card mocktest-card" id="mocktest-join">
           <div class="join-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" style="width:28px;height:28px;color:var(--text-primary);">
+              stroke-linejoin="round" class="mocktest-icon">
               <path d="M9 11l3 3L22 4" />
               <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
             </svg>
@@ -235,8 +235,7 @@
           <div class="section-block" id="latest-jobs-section">
             <div class="section-header">
               <h2 class="section-title">🏛️ Latest Government Jobs</h2>
-              <button type="button" class="view-all-link" id="view-expired-jobs"
-                style="background:none;font:inherit;cursor:pointer;">Expired Jobs →</button>
+              <button type="button" class="view-all-link" id="view-expired-jobs">Expired Jobs →</button>
             </div>
             <div class="posts-list" id="posts-list">
             </div>
@@ -250,10 +249,10 @@
               <a href="#" class="view-all-link" id="view-all-upcoming">View All →</a>
             </div>
             <div class="posts-list" id="upcoming-posts-list">
-              <div style="padding: 30px 20px; text-align: center; color: var(--text-muted);">
-                <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+              <div class="empty-state">
+                <div class="empty-state-icon">📅</div>
                 <p>No upcoming jobs at the moment.</p>
-                <p style="font-size: 0.85rem; margin-top: 5px;">Check back later for future notifications!</p>
+                <p class="empty-state-hint">Check back later for future notifications!</p>
               </div>
             </div>
           </div>
@@ -263,8 +262,7 @@
           <div class="section-block" id="expired-jobs-section">
             <div class="section-header">
               <h2 class="section-title">⚠️ Expired Jobs</h2>
-              <button type="button" class="view-all-link" id="back-to-active-jobs"
-                style="background:none;font:inherit;cursor:pointer;">← Back to Active</button>
+              <button type="button" class="view-all-link" id="back-to-active-jobs">← Back to Active</button>
             </div>
             <div class="posts-list" id="expired-posts-list">
             </div>
@@ -296,10 +294,10 @@
               <a href="#" class="view-all-link" id="view-all-upcoming-results">View All →</a>
             </div>
             <div class="posts-list" id="upcoming-result-list">
-              <div style="padding: 30px 20px; text-align: center; color: var(--text-muted);">
-                <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+              <div class="empty-state">
+                <div class="empty-state-icon">📅</div>
                 <p>No upcoming results at the moment.</p>
-                <p style="font-size: 0.85rem; margin-top: 5px;">Check back later for future notifications!</p>
+                <p class="empty-state-hint">Check back later for future notifications!</p>
               </div>
             </div>
           </div>
@@ -330,10 +328,10 @@
               <a href="#" class="view-all-link" id="view-all-upcoming-scholarships">View All →</a>
             </div>
             <div class="posts-list" id="upcoming-scholarship-list">
-              <div style="padding: 30px 20px; text-align: center; color: var(--text-muted);">
-                <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+              <div class="empty-state">
+                <div class="empty-state-icon">📅</div>
                 <p>No upcoming scholarships at the moment.</p>
-                <p style="font-size: 0.85rem; margin-top: 5px;">Check back later for future notifications!</p>
+                <p class="empty-state-hint">Check back later for future notifications!</p>
               </div>
             </div>
           </div>
@@ -356,7 +354,7 @@
           <div class="qnav-label">Scholarship</div>
           <div class="qnav-count">15 Active</div>
         </a>
-        <a href="/mocktest.html" class="qnav-box" id="qnav-mocktest" style="border-top: 3px solid #7f5af0;">
+        <a href="/mocktest.html" class="qnav-box qnav-mocktest" id="qnav-mocktest">
           <div class="qnav-icon">📝</div>
           <div class="qnav-label">Mock Test</div>
           <div class="qnav-count">Online Practice</div>

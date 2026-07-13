@@ -99,8 +99,8 @@ body {
   width: 100%;
   max-width: 480px;
   background: var(--bg-card);
-  backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px 20px 28px;
@@ -653,7 +653,6 @@ body {
   margin-bottom: 16px;
   overflow-x: auto;
   padding-bottom: 4px;
-  scrollbar-width: thin;
 }
 .review-tabs::-webkit-scrollbar { height: 4px; }
 .review-tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -1633,8 +1632,8 @@ html.light-theme .theme-icon-moon { display: none; }
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   padding: 20px;
   animation: fadeUp 0.25s ease-out;
 }
@@ -1859,10 +1858,18 @@ html.light-theme .theme-icon-moon { display: none; }
   margin-bottom: 24px;
   text-align: left;
 }
+.mock-lang-container {
+  display: none;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
 .lang-select-label {
   display: block;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 8px;
 }
@@ -1870,7 +1877,7 @@ html.light-theme .theme-icon-moon { display: none; }
   width: 100%;
   padding: 10px;
   margin-bottom: 16px;
-  background: var(--bg-primary);
+  background: var(--bg-card-solid);
   color: var(--text-primary);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -1914,12 +1921,16 @@ html.light-theme .theme-icon-moon { display: none; }
   width: 15%;
   padding: 12px;
 }
+#prev-question-btn {
+  display: none;
+}
 .quiz-nav-icon {
   width: 16px;
   height: 16px;
   stroke: currentColor;
 }
 .clear-btn {
+  display: none;
   background: rgba(228, 88, 88, 0.15);
   color: #e45858;
   border: 1.5px solid #e45858;
