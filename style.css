@@ -2184,7 +2184,12 @@ html.light-theme .theme-icon-moon { display: none; }
    NUCLEAR MOBILE FALLBACK
    ============================================= */
 @media screen and (max-width: 768px) {
-    /* Lightweight performance fix for mobile scrolling */\n    html, body {\n        width: 100%;\n        overflow-x: hidden;\n        scroll-behavior: smooth;\n    }
+    /* Lightweight performance fix for mobile scrolling */
+    html, body {
+        width: 100%;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+    }
     
     /* Ensure fixed headers or absolute icons do not stall the scroll paint layout thread */
     header, .main-nav, .header-actions {
