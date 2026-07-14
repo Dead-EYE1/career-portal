@@ -303,6 +303,9 @@
         // Dynamically update SECTION_ORDER before quiz begins
         if (selectedMockTestLanguage === 'hi') {
           SECTION_ORDER = ['reasoning', 'gk', 'quant', 'hindi'];
+        } else if (selectedMockTestLanguage === 'as') {
+          // Assamese track: same as English sections (no dedicated Assamese section)
+          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english'];
         } else {
           SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english'];
         }
@@ -341,13 +344,14 @@
             imageUrl: data.imageUrl || '',
             question: {
               en: data.questionText_en || '',
-              hi: data.questionText_hi || data.questionText || ''
+              hi: data.questionText_hi || data.questionText || '',
+              as: data.questionText_as || ''
             },
             options: [
-              { en: data.a_en || '', hi: data.a_hi || data.a || '' },
-              { en: data.b_en || '', hi: data.b_hi || data.b || '' },
-              { en: data.c_en || '', hi: data.c_hi || data.c || '' },
-              { en: data.d_en || '', hi: data.d_hi || data.d || '' }
+              { en: data.a_en || '', hi: data.a_hi || data.a || '', as: data.a_as || '' },
+              { en: data.b_en || '', hi: data.b_hi || data.b || '', as: data.b_as || '' },
+              { en: data.c_en || '', hi: data.c_hi || data.c || '', as: data.c_as || '' },
+              { en: data.d_en || '', hi: data.d_hi || data.d || '', as: data.d_as || '' }
             ],
             optionImages: [
               data.a_imageUrl || '',
@@ -358,7 +362,8 @@
             answer: data.correct,
             explanation: {
               en: data.explanation_en || '',
-              hi: data.explanation_hi || data.explanation || ''
+              hi: data.explanation_hi || data.explanation || '',
+              as: data.explanation_as || ''
             }
           };
 
@@ -368,13 +373,17 @@
         });
 
         // ── Filter: hide questions that have no text and no image across all languages ──
+        // For Assamese, fall back to English if no Assamese text exists (don't filter out)
         SECTION_ORDER.forEach(sec => {
           allQuestionsBySection[sec] = allQuestionsBySection[sec].filter(q => {
             let applyLang = selectedMockTestLanguage;
             if (q.section === 'hindi') applyLang = 'hi';
             if (q.section === 'english') applyLang = 'en';
 
-            const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['hi'] || q.question['en'] || '') : (q.question || '');
+            // Build fallback chain: selected lang → 'en' → 'hi'
+            const questionLangText = typeof q.question === 'object'
+              ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '')
+              : (q.question || '');
             const hasText = questionLangText && questionLangText.trim().length > 0;
             const hasImage = q.imageUrl && q.imageUrl.trim().length > 0;
             return hasText || hasImage;
@@ -463,6 +472,18 @@
              liveToggle.value = selectedMockTestLanguage;
              liveToggle.disabled = false;
              liveToggle.title = "";
+          }
+
+          // Show/hide Assamese option in the live toggle based on exam category
+          const liveAsOpt = document.getElementById('live-assamese-option');
+          if (liveAsOpt) {
+            const asAllowed = ASSAMESE_ALLOWED_EXAMS.includes(category);
+            liveAsOpt.style.display = asAllowed ? '' : 'none';
+            // If Assamese was somehow selected for a non-allowed exam, reset to English
+            if (!asAllowed && selectedMockTestLanguage === 'as') {
+              selectedMockTestLanguage = 'en';
+              if (liveToggle) liveToggle.value = 'en';
+            }
           }
           
           startSectionQuiz();
@@ -577,7 +598,10 @@
       if (q.section === 'hindi') applyLang = 'hi';
       if (q.section === 'english') applyLang = 'en';
 
-      const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['hi'] || q.question['en'] || '') : (q.question || '');
+      // Fallback chain: selected lang → English → Hindi (prevents blank questions)
+      const questionLangText = typeof q.question === 'object'
+        ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '')
+        : (q.question || '');
       questionText.textContent = `Q${currentIndex + 1}. ${questionLangText}`;
 
       // Show/hide question image
@@ -610,7 +634,8 @@
           if (q.section === 'hindi') applyLang = 'hi';
           if (q.section === 'english') applyLang = 'en';
           
-          const optionLangText = typeof opt === 'object' ? (opt[applyLang] || opt['hi'] || opt['en'] || '') : (opt || '');
+          // Fallback chain: selected lang → English → Hindi
+          const optionLangText = typeof opt === 'object' ? (opt[applyLang] || opt['en'] || opt['hi'] || '') : (opt || '');
           btn.innerHTML = `<span class="key">${keys[i]}</span><span>${optionLangText}</span>`;
         }
         
@@ -1026,8 +1051,9 @@
             if (q.section === 'hindi') applyLang = 'hi';
             if (q.section === 'english') applyLang = 'en';
             
-            const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['hi'] || q.question['en'] || '') : q.question;
-            const explanationLangText = typeof q.explanation === 'object' ? (q.explanation[applyLang] || q.explanation['hi'] || q.explanation['en'] || '') : q.explanation;
+            // Fallback chain: selected lang → English → Hindi
+            const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '') : q.question;
+            const explanationLangText = typeof q.explanation === 'object' ? (q.explanation[applyLang] || q.explanation['en'] || q.explanation['hi'] || '') : q.explanation;
             
             let optionsHtml = '';
             q.options.forEach((opt, optIdx) => {
@@ -1046,7 +1072,8 @@
               if (q.section === 'hindi') applyLangOpt = 'hi';
               if (q.section === 'english') applyLangOpt = 'en';
               
-              const optionLangText = typeof opt === 'object' ? (opt[applyLangOpt] || opt['hi'] || opt['en'] || '') : opt;
+              // Fallback chain: selected lang → English → Hindi
+              const optionLangText = typeof opt === 'object' ? (opt[applyLangOpt] || opt['en'] || opt['hi'] || '') : opt;
               
               optionsHtml += `
                 <div class="${optClass}">
@@ -1097,6 +1124,9 @@ ${formatExplanation(explanationLangText)}</div>
       }
     }
 
+    // ── Exams that support Assamese language ─────────────
+    const ASSAMESE_ALLOWED_EXAMS = ['ssc_gd', 'assam_police'];
+
     // ── Category Select Handler ──────────────────────────
     function selectCategory(category, btn) {
       const cards = document.querySelectorAll('.category-card');
@@ -1110,6 +1140,18 @@ ${formatExplanation(explanationLangText)}</div>
       }
 
       selectedCategory = category;
+
+      // Show/hide Assamese option in test-selection dropdown based on exam category
+      const assameseOpt = document.getElementById('assamese-option');
+      if (assameseOpt) {
+        const showAssamese = ASSAMESE_ALLOWED_EXAMS.includes(category);
+        assameseOpt.style.display = showAssamese ? '' : 'none';
+        // Reset dropdown to English if Assamese was previously selected but is now hidden
+        const langSelect = document.getElementById('mock-lang-select');
+        if (!showAssamese && langSelect && langSelect.value === 'as') {
+          langSelect.value = 'en';
+        }
+      }
 
       if (subExamBadge) {
         subExamBadge.textContent = categoryNames[category] || category.toUpperCase();
@@ -1173,6 +1215,17 @@ ${formatExplanation(explanationLangText)}</div>
         }
       }
 
+      // Ensure Assamese visibility stays in sync when navigating back to test selection
+      const assameseOpt = document.getElementById('assamese-option');
+      if (assameseOpt) {
+        const showAssamese = ASSAMESE_ALLOWED_EXAMS.includes(category);
+        assameseOpt.style.display = showAssamese ? '' : 'none';
+        const langSelect = document.getElementById('mock-lang-select');
+        if (!showAssamese && langSelect && langSelect.value === 'as') {
+          langSelect.value = 'en';
+        }
+      }
+
       const listContainer = document.getElementById('dynamic-test-list');
       if (!listContainer) return;
       listContainer.innerHTML = ''; // Clear previous content
@@ -1200,7 +1253,20 @@ ${formatExplanation(explanationLangText)}</div>
         if (snapshot.empty) {
           listContainer.innerHTML = `<div style="grid-column: span 2; text-align: center; color: var(--text-secondary); padding: 20px;">No tests available for this selection.</div>`;
         } else {
-          snapshot.docs.forEach(doc => {
+          // Sort tests by extracting the number from testId (e.g. "test12" → 12), newest first
+          const extractNum = (str) => {
+            const match = (str || '').match(/(\d+)/);
+            return match ? parseInt(match[1], 10) : 0;
+          };
+          const sortedDocs = [...snapshot.docs].sort((a, b) => {
+            const aData = a.data();
+            const bData = b.data();
+            const aNum = extractNum(aData.testId) || extractNum(aData.testName);
+            const bNum = extractNum(bData.testId) || extractNum(bData.testName);
+            return bNum - aNum; // Descending: highest number first
+          });
+
+          sortedDocs.forEach(doc => {
             const testData = doc.data();
             const btn = document.createElement('button');
             btn.className = 'sub-card';
@@ -1219,6 +1285,8 @@ ${formatExplanation(explanationLangText)}</div>
                 const subjectLower = (testData.subject || '').toLowerCase();
                 if (testNameLower.includes('hindi') || subjectLower.includes('hindi')) {
                   testLang = 'hi';
+                } else if (testNameLower.includes('assamese') || subjectLower.includes('assamese')) {
+                  testLang = 'as';
                 }
               }
               fetchQuestions(category, subCategory, testData.testId, testLang);
@@ -1372,6 +1440,12 @@ ${formatExplanation(explanationLangText)}</div>
     // Only changes the display language for the current quiz session.
     function toggleLanguage(lang) {
       if (selectedSubCategory !== 'full_mock' && selectedSubCategory !== 'previous_year') return;
+      // Prevent switching to Assamese for exams that don't support it
+      if (lang === 'as' && !ASSAMESE_ALLOWED_EXAMS.includes(selectedCategory)) {
+        const liveToggle = document.getElementById('live-lang-toggle');
+        if (liveToggle) liveToggle.value = selectedMockTestLanguage;
+        return;
+      }
       selectedMockTestLanguage = lang;
       
       // Re-render based on which screen is active

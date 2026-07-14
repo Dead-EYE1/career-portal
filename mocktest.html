@@ -307,6 +307,7 @@
       <select id="mock-lang-select" class="lang-select" title="Select language for the mock test">
         <option value="en">English</option>
         <option value="hi">Hindi</option>
+        <option value="as" id="assamese-option">অসমীয়া (Assamese)</option>
       </select>
     </div>
 
@@ -335,9 +336,10 @@
             Exit Test
           </button>
           <div class="quiz-header-actions">
-            <select id="live-lang-toggle" onchange="toggleLanguage(this.value)" title="Toggle test language between English and Hindi">
+            <select id="live-lang-toggle" onchange="toggleLanguage(this.value)" title="Toggle test language">
               <option value="en">English</option>
               <option value="hi">हिन्दी</option>
+              <option value="as" id="live-assamese-option">অসমীয়া</option>
             </select>
             <button class="palette-toggle-btn"
               onclick="document.querySelector('.quiz-sidebar').classList.toggle('show-mobile')" title="Toggle Palette">
