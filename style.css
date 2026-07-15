@@ -1,7 +1,7 @@
 :root {
-  --primary: #6d28d9;
-  --primary-dark: #5b21b6;
-  --primary-light: #8b5cf6;
+  --primary: #0284c7;
+  --primary-dark: #0369a1;
+  --primary-light: #38bdf8;
   --accent: #e63946;
   --accent-dark: #c1121f;
   --accent-light: #ff6b6b;
@@ -11,14 +11,14 @@
   --yellow: #ffd60a;
   --purple: #a78bfa;
   --teal: #0096c7;
-  --bg: #111322;
-  --bg-card: #1d203e;
-  --bg-sidebar: #1d203e;
-  --text-primary: #ffffff;
+  --bg: #0b0f19;
+  --bg-card: #151a2a;
+  --bg-sidebar: #151a2a;
+  --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --border: rgba(139, 92, 246, 0.12);
-  --border-light: rgba(139, 92, 246, 0.12);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.04);
   --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.45);
@@ -35,7 +35,7 @@
    LIGHT THEME OVERRIDES
    ============================================= */
 .light-theme {
-  --bg: #f4f6fb;
+  --bg: #f1f5f9;
   --bg-card: #ffffff;
   --bg-sidebar: #ffffff;
   --text-primary: #0f172a;
@@ -55,10 +55,7 @@
 }
 
 .light-theme body {
-  background-image:
-    radial-gradient(at 0% 0%, rgba(109, 40, 217, 0.03) 0px, transparent 55%),
-    radial-gradient(at 50% 0%, rgba(236, 72, 153, 0.02) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(13, 148, 136, 0.03) 0px, transparent 55%);
+  background-image: none;
 }
 
 .light-theme .top-bar {
@@ -156,28 +153,18 @@
   border: 1px solid #c8e6c9;
 }
 
-.light-theme .badge-admit {
-  background: #fff8e1;
-  color: #f57f17;
-  border: 1px solid #fff3cd;
-}
-
-.light-theme .badge-result {
-  background: #e3f2fd;
-  color: #1565c0;
-  border: 1px solid #bbdefb;
-}
-
+.light-theme .badge-admit,
+.light-theme .badge-result,
 .light-theme .badge-scholarship {
-  background: #f3e5f5;
-  color: #7b2d8b;
-  border: 1px solid #e1bee7;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
 }
 
 .light-theme .badge-expired {
-  background: #f8d7da;
-  color: var(--accent-dark);
-  border: 1px solid #f5c6cb;
+  background: var(--primary);
+  color: #ffffff;
+  border: 1px solid var(--primary-dark);
 }
 
 .light-theme .section-title {
@@ -274,11 +261,6 @@ html {
 body {
   font-family: var(--font-main);
   background-color: var(--bg);
-  background-image:
-    radial-gradient(at 0% 0%, rgba(109, 40, 217, 0.03) 0px, transparent 55%),
-    radial-gradient(at 50% 0%, rgba(236, 72, 153, 0.02) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(13, 148, 136, 0.03) 0px, transparent 55%);
-  background-attachment: fixed;
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
@@ -303,15 +285,15 @@ ul {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1600px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 29px;
 }
 
 .container-fluid {
   width: 100%;
-  padding: 0 24px;
+  padding: 0 29px;
   margin: 0 auto;
 }
 
@@ -411,7 +393,7 @@ ul {
    ============================================= */
 .header {
   background: var(--bg);
-  padding: 14px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   position: sticky;
@@ -836,7 +818,7 @@ html.light-theme .theme-icon-moon {
   display: grid;
   grid-template-columns: 1fr 300px;
   gap: 24px;
-  padding-top: 24px;
+  padding-top: 10px;
   padding-bottom: 40px;
   align-items: start;
 }
@@ -848,7 +830,7 @@ html.light-theme .theme-icon-moon {
   display: flex;
   background: var(--border-light);
   border-radius: var(--radius-md);
-  margin-bottom: 22px;
+  margin-bottom: 14px;
   padding: 6px;
   gap: 4px;
   box-shadow: inset 0 2px 6px rgba(0, 53, 128, 0.04);
@@ -926,7 +908,7 @@ html.light-theme .theme-icon-moon {
   border-radius: var(--radius-lg);
   overflow: visible;
   box-shadow: none;
-  margin-bottom: 22px;
+  margin-bottom: 12px;
   border: none;
   transition: box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   max-width: 100%;
@@ -942,7 +924,7 @@ html.light-theme .theme-icon-moon {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 0;
+  padding: 10px 0;
   border-bottom: none;
   background: transparent;
   gap: 12px;
@@ -965,10 +947,11 @@ html.light-theme .theme-icon-moon {
 
 .view-all-link {
   font-size: 0.82rem;
-  color: var(--accent);
+  background: var(--primary);
+  color: #ffffff;
   font-weight: 600;
   transition: var(--transition);
-  border: 1px solid var(--accent);
+  border: none;
   padding: 8px 16px;
   min-height: 48px;
   display: inline-flex;
@@ -977,11 +960,14 @@ html.light-theme .theme-icon-moon {
   border-radius: 50px;
   white-space: nowrap;
   flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
 }
 
 .view-all-link:hover {
-  background: var(--accent);
+  background: var(--primary-dark);
   color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
 }
 
 /* =============================================
@@ -991,7 +977,7 @@ html.light-theme .theme-icon-moon {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
-  margin-bottom: 22px;
+  margin-bottom: 14px;
 }
 
 .content-area>.join-banner {
@@ -1011,7 +997,7 @@ html.light-theme .theme-icon-moon {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 18px;
+  padding: 20px 24px;
   border-radius: var(--radius-md);
   color: var(--text-primary);
   background: var(--bg-card);
@@ -1137,7 +1123,7 @@ html.light-theme .theme-icon-moon {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 24px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -1186,33 +1172,22 @@ html.light-theme .theme-icon-moon {
   border: 1px solid rgba(34, 197, 94, 0.25);
 }
 
-.badge-admit {
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.25);
-}
-
-.badge-result {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
-  border: 1px solid rgba(59, 130, 246, 0.25);
-}
-
+.badge-admit,
+.badge-result,
 .badge-scholarship {
-  background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
-  border: 1px solid rgba(168, 85, 247, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .badge-expired {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: var(--primary);
+  color: #ffffff;
+  border: 1px solid var(--primary-dark);
 }
 
 .expired-card-item {
   opacity: 0.65;
-  filter: grayscale(100%);
   background-color: rgba(26, 27, 46, 0.4);
 }
 
@@ -1689,10 +1664,27 @@ html.light-theme .theme-icon-moon {
   box-sizing: border-box;
 }
 
+.desktop-quick-nav {
+  grid-template-columns: 1fr 1fr;
+}
+
+.mobile-quick-nav {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .desktop-quick-nav {
+    display: none;
+  }
+  .mobile-quick-nav {
+    display: grid;
+  }
+}
+
 .qnav-box {
   background: var(--bg-card);
   border-radius: var(--radius-md);
-  padding: 20px 16px;
+  padding: 24px;
   text-align: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(139, 92, 246, 0.2);
@@ -2810,7 +2802,7 @@ html.light-theme .theme-icon-moon {
 .join-banner {
   display: none;
   /* Hidden on desktop by default; shown by sidebar or mobile rules */
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .sidebar>.join-banner {
@@ -2822,7 +2814,7 @@ html.light-theme .theme-icon-moon {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 16px 20px;
+  padding: 20px 24px;
   border-radius: var(--radius-lg);
   color: var(--text-primary);
   background: var(--bg-card);
@@ -3030,11 +3022,11 @@ html.light-theme .theme-icon-moon {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 20px 24px;
+  padding: 14px 20px;
   background: var(--bg-card);
   border: 1px solid #7c3aed;
   border-radius: var(--radius-lg);
-  margin-bottom: 22px;
+  margin-bottom: 14px;
   box-shadow: 0 8px 30px rgba(124, 58, 237, 0.15);
   position: relative;
   overflow: hidden;
@@ -3112,22 +3104,22 @@ html.light-theme .theme-icon-moon {
   align-items: center;
   justify-content: center;
   padding: 12px 24px;
-  background: linear-gradient(135deg, #6d28d9, #7c3aed);
+  background: var(--primary);
   color: #ffffff !important;
   font-weight: 700;
   font-size: 0.9rem;
   border-radius: 50px;
   white-space: nowrap;
   transition: var(--transition);
-  box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3);
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
   text-decoration: none;
   flex-shrink: 0;
 }
 
 .trending-exam-btn:hover {
-  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  background: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.4);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
 }
 
 .trending-exam-btn:active {

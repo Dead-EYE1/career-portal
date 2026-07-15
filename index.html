@@ -58,40 +58,10 @@
 
 <body>
 
-  <div class="top-bar" id="top-bar">
-    <div class="container top-bar-inner">
-      <div class="top-bar-left">
-        <span class="top-bar-date" id="live-date"></span>
-        <span class="top-bar-divider">|</span>
-        <a href="#" class="top-bar-link">About Us</a>
-        <a href="#" class="top-bar-link">Contact</a>
-        <a href="#" class="top-bar-link">Privacy Policy</a>
-      </div>
-      <div class="top-bar-right">
-        <a href="#" class="social-icon facebook" title="Facebook" aria-label="Facebook">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-          </svg>
-        </a>
-        <a href="#" class="social-icon twitter" title="Twitter" aria-label="Twitter">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-          </svg>
-        </a>
-        <a href="#" class="social-icon youtube" title="YouTube" aria-label="YouTube">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-          </svg>
-        </a>
-      </div>
-    </div>
-  </div>
+
 
   <header class="header" id="main-header">
-    <div class="container-fluid header-inner">
+    <div class="container header-inner">
       <a href="/" class="logo" id="logo-link">
         <div class="logo-icon">NJ</div>
         <div class="logo-text">
@@ -145,10 +115,10 @@
   </header>
 
   <nav class="main-nav" id="main-nav">
-    <div class="container-fluid nav-inner">
+    <div class="container nav-inner">
       <ul class="nav-menu" id="nav-menu">
         <li><a href="/" class="nav-link active" id="nav-home">🏠 Home</a></li>
-        <li><a href="/#latest-jobs-section" class="nav-link" id="nav-govt">Govt Jobs</a></li>
+        <li><a href="/#assam-jobs-section" class="nav-link" id="nav-govt">Govt Jobs</a></li>
         <li><a href="/#result-section" class="nav-link" id="nav-result">Result</a></li>
         <li><a href="/#scholarship-section" class="nav-link" id="nav-scholarship">Scholarship</a></li>
         <li><a href="/mocktest.html" class="nav-link" id="nav-mocktest">📝 Mock Test</a></li>
@@ -157,19 +127,7 @@
     </div>
   </nav>
 
-  <div class="breaking-news-bar" id="breaking-bar">
-    <div class="container-fluid breaking-inner">
-      <span class="breaking-label">🔴 BREAKING</span>
-      <div class="ticker-wrapper">
-        <div class="ticker-track" id="ticker-track">
-          <span>🔥 SBI PO 2026 — 1,500 Vacancies | Apply Now (Last Date: July 8)</span>
-          <span>⚠️ Coal India MT 2026 — 660 Posts | Last Day Tomorrow (Jun 21)</span>
-          <span>🎯 APSC CCE 2026 Admit Card Out — Prelims on July 5</span>
-          <span>🚢 Indian Navy B.Tech Cadet Entry — 60 Posts (Apply Before Jun 29)</span>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
   <main class="main-layout container" id="main-content">
 
@@ -227,17 +185,28 @@
 
       <div class="tabs-wrapper">
         <div class="job-tabs-container" id="job-tabs">
-          <button class="job-tab active" data-target="active-jobs-container">Active Jobs</button>
+          <button class="job-tab active" data-target="assam-jobs-container">Assam State Jobs</button>
+          <button class="job-tab" data-target="central-jobs-container">Central Govt & Banking</button>
           <button class="job-tab" data-target="upcoming-jobs-container">Upcoming Jobs</button>
         </div>
 
-        <div id="active-jobs-container" class="job-tab-content active">
-          <div class="section-block" id="latest-jobs-section">
+        <div id="assam-jobs-container" class="job-tab-content active">
+          <div class="section-block" id="assam-jobs-section">
             <div class="section-header">
-              <h2 class="section-title">🏛️ Latest Government Jobs</h2>
+              <h2 class="section-title">🌿 Assam State Jobs</h2>
               <button type="button" class="view-all-link" id="view-expired-jobs">Expired Jobs →</button>
             </div>
-            <div class="posts-list" id="posts-list">
+            <div class="posts-list" id="assam-posts-list">
+            </div>
+          </div>
+        </div>
+
+        <div id="central-jobs-container" class="job-tab-content">
+          <div class="section-block" id="central-jobs-section">
+            <div class="section-header">
+              <h2 class="section-title">🏛️ Central Govt & Banking</h2>
+            </div>
+            <div class="posts-list" id="central-posts-list">
             </div>
           </div>
         </div>
@@ -273,88 +242,56 @@
       <div class="tabs-wrapper">
         <div class="job-tabs-container" id="result-tabs">
           <button class="job-tab active" data-target="active-result-container">Active Results</button>
-          <button class="job-tab" data-target="upcoming-result-container">Upcoming Results</button>
         </div>
 
         <div id="active-result-container" class="job-tab-content active">
           <div class="section-block" id="result-section">
             <div class="section-header">
               <h2 class="section-title">📊 Latest Results</h2>
-              <a href="#" class="view-all-link" id="view-all-results">View All →</a>
             </div>
             <div class="posts-list" id="result-list">
             </div>
           </div>
         </div>
 
-        <div id="upcoming-result-container" class="job-tab-content">
-          <div class="section-block" id="upcoming-result-section">
-            <div class="section-header">
-              <h2 class="section-title">⏳ Upcoming Results</h2>
-              <a href="#" class="view-all-link" id="view-all-upcoming-results">View All →</a>
-            </div>
-            <div class="posts-list" id="upcoming-result-list">
-              <div class="empty-state">
-                <div class="empty-state-icon">📅</div>
-                <p>No upcoming results at the moment.</p>
-                <p class="empty-state-hint">Check back later for future notifications!</p>
-              </div>
-            </div>
-          </div>
-        </div>
+
       </div>
 
       <div class="tabs-wrapper">
         <div class="job-tabs-container" id="scholarship-tabs">
           <button class="job-tab active" data-target="active-scholarship-container">Active Scholarships</button>
-          <button class="job-tab" data-target="upcoming-scholarship-container">Upcoming Scholarships</button>
         </div>
 
         <div id="active-scholarship-container" class="job-tab-content active">
           <div class="section-block" id="scholarship-section">
             <div class="section-header">
               <h2 class="section-title">🏆 Scholarships</h2>
-              <a href="#" class="view-all-link" id="view-all-scholarship">View All →</a>
             </div>
             <div class="posts-list" id="scholarship-list">
             </div>
           </div>
         </div>
 
-        <div id="upcoming-scholarship-container" class="job-tab-content">
-          <div class="section-block" id="upcoming-scholarship-section">
-            <div class="section-header">
-              <h2 class="section-title">⏳ Upcoming Scholarships</h2>
-              <a href="#" class="view-all-link" id="view-all-upcoming-scholarships">View All →</a>
-            </div>
-            <div class="posts-list" id="upcoming-scholarship-list">
-              <div class="empty-state">
-                <div class="empty-state-icon">📅</div>
-                <p>No upcoming scholarships at the moment.</p>
-                <p class="empty-state-hint">Check back later for future notifications!</p>
-              </div>
-            </div>
-          </div>
-        </div>
+
       </div>
 
-      <div class="quick-nav-grid" id="quick-nav-grid">
-        <a href="/#latest-jobs-section" class="qnav-box qnav-govt" id="qnav-govt">
+      <div class="quick-nav-grid mobile-quick-nav">
+        <a href="/#assam-jobs-section" class="qnav-box qnav-govt">
           <div class="qnav-icon">🏛️</div>
           <div class="qnav-label">Govt Jobs</div>
           <div class="qnav-count">245+ Posts</div>
         </a>
-        <a href="/#result-section" class="qnav-box qnav-result" id="qnav-result">
+        <a href="/#result-section" class="qnav-box qnav-result">
           <div class="qnav-icon">📊</div>
           <div class="qnav-label">Results</div>
           <div class="qnav-count">52 Released</div>
         </a>
-        <a href="/#scholarship-section" class="qnav-box qnav-scholarship" id="qnav-scholarship">
+        <a href="/#scholarship-section" class="qnav-box qnav-scholarship">
           <div class="qnav-icon">🏆</div>
           <div class="qnav-label">Scholarship</div>
           <div class="qnav-count">15 Active</div>
         </a>
-        <a href="/mocktest.html" class="qnav-box qnav-mocktest" id="qnav-mocktest">
+        <a href="/mocktest.html" class="qnav-box qnav-mocktest">
           <div class="qnav-icon">📝</div>
           <div class="qnav-label">Mock Test</div>
           <div class="qnav-count">Online Practice</div>
@@ -382,6 +319,28 @@
         </a>
       </div>
 
+      <div class="quick-nav-grid desktop-quick-nav">
+        <a href="/#assam-jobs-section" class="qnav-box qnav-govt">
+          <div class="qnav-icon">🏛️</div>
+          <div class="qnav-label">Govt Jobs</div>
+          <div class="qnav-count">245+ Posts</div>
+        </a>
+        <a href="/#result-section" class="qnav-box qnav-result">
+          <div class="qnav-icon">📊</div>
+          <div class="qnav-label">Results</div>
+          <div class="qnav-count">52 Released</div>
+        </a>
+        <a href="/#scholarship-section" class="qnav-box qnav-scholarship">
+          <div class="qnav-icon">🏆</div>
+          <div class="qnav-label">Scholarship</div>
+          <div class="qnav-count">15 Active</div>
+        </a>
+        <a href="/mocktest.html" class="qnav-box qnav-mocktest">
+          <div class="qnav-icon">📝</div>
+          <div class="qnav-label">Mock Test</div>
+          <div class="qnav-count">Online Practice</div>
+        </a>
+      </div>
       <div class="sidebar-widget" id="search-widget">
         <h3 class="widget-title">🔍 Search Jobs</h3>
         <div class="widget-search">
@@ -444,7 +403,7 @@
           <h4 class="footer-heading">Quick Links</h4>
           <ul class="footer-link-list">
             <li><a href="#" id="fl-home">Home</a></li>
-            <li><a href="/#latest-jobs-section" id="fl-govt">Govt Jobs</a></li>
+            <li><a href="/#assam-jobs-section" id="fl-govt">Govt Jobs</a></li>
             <li><a href="/#result-section" id="fl-result">Result</a></li>
             <li><a href="/#scholarship-section" id="fl-scholarship">Scholarship</a></li>
             <li><a href="/#footer" id="fl-contact">Contact Us</a></li>
@@ -488,7 +447,7 @@
       <span class="nav-icon">🏠</span>
       <span>Home</span>
     </a>
-    <a href="/#latest-jobs-section" class="mobile-nav-item" id="mob-nav-govt">
+    <a href="/#assam-jobs-section" class="mobile-nav-item" id="mob-nav-govt">
       <span class="nav-icon">💼</span>
       <span>Govt Jobs</span>
     </a>

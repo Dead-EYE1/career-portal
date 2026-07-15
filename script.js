@@ -261,7 +261,7 @@ function generatePostHTML(data) {
         ${(item.apply_date || item.education || item.other_details || item.details || item.salary || item.location || item.application_fee || item.apply_link) ? `
         <button type="button" class="view-details-btn" onclick="event.stopPropagation(); toggleJobDetails(this.closest('.post-item'))">👁️ View Details</button>
         <div class="post-details" onclick="event.stopPropagation()">
-          ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.last_date || 'the deadline'}</strong>. <a href="#latest-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
+          ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.last_date || 'the deadline'}</strong>. <a href="#assam-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
           ${safeMainDetails ? `<div class="extended-details-content">${safeMainDetails}</div>` : ''}
           <div class="post-details-grid">
             ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> <span class="highlight-date text-right" style="color:var(--primary);">${item.apply_date}</span></div>` : ''}
@@ -844,17 +844,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     ...scholarshipData
   ];
 
-  const activeJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)));
-  const expiredJobs = jobsData.filter(j => j.status !== 'upcoming' && j.raw_last_date && isExpired(j.raw_last_date));
+  const assamJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && (j.group === 'Assam' || j.tag === 'Assam' || j.tag === 'APSC'));
+  const centralJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && (j.group === 'Central' || (j.tag !== 'Assam' && j.tag !== 'APSC' && j.group !== 'Assam')));
+  const expiredJobs = jobsData.filter(j => j.status !== 'upcoming' && j.raw_last_date && isExpired(j.raw_last_date)).slice(0, 5);
   const upcomingJobs = jobsData.filter(j => j.status === 'upcoming');
   
   const activeResult = resultData.filter(r => r.status !== 'upcoming');
-  const upcomingResult = resultData.filter(r => r.status === 'upcoming');
-
   const activeScholarship = scholarshipData.filter(s => s.status !== 'upcoming');
-  const upcomingScholarship = scholarshipData.filter(s => s.status === 'upcoming');
 
-  renderPosts("posts-list", activeJobs);
+  renderPosts("assam-posts-list", assamJobs);
+  renderPosts("central-posts-list", centralJobs);
+  
   if (upcomingJobs.length > 0) {
     renderPosts("upcoming-posts-list", upcomingJobs);
   }
@@ -868,14 +868,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   renderPosts("result-list", activeResult);
-  if (upcomingResult.length > 0) {
-    renderPosts("upcoming-result-list", upcomingResult);
-  }
-
   renderPosts("scholarship-list", activeScholarship);
-  if (upcomingScholarship.length > 0) {
-    renderPosts("upcoming-scholarship-list", upcomingScholarship);
-  }
 
 
   initTicker();
@@ -896,9 +889,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     btnExpired.addEventListener("click", () => {
       document.querySelectorAll('#job-tabs .job-tab').forEach(t => t.classList.remove('active'));
       
-      const activeContainer = document.getElementById('active-jobs-container');
+      const assamContainer = document.getElementById('assam-jobs-container');
+      const centralContainer = document.getElementById('central-jobs-container');
       const upcomingContainer = document.getElementById('upcoming-jobs-container');
-      if (activeContainer) activeContainer.classList.remove('active');
+      if (assamContainer) assamContainer.classList.remove('active');
+      if (centralContainer) centralContainer.classList.remove('active');
       if (upcomingContainer) upcomingContainer.classList.remove('active');
       
       const expiredContainer = document.getElementById('expired-jobs-container');
@@ -907,7 +902,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   if (btnBackActive) {
     btnBackActive.addEventListener("click", () => {
-      const activeTab = document.querySelector('#job-tabs .job-tab[data-target="active-jobs-container"]');
+      const activeTab = document.querySelector('#job-tabs .job-tab[data-target="assam-jobs-container"]');
       if (activeTab) activeTab.click(); // This automatically handles the container switching
     });
   }
