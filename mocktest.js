@@ -340,7 +340,6 @@
 
           const questionObj = {
             id: doc.id,
-            index: data.index !== undefined ? data.index : (data.qNumber !== undefined ? data.qNumber : null),
             section: rawSec,
             imageUrl: data.imageUrl || '',
             question: {
@@ -390,18 +389,13 @@
             return hasText || hasImage;
           });
 
-          // Sort questions sequentially
+          // Sort questions sequentially by the number at the very end of their ID (following the final '-e')
           allQuestionsBySection[sec].sort((a, b) => {
-            if (a.index !== null && b.index !== null) {
-              return a.index - b.index;
-            }
-            
-            // Fallback: extract numeric value from string ID
             const getNum = (id) => {
-              const match = String(id).match(/\d+/);
-              return match ? parseInt(match[0], 10) : 0;
+              const parts = (id || '').split('-e');
+              const num = parseInt(parts[parts.length - 1], 10);
+              return isNaN(num) ? 0 : num;
             };
-            
             return getNum(a.id) - getNum(b.id);
           });
         });
