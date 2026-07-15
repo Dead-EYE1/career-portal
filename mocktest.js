@@ -340,6 +340,7 @@
 
           const questionObj = {
             id: doc.id,
+            index: data.index !== undefined ? data.index : (data.qNumber !== undefined ? data.qNumber : null),
             section: rawSec,
             imageUrl: data.imageUrl || '',
             question: {
@@ -387,6 +388,21 @@
             const hasText = questionLangText && questionLangText.trim().length > 0;
             const hasImage = q.imageUrl && q.imageUrl.trim().length > 0;
             return hasText || hasImage;
+          });
+
+          // Sort questions sequentially
+          allQuestionsBySection[sec].sort((a, b) => {
+            if (a.index !== null && b.index !== null) {
+              return a.index - b.index;
+            }
+            
+            // Fallback: extract numeric value from string ID
+            const getNum = (id) => {
+              const match = String(id).match(/\d+/);
+              return match ? parseInt(match[0], 10) : 0;
+            };
+            
+            return getNum(a.id) - getNum(b.id);
           });
         });
 
