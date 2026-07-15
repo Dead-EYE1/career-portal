@@ -3026,7 +3026,8 @@ html.light-theme .theme-icon-moon {
   background: var(--bg-card);
   border: 1px solid #7c3aed;
   border-radius: var(--radius-lg);
-  margin-bottom: 14px;
+  margin-top: 16px;
+  margin-bottom: 18px;
   box-shadow: 0 8px 30px rgba(124, 58, 237, 0.15);
   position: relative;
   overflow: hidden;
