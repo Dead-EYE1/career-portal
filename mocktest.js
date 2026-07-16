@@ -207,6 +207,12 @@
     const otpVerifyMsg     = document.getElementById('otp-verify-msg');
 
     function setupRecaptcha() {
+      const container = document.getElementById('recaptcha-container');
+      if (!container) {
+        console.error("recaptcha-container not found in the DOM");
+        return false;
+      }
+      
       if (recaptchaVerifier) {
         recaptchaVerifier.clear();
         recaptchaVerifier = null;
@@ -215,6 +221,7 @@
         size: 'invisible',
         callback: () => { /* reCAPTCHA solved — allow signInWithPhoneNumber */ }
       });
+      return true;
     }
 
     function showOtpStatus(el, msg, isError = false) {
@@ -252,7 +259,11 @@
       if (sendOtpBtn) { sendOtpBtn.disabled = true; sendOtpBtn.textContent = 'Sending...'; }
 
       try {
-        setupRecaptcha();
+        if (!setupRecaptcha()) {
+            showOtpStatus(otpStatusMsg, 'Recaptcha configuration missing. Please try again later.', true);
+            if (sendOtpBtn) { sendOtpBtn.disabled = false; sendOtpBtn.textContent = 'Send OTP'; }
+            return;
+        }
         confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
         // Show OTP input step
         if (phoneStep1) phoneStep1.classList.add('hidden');
@@ -260,7 +271,7 @@
         if (otpSentNumber) otpSentNumber.textContent = phoneNumber;
         if (otpCodeInput) otpCodeInput.focus();
       } catch (error) {
-        console.error('OTP send error:', error);
+        console.error('Firebase Auth Error Details:', error);
         if (sendOtpBtn) { sendOtpBtn.disabled = false; sendOtpBtn.textContent = 'Send OTP'; }
         if (error.code === 'auth/too-many-requests') {
           showOtpStatus(otpStatusMsg, 'Too many attempts. Please try again later.', true);
