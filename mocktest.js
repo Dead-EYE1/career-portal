@@ -2,7 +2,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
     import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInWithPhoneNumber, RecaptchaVerifier } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
     // ── Firebase Config ─────────────────────────────────
     const firebaseConfig = {
@@ -190,150 +190,116 @@
       });
     }
 
-    // ── Phone OTP Auth ───────────────────────────────────
-    let confirmationResult = null;
-    let recaptchaVerifier = null;
+    // ── Phone & Password Auth ────────────────────────────
+    let isSignupMode = false;
 
-    // DOM refs for OTP
-    const phoneStep1       = document.getElementById('phone-step-1');
-    const phoneStep2       = document.getElementById('phone-step-2');
-    const phoneNumberInput = document.getElementById('phone-number-input');
-    const sendOtpBtn       = document.getElementById('send-otp-btn');
-    const otpStatusMsg     = document.getElementById('otp-status-msg');
-    const otpSentNumber    = document.getElementById('otp-sent-number');
-    const otpCodeInput     = document.getElementById('otp-code-input');
-    const verifyOtpBtn     = document.getElementById('verify-otp-btn');
-    const resendOtpBtn     = document.getElementById('resend-otp-btn');
-    const otpVerifyMsg     = document.getElementById('otp-verify-msg');
+    // DOM refs for Phone Auth
+    const authNameGroup   = document.getElementById('auth-name-group');
+    const authNameInput   = document.getElementById('auth-name-input');
+    const authPhoneInput  = document.getElementById('auth-phone-input');
+    const authPasswordInput = document.getElementById('auth-password-input');
+    const authSubmitBtn   = document.getElementById('auth-submit-btn');
+    const authStatusMsg   = document.getElementById('auth-status-msg');
+    const authToggleText  = document.getElementById('auth-toggle-text');
+    const authToggleBtn   = document.getElementById('auth-toggle-btn');
 
-    function setupRecaptcha() {
-      const container = document.getElementById('recaptcha-container');
-      if (!container) {
-        console.error("recaptcha-container not found in the DOM");
-        return false;
+    function toggleAuthMode() {
+      isSignupMode = !isSignupMode;
+      if (isSignupMode) {
+        if (authNameGroup) authNameGroup.classList.remove('hidden');
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Sign up';
+        if (authToggleText) authToggleText.textContent = 'Already have an account? ';
+        if (authToggleBtn) authToggleBtn.textContent = 'Login';
+      } else {
+        if (authNameGroup) authNameGroup.classList.add('hidden');
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Login';
+        if (authToggleText) authToggleText.textContent = 'New here? ';
+        if (authToggleBtn) authToggleBtn.textContent = 'Sign up';
       }
-      
-      if (recaptchaVerifier) {
-        recaptchaVerifier.clear();
-        recaptchaVerifier = null;
-      }
-      recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => { /* reCAPTCHA solved — allow signInWithPhoneNumber */ }
-      });
-      return true;
+      hideAuthStatus();
+    }
+    
+    function showAuthStatus(msg, isError = false) {
+      if (!authStatusMsg) return;
+      authStatusMsg.textContent = msg;
+      authStatusMsg.className = 'otp-status-msg' + (isError ? ' otp-error' : ' otp-success');
+      authStatusMsg.classList.remove('hidden');
     }
 
-    function showOtpStatus(el, msg, isError = false) {
-      if (!el) return;
-      el.textContent = msg;
-      el.className = 'otp-status-msg' + (isError ? ' otp-error' : ' otp-success');
-      el.classList.remove('hidden');
-    }
-
-    function hideOtpStatus(el) {
-      if (el) el.classList.add('hidden');
+    function hideAuthStatus() {
+      if (authStatusMsg) authStatusMsg.classList.add('hidden');
     }
 
     function resetPhoneOtpUI() {
-      if (phoneStep1) phoneStep1.classList.remove('hidden');
-      if (phoneStep2) phoneStep2.classList.add('hidden');
-      if (phoneNumberInput) phoneNumberInput.value = '';
-      if (otpCodeInput) otpCodeInput.value = '';
-      if (sendOtpBtn) { sendOtpBtn.disabled = false; sendOtpBtn.textContent = 'Send OTP'; }
-      if (verifyOtpBtn) { verifyOtpBtn.disabled = false; verifyOtpBtn.textContent = 'Verify & Login'; }
-      hideOtpStatus(otpStatusMsg);
-      hideOtpStatus(otpVerifyMsg);
-      confirmationResult = null;
+      // Keeps old function name to avoid breaking dismissLoginModal calls
+      isSignupMode = false;
+      if (authNameGroup) authNameGroup.classList.add('hidden');
+      if (authNameInput) authNameInput.value = '';
+      if (authPhoneInput) authPhoneInput.value = '';
+      if (authPasswordInput) authPasswordInput.value = '';
+      if (authSubmitBtn) { authSubmitBtn.disabled = false; authSubmitBtn.textContent = 'Login'; }
+      if (authToggleText) authToggleText.textContent = 'New here? ';
+      if (authToggleBtn) authToggleBtn.textContent = 'Sign up';
+      hideAuthStatus();
     }
 
-    async function handleSendOtp() {
-      const rawPhone = (phoneNumberInput?.value || '').replace(/\s+/g, '');
+    async function handlePhoneAuth() {
+      const rawPhone = (authPhoneInput?.value || '').replace(/\s+/g, '');
+      const password = (authPasswordInput?.value || '');
+      const name = (authNameInput?.value || '').trim();
+
       if (!/^\d{10}$/.test(rawPhone)) {
-        showOtpStatus(otpStatusMsg, 'Please enter a valid 10-digit mobile number.', true);
+        showAuthStatus('Please enter a valid 10-digit mobile number.', true);
+        return;
+      }
+      
+      if (password.length < 6) {
+        showAuthStatus('Password must be at least 6 characters.', true);
         return;
       }
 
-      const phoneNumber = '+91' + rawPhone;
-      hideOtpStatus(otpStatusMsg);
-      if (sendOtpBtn) { sendOtpBtn.disabled = true; sendOtpBtn.textContent = 'Sending...'; }
+      if (isSignupMode && !name) {
+        showAuthStatus('Please enter your full name.', true);
+        return;
+      }
+
+      // Trick: Convert phone to pseudo-email
+      const email = `${rawPhone}@mock.com`;
+      
+      hideAuthStatus();
+      if (authSubmitBtn) { 
+        authSubmitBtn.disabled = true; 
+        authSubmitBtn.textContent = isSignupMode ? 'Signing up...' : 'Logging in...'; 
+      }
 
       try {
-        if (!setupRecaptcha()) {
-            showOtpStatus(otpStatusMsg, 'Recaptcha configuration missing. Please try again later.', true);
-            if (sendOtpBtn) { sendOtpBtn.disabled = false; sendOtpBtn.textContent = 'Send OTP'; }
-            return;
-        }
-        confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-        // Show OTP input step
-        if (phoneStep1) phoneStep1.classList.add('hidden');
-        if (phoneStep2) phoneStep2.classList.remove('hidden');
-        if (otpSentNumber) otpSentNumber.textContent = phoneNumber;
-        if (otpCodeInput) otpCodeInput.focus();
-      } catch (error) {
-        console.error('Firebase Auth Error Details:', error);
-        if (sendOtpBtn) { sendOtpBtn.disabled = false; sendOtpBtn.textContent = 'Send OTP'; }
-        if (error.code === 'auth/too-many-requests') {
-          showOtpStatus(otpStatusMsg, 'Too many attempts. Please try again later.', true);
-        } else if (error.code === 'auth/invalid-phone-number') {
-          showOtpStatus(otpStatusMsg, 'Invalid phone number. Please check and retry.', true);
+        if (isSignupMode) {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          // Update profile with the name
+          if (userCredential.user) {
+             await updateProfile(userCredential.user, { displayName: name });
+          }
         } else {
-          showOtpStatus(otpStatusMsg, 'Failed to send OTP. Please try again.', true);
+          await signInWithEmailAndPassword(auth, email, password);
         }
-        // Reset reCAPTCHA on failure so user can retry
-        try { if (recaptchaVerifier) { recaptchaVerifier.clear(); recaptchaVerifier = null; } } catch(e) {}
-      }
-    }
-
-    async function handleVerifyOtp() {
-      const code = (otpCodeInput?.value || '').trim();
-      if (!/^\d{6}$/.test(code)) {
-        showOtpStatus(otpVerifyMsg, 'Please enter the 6-digit OTP.', true);
-        return;
-      }
-
-      if (!confirmationResult) {
-        showOtpStatus(otpVerifyMsg, 'Session expired. Please resend OTP.', true);
-        return;
-      }
-
-      hideOtpStatus(otpVerifyMsg);
-      if (verifyOtpBtn) { verifyOtpBtn.disabled = true; verifyOtpBtn.textContent = 'Verifying...'; }
-
-      try {
-        await confirmationResult.confirm(code);
-        // onAuthStateChanged callback will handle the rest (same as Google login)
+        
+        // Success! onAuthStateChanged will handle the rest and close modal.
       } catch (error) {
-        console.error('OTP verify error:', error);
-        if (verifyOtpBtn) { verifyOtpBtn.disabled = false; verifyOtpBtn.textContent = 'Verify & Login'; }
-        if (error.code === 'auth/invalid-verification-code') {
-          showOtpStatus(otpVerifyMsg, 'Invalid OTP. Please check and try again.', true);
-        } else if (error.code === 'auth/code-expired') {
-          showOtpStatus(otpVerifyMsg, 'OTP expired. Please resend.', true);
+        console.error('Phone Auth Error:', error);
+        if (authSubmitBtn) { 
+          authSubmitBtn.disabled = false; 
+          authSubmitBtn.textContent = isSignupMode ? 'Sign up' : 'Login'; 
+        }
+        
+        if (error.code === 'auth/email-already-in-use') {
+          showAuthStatus('This phone number is already registered. Please login.', true);
+        } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+          showAuthStatus('Incorrect phone number or password.', true);
         } else {
-          showOtpStatus(otpVerifyMsg, 'Verification failed. Please try again.', true);
+          showAuthStatus(error.message || 'Authentication failed. Please try again.', true);
         }
       }
     }
-
-    async function handleResendOtp() {
-      // Go back to step 1 for re-entry
-      if (phoneStep1) phoneStep1.classList.remove('hidden');
-      if (phoneStep2) phoneStep2.classList.add('hidden');
-      if (otpCodeInput) otpCodeInput.value = '';
-      hideOtpStatus(otpVerifyMsg);
-      if (sendOtpBtn) { sendOtpBtn.disabled = false; sendOtpBtn.textContent = 'Send OTP'; }
-      confirmationResult = null;
-    }
-
-    // OTP Event Listeners
-    if (sendOtpBtn) sendOtpBtn.addEventListener('click', handleSendOtp);
-    if (verifyOtpBtn) verifyOtpBtn.addEventListener('click', handleVerifyOtp);
-    if (resendOtpBtn) resendOtpBtn.addEventListener('click', handleResendOtp);
-
-    // Allow Enter key to submit in phone/OTP inputs
-    if (phoneNumberInput) phoneNumberInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendOtp(); });
-    if (otpCodeInput) otpCodeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleVerifyOtp(); });
 
     // ── Save Result to Firestore ─────────────────────────
     async function saveResultToFirestore(resultData) {
@@ -1691,6 +1657,8 @@ ${formatExplanation(explanationLangText)}</div>
     window.handleLogout = handleLogout;
     window.handleGoogleLogin = handleGoogleLogin;
     window.openHeaderLogin = openHeaderLogin;
+    window.toggleAuthMode = toggleAuthMode;
+    window.handlePhoneAuth = handlePhoneAuth;
 
     // ── Check URL Params for Direct Exam Linking ─────────
     const initFromURL = () => {

@@ -58,33 +58,39 @@
 
       <div class="modal-divider"><span>or</span></div>
 
-      <!-- Phone OTP: Step 1 — Enter Phone Number -->
-      <div id="phone-step-1">
-        <div class="phone-input-group">
-          <span class="phone-prefix">+91</span>
-          <input type="tel" id="phone-number-input" placeholder="Enter mobile number" maxlength="10"
-            autocomplete="tel" />
-        </div>
-        <button class="otp-btn" id="send-otp-btn" type="button">Send OTP</button>
-        <p class="otp-status-msg hidden" id="otp-status-msg"></p>
+      <!-- Phone & Password Auth -->
+      <div id="phone-auth-container">
+        <form id="phone-auth-form" onsubmit="event.preventDefault(); handlePhoneAuth();">
+          
+          <div class="phone-input-group hidden" id="auth-name-group" style="margin-bottom: 12px;">
+            <span class="phone-prefix" style="padding-right: 17px; padding-left: 17px;">👤</span>
+            <input type="text" id="auth-name-input" placeholder="Full Name" autocomplete="name" />
+          </div>
+
+          <div class="phone-input-group" style="margin-bottom: 12px;">
+            <span class="phone-prefix">+91</span>
+            <input type="tel" id="auth-phone-input" placeholder="Enter mobile number" maxlength="10" autocomplete="tel" required />
+          </div>
+
+          <div class="phone-input-group" style="margin-bottom: 12px;">
+            <span class="phone-prefix" style="padding-right: 17px; padding-left: 17px;">🔒</span>
+            <input type="password" id="auth-password-input" placeholder="Password (min 6 chars)" autocomplete="current-password" required minlength="6" />
+          </div>
+
+          <button class="otp-btn" id="auth-submit-btn" type="submit">Login</button>
+          
+          <p class="otp-status-msg hidden" id="auth-status-msg"></p>
+          
+          <div style="margin-top: 16px; text-align: center; font-size: 0.85rem; color: var(--text-secondary);">
+            <span id="auth-toggle-text">New here? </span>
+            <button type="button" onclick="toggleAuthMode()" style="background:none; border:none; color:var(--accent); font-weight:700; cursor:pointer;">Sign up</button>
+          </div>
+        </form>
       </div>
 
-      <!-- Phone OTP: Step 2 — Enter OTP Code (hidden initially) -->
-      <div id="phone-step-2" class="hidden">
-        <p class="otp-sent-info">OTP sent to <strong id="otp-sent-number"></strong></p>
-        <input type="text" id="otp-code-input" class="otp-code-input" placeholder="Enter 6-digit OTP" maxlength="6"
-          inputmode="numeric" autocomplete="one-time-code" />
-        <button class="otp-btn otp-verify-btn" id="verify-otp-btn" type="button">Verify & Login</button>
-        <button class="otp-resend-btn" id="resend-otp-btn" type="button">Resend OTP</button>
-        <p class="otp-status-msg hidden" id="otp-verify-msg"></p>
-      </div>
-
-      <button class="modal-close-btn" id="modal-close-btn" type="button">Skip — view results without saving</button>
+      <button class="modal-close-btn" id="modal-close-btn" type="button" style="margin-top: 16px;">Skip — view results without saving</button>
     </div>
   </div>
-
-  <!-- Invisible reCAPTCHA container (required by Firebase Phone Auth) -->
-  <div id="recaptcha-container"></div>
 
   <!-- Global Loader -->
   <div id="global-loader" class="global-loader hidden">
