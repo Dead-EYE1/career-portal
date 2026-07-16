@@ -230,7 +230,7 @@
       'english': 'English',
       'hindi': 'Hindi'
     };
-    const TIME_PER_SECTION = 15 * 60; // 15 minutes in seconds
+    let TIME_PER_SECTION = 15 * 60; // 15 minutes default
 
     // ── State ────────────────────────────────────────────
     let allQuestionsBySection = {}; // Organizes questions by subject
@@ -1146,7 +1146,7 @@ ${formatExplanation(explanationLangText)}</div>
     }
 
     // ── Exams that support Assamese language ─────────────
-    const ASSAMESE_ALLOWED_EXAMS = ['ssc_gd', 'assam_police'];
+    const ASSAMESE_ALLOWED_EXAMS = ['ssc_gd', 'assam_police', 'weekly_quiz'];
 
     // ── Category Select Handler ──────────────────────────
     function selectCategory(category, btn) {
@@ -1182,6 +1182,16 @@ ${formatExplanation(explanationLangText)}</div>
       if (subScreen) {
         subScreen.classList.remove('hidden');
         renderSubCategoryGrid(category);
+      }
+
+      // Update timer display dynamically
+      const timeChip = document.getElementById('time-chip');
+      if (category === 'weekly_quiz') {
+        TIME_PER_SECTION = 10 * 60;
+        if (timeChip) timeChip.textContent = '10 Minutes';
+      } else {
+        TIME_PER_SECTION = 15 * 60;
+        if (timeChip) timeChip.textContent = '15 Minutes';
       }
       
       // Update count asynchronously without blocking the UI
@@ -1483,7 +1493,7 @@ ${formatExplanation(explanationLangText)}</div>
     // ── Live Language Toggle ──────────────────────────────
     // Only changes the display language for the current quiz session.
     function toggleLanguage(lang) {
-      if (selectedSubCategory !== 'full_mock' && selectedSubCategory !== 'previous_year') return;
+      if (selectedSubCategory !== 'full_mock' && selectedSubCategory !== 'previous_year' && selectedCategory !== 'weekly_quiz') return;
       // Prevent switching to Assamese for exams that don't support it
       if (lang === 'as' && !ASSAMESE_ALLOWED_EXAMS.includes(selectedCategory)) {
         const liveToggle = document.getElementById('live-lang-toggle');
