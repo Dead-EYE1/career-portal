@@ -1722,6 +1722,185 @@ html.light-theme .theme-icon-moon { display: none; }
   color: var(--text-primary);
 }
 
+/* ── Modal Divider ── */
+.modal-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 16px;
+}
+.modal-divider::before,
+.modal-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.modal-divider span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Phone Input Group ── */
+.phone-input-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-body);
+  transition: border-color 0.2s ease;
+}
+.phone-input-group:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.phone-prefix {
+  padding: 12px 14px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: rgba(127, 90, 240, 0.08);
+  border-right: 1px solid var(--border);
+  user-select: none;
+  flex-shrink: 0;
+}
+.phone-input-group input {
+  flex: 1;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+  letter-spacing: 1.5px;
+  min-width: 0;
+}
+.phone-input-group input::placeholder {
+  color: var(--text-secondary);
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+/* ── OTP Buttons ── */
+.otp-btn {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  margin-top: 12px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent), #6c3ce0);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 24px var(--accent-glow);
+  -webkit-tap-highlight-color: transparent;
+}
+.otp-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 32px var(--accent-glow);
+}
+.otp-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.otp-verify-btn {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  box-shadow: 0 4px 24px rgba(22, 163, 74, 0.25);
+}
+.otp-verify-btn:hover:not(:disabled) {
+  box-shadow: 0 6px 32px rgba(22, 163, 74, 0.35);
+}
+
+/* ── OTP Code Input ── */
+.otp-code-input {
+  width: 100%;
+  padding: 14px;
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: var(--bg-body);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  letter-spacing: 8px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+.otp-code-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.otp-code-input::placeholder {
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* ── OTP Sent Info ── */
+.otp-sent-info {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.otp-sent-info strong {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ── Resend OTP ── */
+.otp-resend-btn {
+  display: block;
+  margin: 10px auto 0;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px;
+  transition: color 0.2s ease;
+}
+.otp-resend-btn:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+/* ── OTP Status Messages ── */
+.otp-status-msg {
+  font-size: 0.76rem;
+  font-weight: 600;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+.otp-status-msg.otp-error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+.otp-status-msg.otp-success {
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.08);
+}
+
+/* ── Invisible reCAPTCHA container ── */
+#recaptcha-container {
+  /* Firebase renders this invisibly; keep it out of the way */
+}
 /* Logout button on result screen */
 .logout-result-btn {
   width: 100%;

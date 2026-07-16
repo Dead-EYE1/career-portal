@@ -2,7 +2,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
     import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInWithPhoneNumber, RecaptchaVerifier } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
     // ── Firebase Config ─────────────────────────────────
     const firebaseConfig = {
@@ -78,8 +78,8 @@
       if (user) {
         currentUser = {
           uid: user.uid,
-          displayName: user.displayName || 'User',
-          email: user.email || '',
+          displayName: user.displayName || user.phoneNumber || 'User',
+          email: user.email || user.phoneNumber || '',
           photoURL: user.photoURL || ''
         };
         const avatarSrc = currentUser.photoURL || FALLBACK_AVATAR;
@@ -161,12 +161,18 @@
     // ── Login Modal Controls ─────────────────────────────
     function showLoginModal(resultData) {
       pendingResultData = resultData;
+      resetPhoneOtpUI(); // Reset phone OTP state when modal opens
       if (loginModal) loginModal.classList.remove('hidden');
+    }
+
+    function openHeaderLogin() {
+      showLoginModal(null);
     }
 
     function dismissLoginModal() {
       if (loginModal) loginModal.classList.add('hidden');
       pendingResultData = null;
+      resetPhoneOtpUI(); // Reset phone OTP state when modal closes
       // Show info status that score was not saved
       const statusContainer = document.getElementById('save-status-container');
       if (statusContainer) {
@@ -178,6 +184,145 @@
     if (dropdownLogout) dropdownLogout.addEventListener('click', handleLogout);
     if (modalLoginBtn) modalLoginBtn.addEventListener('click', handleGoogleLogin);
     if (modalCloseBtn) modalCloseBtn.addEventListener('click', dismissLoginModal);
+    if (loginModal) {
+      loginModal.addEventListener('click', (e) => {
+        if (e.target === loginModal) dismissLoginModal();
+      });
+    }
+
+    // ── Phone OTP Auth ───────────────────────────────────
+    let confirmationResult = null;
+    let recaptchaVerifier = null;
+
+    // DOM refs for OTP
+    const phoneStep1       = document.getElementById('phone-step-1');
+    const phoneStep2       = document.getElementById('phone-step-2');
+    const phoneNumberInput = document.getElementById('phone-number-input');
+    const sendOtpBtn       = document.getElementById('send-otp-btn');
+    const otpStatusMsg     = document.getElementById('otp-status-msg');
+    const otpSentNumber    = document.getElementById('otp-sent-number');
+    const otpCodeInput     = document.getElementById('otp-code-input');
+    const verifyOtpBtn     = document.getElementById('verify-otp-btn');
+    const resendOtpBtn     = document.getElementById('resend-otp-btn');
+    const otpVerifyMsg     = document.getElementById('otp-verify-msg');
+
+    function setupRecaptcha() {
+      if (recaptchaVerifier) {
+        recaptchaVerifier.clear();
+        recaptchaVerifier = null;
+      }
+      recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible',
+        callback: () => { /* reCAPTCHA solved — allow signInWithPhoneNumber */ }
+      });
+    }
+
+    function showOtpStatus(el, msg, isError = false) {
+      if (!el) return;
+      el.textContent = msg;
+      el.className = 'otp-status-msg' + (isError ? ' otp-error' : ' otp-success');
+      el.classList.remove('hidden');
+    }
+
+    function hideOtpStatus(el) {
+      if (el) el.classList.add('hidden');
+    }
+
+    function resetPhoneOtpUI() {
+      if (phoneStep1) phoneStep1.classList.remove('hidden');
+      if (phoneStep2) phoneStep2.classList.add('hidden');
+      if (phoneNumberInput) phoneNumberInput.value = '';
+      if (otpCodeInput) otpCodeInput.value = '';
+      if (sendOtpBtn) { sendOtpBtn.disabled = false; sendOtpBtn.textContent = 'Send OTP'; }
+      if (verifyOtpBtn) { verifyOtpBtn.disabled = false; verifyOtpBtn.textContent = 'Verify & Login'; }
+      hideOtpStatus(otpStatusMsg);
+      hideOtpStatus(otpVerifyMsg);
+      confirmationResult = null;
+    }
+
+    async function handleSendOtp() {
+      const rawPhone = (phoneNumberInput?.value || '').replace(/\s+/g, '');
+      if (!/^\d{10}$/.test(rawPhone)) {
+        showOtpStatus(otpStatusMsg, 'Please enter a valid 10-digit mobile number.', true);
+        return;
+      }
+
+      const phoneNumber = '+91' + rawPhone;
+      hideOtpStatus(otpStatusMsg);
+      if (sendOtpBtn) { sendOtpBtn.disabled = true; sendOtpBtn.textContent = 'Sending...'; }
+
+      try {
+        setupRecaptcha();
+        confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+        // Show OTP input step
+        if (phoneStep1) phoneStep1.classList.add('hidden');
+        if (phoneStep2) phoneStep2.classList.remove('hidden');
+        if (otpSentNumber) otpSentNumber.textContent = phoneNumber;
+        if (otpCodeInput) otpCodeInput.focus();
+      } catch (error) {
+        console.error('OTP send error:', error);
+        if (sendOtpBtn) { sendOtpBtn.disabled = false; sendOtpBtn.textContent = 'Send OTP'; }
+        if (error.code === 'auth/too-many-requests') {
+          showOtpStatus(otpStatusMsg, 'Too many attempts. Please try again later.', true);
+        } else if (error.code === 'auth/invalid-phone-number') {
+          showOtpStatus(otpStatusMsg, 'Invalid phone number. Please check and retry.', true);
+        } else {
+          showOtpStatus(otpStatusMsg, 'Failed to send OTP. Please try again.', true);
+        }
+        // Reset reCAPTCHA on failure so user can retry
+        try { if (recaptchaVerifier) { recaptchaVerifier.clear(); recaptchaVerifier = null; } } catch(e) {}
+      }
+    }
+
+    async function handleVerifyOtp() {
+      const code = (otpCodeInput?.value || '').trim();
+      if (!/^\d{6}$/.test(code)) {
+        showOtpStatus(otpVerifyMsg, 'Please enter the 6-digit OTP.', true);
+        return;
+      }
+
+      if (!confirmationResult) {
+        showOtpStatus(otpVerifyMsg, 'Session expired. Please resend OTP.', true);
+        return;
+      }
+
+      hideOtpStatus(otpVerifyMsg);
+      if (verifyOtpBtn) { verifyOtpBtn.disabled = true; verifyOtpBtn.textContent = 'Verifying...'; }
+
+      try {
+        await confirmationResult.confirm(code);
+        // onAuthStateChanged callback will handle the rest (same as Google login)
+      } catch (error) {
+        console.error('OTP verify error:', error);
+        if (verifyOtpBtn) { verifyOtpBtn.disabled = false; verifyOtpBtn.textContent = 'Verify & Login'; }
+        if (error.code === 'auth/invalid-verification-code') {
+          showOtpStatus(otpVerifyMsg, 'Invalid OTP. Please check and try again.', true);
+        } else if (error.code === 'auth/code-expired') {
+          showOtpStatus(otpVerifyMsg, 'OTP expired. Please resend.', true);
+        } else {
+          showOtpStatus(otpVerifyMsg, 'Verification failed. Please try again.', true);
+        }
+      }
+    }
+
+    async function handleResendOtp() {
+      // Go back to step 1 for re-entry
+      if (phoneStep1) phoneStep1.classList.remove('hidden');
+      if (phoneStep2) phoneStep2.classList.add('hidden');
+      if (otpCodeInput) otpCodeInput.value = '';
+      hideOtpStatus(otpVerifyMsg);
+      if (sendOtpBtn) { sendOtpBtn.disabled = false; sendOtpBtn.textContent = 'Send OTP'; }
+      confirmationResult = null;
+    }
+
+    // OTP Event Listeners
+    if (sendOtpBtn) sendOtpBtn.addEventListener('click', handleSendOtp);
+    if (verifyOtpBtn) verifyOtpBtn.addEventListener('click', handleVerifyOtp);
+    if (resendOtpBtn) resendOtpBtn.addEventListener('click', handleResendOtp);
+
+    // Allow Enter key to submit in phone/OTP inputs
+    if (phoneNumberInput) phoneNumberInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSendOtp(); });
+    if (otpCodeInput) otpCodeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleVerifyOtp(); });
 
     // ── Save Result to Firestore ─────────────────────────
     async function saveResultToFirestore(resultData) {
@@ -1534,6 +1679,7 @@ ${formatExplanation(explanationLangText)}</div>
     window.toggleLanguage = toggleLanguage;
     window.handleLogout = handleLogout;
     window.handleGoogleLogin = handleGoogleLogin;
+    window.openHeaderLogin = openHeaderLogin;
 
     // ── Check URL Params for Direct Exam Linking ─────────
     const initFromURL = () => {
