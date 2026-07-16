@@ -301,7 +301,12 @@
         selectedMockTestLanguage = testLang;
 
         // Dynamically update SECTION_ORDER before quiz begins
-        if (selectedMockTestLanguage === 'hi') {
+        if (category === 'weekly_quiz') {
+          // Weekly quiz: single subject per test
+          let sec = (subCategory || 'gk').toLowerCase();
+          if (sec === 'math' || sec === 'mathematics' || sec === 'maths') sec = 'quant';
+          SECTION_ORDER = [sec];
+        } else if (selectedMockTestLanguage === 'hi') {
           SECTION_ORDER = ['reasoning', 'gk', 'quant', 'hindi'];
         } else if (selectedMockTestLanguage === 'as') {
           // Assamese track: same as English sections (no dedicated Assamese section)
@@ -335,7 +340,13 @@
         
         snapshot.docs.forEach(doc => {
           const data = doc.data();
-          let rawSec = (data.section || 'reasoning').toLowerCase();
+          // For weekly_quiz, section = subCategory (they're the same subject)
+          let rawSec;
+          if (category === 'weekly_quiz') {
+            rawSec = (subCategory || 'gk').toLowerCase();
+          } else {
+            rawSec = (data.section || 'reasoning').toLowerCase();
+          }
           if (rawSec === 'math' || rawSec === 'mathematics' || rawSec === 'maths') rawSec = 'quant';
 
           const questionObj = {
@@ -1168,11 +1179,9 @@ ${formatExplanation(explanationLangText)}</div>
       }
 
       startScreen.classList.add('hidden');
-      if (category === 'weekly_test') {
-        selectedSubCategory = 'weekly_test';
-        loadTestsDynamically(category, 'weekly_test');
-      } else {
-        if (subScreen) subScreen.classList.remove('hidden');
+      if (subScreen) {
+        subScreen.classList.remove('hidden');
+        renderSubCategoryGrid(category);
       }
       
       // Update count asynchronously without blocking the UI
@@ -1200,6 +1209,42 @@ ${formatExplanation(explanationLangText)}</div>
       cards.forEach(c => c.classList.remove('selected'));
     }
 
+    // ── Render Sub-Category Grid Dynamically ────────────
+    const SUB_CATEGORIES = {
+      weekly_quiz: [
+        { key: 'gk',        icon: '🌍', name: 'GK / GS',    desc: 'General Knowledge & Studies' },
+        { key: 'math',      icon: '➗', name: 'Math',        desc: 'Mathematics' },
+        { key: 'reasoning', icon: '🧠', name: 'Reasoning',   desc: 'Logical Reasoning' },
+        { key: 'hindi',     icon: 'अ',  name: 'Hindi',       desc: 'Hindi Language' },
+        { key: 'english',   icon: 'A',  name: 'English',     desc: 'English Language' }
+      ],
+      _default: [
+        { key: 'full_mock',      icon: '🏆', name: 'Full Mock Test',       desc: 'Full length practice paper' },
+        { key: 'subject_wise',   icon: '📚', name: 'Subject-Wise Test',    desc: 'Target specific subjects' },
+        { key: 'previous_year',  icon: '📄', name: 'Previous Year Papers', desc: 'Real exam questions' },
+        { key: 'speed_booster',  icon: '⚡', name: 'Speed Boosters',       desc: 'Timed rapid fire round' }
+      ]
+    };
+
+    function renderSubCategoryGrid(category) {
+      const grid = document.getElementById('sub-category-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const items = SUB_CATEGORIES[category] || SUB_CATEGORIES._default;
+      items.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'sub-card';
+        btn.innerHTML = `
+          <span class="sub-icon">${item.icon}</span>
+          <span class="sub-name">${item.name}</span>
+          <span class="sub-desc">${item.desc}</span>
+        `;
+        btn.onclick = () => selectSubCategory(item.key);
+        grid.appendChild(btn);
+      });
+    }
+
     function selectSubCategory(subCategory) {
       selectedSubCategory = subCategory;
       loadTestsDynamically(selectedCategory, subCategory);
@@ -1212,7 +1257,7 @@ ${formatExplanation(explanationLangText)}</div>
 
       if (testSelectionExamBadge) {
         const catName = categoryNames[category] || category.toUpperCase();
-        const subName = (subCategory && subCategory !== 'weekly_test') ? ` - ${subCategory.replace('_', ' ').toUpperCase()}` : '';
+        const subName = (subCategory) ? ` - ${subCategory.replace('_', ' ').toUpperCase()}` : '';
         testSelectionExamBadge.textContent = `${catName}${subName}`;
       }
 
@@ -1244,19 +1289,12 @@ ${formatExplanation(explanationLangText)}</div>
 
       try {
         let q;
-        if (category === 'weekly_test') {
-          q = query(
-            collection(db, 'tests'),
-            where('exam', '==', category)
-          );
-        } else {
-          const dbSubCategory = dbSubCategoryMap[subCategory] || subCategory;
-          q = query(
-            collection(db, 'tests'),
-            where('exam', '==', category),
-            where('subCategory', '==', dbSubCategory)
-          );
-        }
+        const dbSubCategory = dbSubCategoryMap[subCategory] || subCategory;
+        q = query(
+          collection(db, 'tests'),
+          where('exam', '==', category),
+          where('subCategory', '==', dbSubCategory)
+        );
 
         const snapshot = await getDocs(q);
 
@@ -1316,11 +1354,7 @@ ${formatExplanation(explanationLangText)}</div>
     // ── Test Selection Back Button Action ─────────────────
     function goBackToSubCategories() {
       if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
-      if (selectedCategory === 'weekly_test') {
-        goBackToCategories();
-      } else {
-        if (subScreen) subScreen.classList.remove('hidden');
-      }
+      if (subScreen) subScreen.classList.remove('hidden');
     }
 
     // ── Result Screen Back Button Action ──────────────────

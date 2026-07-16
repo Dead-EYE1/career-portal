@@ -193,7 +193,7 @@
           <span class="icon">👮</span>
           <span class="name">Assam Police</span>
         </button>
-        <button class="category-card" onclick="selectCategory('weekly_test', this)">
+        <button class="category-card" onclick="selectCategory('weekly_quiz', this)">
           <span class="icon">📚</span>
           <span class="name">Weekly Quiz</span>
         </button>
@@ -255,29 +255,8 @@
         −0.25 Wrong
       </span>
     </div>
-    <!-- Sub-Category Grid -->
-    <div class="sub-category-grid">
-      <button class="sub-card" onclick="selectSubCategory('full_mock')">
-        <span class="sub-icon">🏆</span>
-        <span class="sub-name">Full Mock Test</span>
-        <span class="sub-desc">Full length practice paper</span>
-      </button>
-      <button class="sub-card" onclick="selectSubCategory('subject_wise')">
-        <span class="sub-icon">📚</span>
-        <span class="sub-name">Subject-Wise Test</span>
-        <span class="sub-desc">Target specific subjects</span>
-      </button>
-      <button class="sub-card" onclick="selectSubCategory('previous_year')">
-        <span class="sub-icon">📄</span>
-        <span class="sub-name">Previous Year Papers</span>
-        <span class="sub-desc">Real exam questions</span>
-      </button>
-      <button class="sub-card" onclick="selectSubCategory('speed_booster')">
-        <span class="sub-icon">⚡</span>
-        <span class="sub-name">Speed Boosters</span>
-        <span class="sub-desc">Timed rapid fire round</span>
-      </button>
-    </div>
+    <!-- Sub-Category Grid (dynamically populated by JS) -->
+    <div class="sub-category-grid" id="sub-category-grid"></div>
 
   </div>
 
