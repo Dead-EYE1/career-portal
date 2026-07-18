@@ -186,12 +186,14 @@ body {
   display: none;
   width: 100%;
   max-height: 360px;
+  min-height: 120px;
   object-fit: contain;
   border-radius: var(--radius-sm);
   margin-bottom: 22px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-badge);
   animation: fadeUp 0.35s ease-out;
+  color: transparent;
 }
 .question-image.visible {
   display: block;
@@ -200,11 +202,15 @@ body {
 /* ── Option Images (non-verbal reasoning) ──────── */
 .option-btn .option-image {
   max-height: 80px;
+  min-height: 60px;
   max-width: 100%;
   width: auto;
+  min-width: 80px;
   object-fit: contain;
   border-radius: 6px;
   display: block;
+  background: var(--bg-badge);
+  color: transparent;
 }
 .option-btn.has-image {
   justify-content: center;
@@ -1898,9 +1904,7 @@ html.light-theme .theme-icon-moon { display: none; }
 }
 
 /* ── Invisible reCAPTCHA container ── */
-#recaptcha-container {
-  /* Firebase renders this invisibly; keep it out of the way */
-}
+/* Firebase renders this invisibly; keep it out of the way */
 /* Logout button on result screen */
 .logout-result-btn {
   width: 100%;

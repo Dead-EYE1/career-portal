@@ -771,7 +771,7 @@
         const optImgUrl = (q.optionImages && q.optionImages[i]) ? q.optionImages[i].trim() : '';
         if (optImgUrl) {
           btn.classList.add('has-image');
-          btn.innerHTML = `<span class="key">${keys[i]}</span><img class="option-image" src="${optImgUrl}" alt="Option ${keys[i]}" />`;
+          btn.innerHTML = `<span class="key">${keys[i]}</span><img class="option-image" src="${optImgUrl}" loading="lazy" decoding="async" alt="Option ${keys[i]}" />`;
         } else {
           let applyLang = selectedMockTestLanguage;
           if (q.section === 'hindi') applyLang = 'hi';
