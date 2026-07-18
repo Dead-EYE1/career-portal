@@ -417,6 +417,13 @@
 
     // ── Fetch & Sort Sectional Questions ─────────────────
     async function fetchQuestions(category, subCategory, testId, testLang = 'en') {
+      // Update the URL to allow resuming on refresh
+      const url = new URL(window.location);
+      url.searchParams.set('exam', category);
+      url.searchParams.set('sub', subCategory);
+      if (testId) url.searchParams.set('test', testId);
+      window.history.pushState({}, '', url);
+
       selectedTestId = testId || '';
       showGlobalLoader('Preparing questions...', fetchQuestions, category, subCategory, testId, testLang);
       try {
@@ -550,8 +557,10 @@
         activeSectionIndex = 0;
         initializeQuizState();
 
+        const isReattempting = sessionStorage.getItem('is_reattempting') === 'true';
+
         let hasSavedScore = false;
-        if (currentUser) {
+        if (currentUser && !isReattempting) {
           try {
             const scoreDocRef = doc(db, 'scores', currentUser.uid + '_' + category + '_' + (testId || ''));
             const scoreDocSnap = await getDoc(scoreDocRef);
@@ -639,15 +648,30 @@
 
     // ── Initialize Global State Tracking ─────────────────
     function initializeQuizState() {
+      const savedAnswers = sessionStorage.getItem('current_answers');
+      let parsedAnswers = null;
+      if (savedAnswers) {
+        try {
+          parsedAnswers = JSON.parse(savedAnswers);
+        } catch(e) {
+          console.error('Error parsing saved answers', e);
+        }
+      }
+
       quizState = {};
       timeSpentPerQuestion = {};
       SECTION_ORDER.forEach(secKey => {
-        quizState[secKey] = allQuestionsBySection[secKey].map(() => ({
-          status: 'not-visited',
-          selectedIdx: -1,
-          isCorrect: null,
-          isReviewed: false
-        }));
+        if (parsedAnswers && parsedAnswers[secKey] && parsedAnswers[secKey].length === allQuestionsBySection[secKey].length) {
+          // Restore answers if they match the question count
+          quizState[secKey] = parsedAnswers[secKey];
+        } else {
+          quizState[secKey] = allQuestionsBySection[secKey].map(() => ({
+            status: 'not-visited',
+            selectedIdx: -1,
+            isCorrect: null,
+            isReviewed: false
+          }));
+        }
         timeSpentPerQuestion[secKey] = allQuestionsBySection[secKey].map(() => 0);
       });
     }
@@ -855,6 +879,9 @@
         isCorrect: isCorrect
       };
 
+      // Save progress dynamically
+      sessionStorage.setItem('current_answers', JSON.stringify(quizState));
+
       const clearBtn = document.getElementById('clear-btn');
       if (clearBtn) {
         clearBtn.style.display = 'block';
@@ -984,6 +1011,10 @@
     // ── Show Final Score Breakdown ───────────────────────
     function showResult() {
       clearInterval(timerInterval);
+      
+      // Clear saved progress on finish
+      sessionStorage.removeItem('current_answers');
+      sessionStorage.removeItem('is_reattempting');
 
       // Record time for the last question being viewed
       const lastSectionKey = SECTION_ORDER[activeSectionIndex];
@@ -1517,6 +1548,10 @@ ${formatExplanation(explanationLangText)}</div>
       // Clear any running timer
       if (timerInterval) clearInterval(timerInterval);
       timerBadge.classList.remove('danger');
+      
+      // Clear saved answers
+      sessionStorage.removeItem('current_answers');
+      sessionStorage.setItem('is_reattempting', 'true');
 
       // Reset scoring
       score = 0;
@@ -1563,6 +1598,8 @@ ${formatExplanation(explanationLangText)}</div>
     // ── Exit Test Back Action ────────────────────────────
     function confirmExitQuiz() {
       if (confirm("Are you sure you want to exit the test? Your progress will be lost.")) {
+        sessionStorage.removeItem('current_answers');
+        sessionStorage.removeItem('is_reattempting');
         if (timerInterval) clearInterval(timerInterval);
         quizScreen.classList.add('hidden');
         if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
@@ -1597,6 +1634,8 @@ ${formatExplanation(explanationLangText)}</div>
           selectedIdx: -1,
           isCorrect: null
         };
+        
+        sessionStorage.setItem('current_answers', JSON.stringify(quizState));
         
         answered = false;
         selectedOption = -1;
