@@ -61,7 +61,7 @@
       <!-- Phone & Password Auth -->
       <div id="phone-auth-container">
         <form id="phone-auth-form" onsubmit="event.preventDefault(); handlePhoneAuth();">
-          
+
           <div class="phone-input-group hidden" id="auth-name-group" style="margin-bottom: 12px;">
             <span class="phone-prefix" style="padding-right: 17px; padding-left: 17px;">👤</span>
             <input type="text" id="auth-name-input" placeholder="Full Name" autocomplete="name" />
@@ -69,26 +69,31 @@
 
           <div class="phone-input-group" style="margin-bottom: 12px;">
             <span class="phone-prefix">+91</span>
-            <input type="tel" id="auth-phone-input" placeholder="Enter mobile number" maxlength="10" autocomplete="tel" required />
+            <input type="tel" id="auth-phone-input" placeholder="Enter mobile number" maxlength="10" autocomplete="tel"
+              required />
           </div>
 
           <div class="phone-input-group" style="margin-bottom: 12px;">
             <span class="phone-prefix" style="padding-right: 17px; padding-left: 17px;">🔒</span>
-            <input type="password" id="auth-password-input" placeholder="Password (min 6 chars)" autocomplete="current-password" required minlength="6" />
+            <input type="password" id="auth-password-input" placeholder="Password (min 6 chars)"
+              autocomplete="current-password" required minlength="6" />
           </div>
 
           <button class="otp-btn" id="auth-submit-btn" type="submit">Login</button>
-          
+
           <p class="otp-status-msg hidden" id="auth-status-msg"></p>
-          
+
           <div style="margin-top: 16px; text-align: center; font-size: 0.85rem; color: var(--text-secondary);">
             <span id="auth-toggle-text">New here? </span>
-            <button type="button" onclick="toggleAuthMode()" style="background:none; border:none; color:var(--accent); font-weight:700; cursor:pointer;">Sign up</button>
+            <button type="button" onclick="toggleAuthMode()"
+              style="background:none; border:none; color:var(--accent); font-weight:700; cursor:pointer;">Sign
+              up</button>
           </div>
         </form>
       </div>
 
-      <button class="modal-close-btn" id="modal-close-btn" type="button" style="margin-top: 16px;">Skip — view results without saving</button>
+      <button class="modal-close-btn" id="modal-close-btn" type="button" style="margin-top: 16px;">Skip — view results
+        without saving</button>
     </div>
   </div>
 
@@ -386,7 +391,8 @@
         <p class="question-text" id="question-text"></p>
 
         <!-- Question Image (hidden by default) -->
-        <img id="question-image" class="question-image" src="" loading="lazy" decoding="async" alt="Question illustration" />
+        <img id="question-image" class="question-image" src="" loading="lazy" decoding="async"
+          alt="Question illustration" />
 
         <!-- Options -->
         <div class="options-list" id="options-list"></div>

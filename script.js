@@ -8,16 +8,16 @@ let allData = [];
 // Convert ISO date (2026-04-24) → "April 24, 2026"
 function isoToDisplay(iso) {
   if (!iso || iso.includes(',')) return iso; // already formatted
-  const [y,m,d] = iso.split('-');
+  const [y, m, d] = iso.split('-');
   if (!y || !m || !d) return iso;
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  return `${months[+m-1]} ${+d}, ${y}`;
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  return `${months[+m - 1]} ${+d}, ${y}`;
 }
 
 function normaliseDate(items) {
   if (!items) return [];
-  return items.map(item => ({ 
-    ...item, 
+  return items.map(item => ({
+    ...item,
     raw_date: item.date,
     raw_apply_date: item.apply_date,
     raw_last_date: item.last_date,
@@ -104,7 +104,7 @@ function toggleJobDetails(el) {
         btn.innerHTML = '❌ Close Details';
         btn.classList.add('open-btn');
       }
-      
+
       const uid = el.getAttribute('data-uid');
       if (uid && typeof renderComments === 'function') {
         renderComments(uid);
@@ -118,7 +118,7 @@ function activateTabForPostItem(postItem) {
   const tabContent = postItem.closest('.job-tab-content');
   if (!tabContent) return;
   const containerId = tabContent.id;
-  
+
   if (containerId === 'expired-jobs-container') {
     const btnExpired = document.getElementById("view-expired-jobs");
     if (btnExpired) {
@@ -155,7 +155,7 @@ function isExpired(dateStr) {
 }
 
 function highlightExamKeywords(title) {
-  const keywords = ['SSC GD','ASSAM POLICE','SSC CGL', 'SSC','RBI','INDIA POST GDS','BRO', 'UPSC', 'RRB', 'APSC', 'ADRE', 'Bank', 'Railway', 'SBI', 'IBPS', 'CISF', 'Indian Air Force', 'Indian Navy', 'Coal India', 'NABARD', 'Oil India'];
+  const keywords = ['SSC GD', 'ASSAM POLICE', 'SSC CGL', 'SSC', 'RBI', 'INDIA POST GDS', 'BRO', 'UPSC', 'RRB', 'APSC', 'ADRE', 'Bank', 'Railway', 'SBI', 'IBPS', 'CISF', 'Indian Air Force', 'Indian Navy', 'Coal India', 'NABARD', 'Oil India'];
   let newTitle = title;
   const sortedKeywords = keywords.sort((a, b) => b.length - a.length);
   for (const kw of sortedKeywords) {
@@ -179,13 +179,13 @@ function wrapTablesInResponsiveDiv(html) {
 }
 
 // ---- SHARE ON WHATSAPP LOGIC ----
-window.shareOnWhatsApp = function(uid) {
+window.shareOnWhatsApp = function (uid) {
   const job = allData.find(j => j.uid === uid);
   if (!job) return;
-  
+
   const title = job.title || '';
   const url = `https://newjobupdates.in/job/${uid}`;
-  
+
   let text = '';
   if (job.section === "Result") {
     text = `📊 *${title}*\n\n`;
@@ -204,17 +204,17 @@ window.shareOnWhatsApp = function(uid) {
     if (job.last_date) text += `⏰ Last Date: ${job.last_date}\n`;
     text += `\n Full Details & Apply: ${url}\n`;
   }
-  
+
   const encodedText = encodeURIComponent(text);
   window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
 };
 
-window.shareGeneral = function(uid) {
+window.shareGeneral = function (uid) {
   const job = allData.find(j => j.uid === uid);
   if (!job) return;
   const title = job.title || 'New Job Update';
   const url = `https://newjobupdates.in/job/${uid}`;
-  
+
   if (navigator.share) {
     navigator.share({
       title: title,
@@ -225,7 +225,7 @@ window.shareGeneral = function(uid) {
   }
 };
 
-window.copyJobLink = function(uid, btnElement) {
+window.copyJobLink = function (uid, btnElement) {
   const url = `https://newjobupdates.in/job/${uid}`;
   navigator.clipboard.writeText(url).then(() => {
     const originalHTML = btnElement.innerHTML;
@@ -247,7 +247,7 @@ function generatePostHTML(data) {
     const expiredClass = isPastDeadline ? "expired-card-item" : "";
     const badgeClass = isPastDeadline ? "badge-expired" : getBadgeClass(item.badge);
     const badgeText = isPastDeadline ? "CLOSED" : (item.organization || item.section || getBadgeText(item.badge));
-    
+
     return `
     <div class="post-item ${expiredClass}" data-uid="${item.uid}" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { toggleJobDetails(this); event.preventDefault(); }">
       <span class="post-badge ${badgeClass}">${badgeText}</span>
@@ -324,8 +324,8 @@ function renderPosts(listId, data) {
 function setLiveDate() {
   const el = document.getElementById("live-date");
   if (!el) return;
-  const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const now = new Date();
   el.textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 }
@@ -337,7 +337,7 @@ function doSearch(query) {
   const overlay = document.getElementById("search-overlay");
   const resultsList = document.getElementById("search-results-list");
   const noResults = document.getElementById("no-results-msg");
-  
+
   if (!overlay || !resultsList) return;
 
   if (!query || query.trim().length < 2) {
@@ -382,7 +382,7 @@ function doSearch(query) {
 }
 
 // Global handler to navigate to the clicked search result
-window.handleSearchResultClick = function(uid) {
+window.handleSearchResultClick = function (uid) {
   // 1. Close overlay
   const overlay = document.getElementById("search-overlay");
   if (overlay) overlay.classList.remove("active");
@@ -395,13 +395,13 @@ window.handleSearchResultClick = function(uid) {
 
     // 4. Scroll to it
     post.scrollIntoView({ behavior: "smooth", block: "center" });
-    
+
     // 5. Expand details if closed
     const details = post.querySelector('.post-details');
     if (details && !details.classList.contains('expanded')) {
       toggleJobDetails(post);
     }
-    
+
     // 6. Highlight briefly to draw attention
     post.style.transition = "background-color 0.4s";
     const origBg = post.style.backgroundColor;
@@ -422,7 +422,7 @@ function initHamburger() {
     e.stopPropagation();
     menu.classList.toggle("open");
   });
-  
+
   // Close menu when clicking outside
   document.addEventListener("click", (e) => {
     if (menu.classList.contains("open") && !menu.contains(e.target) && e.target !== hamburger) {
@@ -677,9 +677,9 @@ function generateJobSchema(jobs) {
     "@context": "https://schema.org",
     "@graph": jobs.filter(j => j.title).map(job => {
       const datePosted = job.raw_date ? new Date(job.raw_date) : new Date();
-      let validThroughDate = job.raw_last_date && !isNaN(new Date(job.raw_last_date).getTime()) ? new Date(job.raw_last_date) : 
-                               (job.raw_apply_date && !isNaN(new Date(job.raw_apply_date).getTime()) ? new Date(job.raw_apply_date) : null);
-      
+      let validThroughDate = job.raw_last_date && !isNaN(new Date(job.raw_last_date).getTime()) ? new Date(job.raw_last_date) :
+        (job.raw_apply_date && !isNaN(new Date(job.raw_apply_date).getTime()) ? new Date(job.raw_apply_date) : null);
+
       // Provide a 30-day dummy fallback for "TBA" or missing dates to fix the 6th warning
       if (!validThroughDate) {
         validThroughDate = new Date(datePosted.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -720,7 +720,7 @@ function generateJobSchema(jobs) {
       };
     })
   };
-  
+
   const oldScript = document.getElementById('job-schema-script');
   if (oldScript) oldScript.remove();
 
@@ -741,7 +741,7 @@ function getComments(uid) {
   }
 }
 
-window.renderComments = function(uid) {
+window.renderComments = function (uid) {
   const list = document.getElementById('comments-list-' + uid);
   if (!list) return;
   const comments = getComments(uid);
@@ -759,19 +759,19 @@ window.renderComments = function(uid) {
 
 let lastCommentTime = 0;
 
-window.addComment = function(uid) {
+window.addComment = function (uid) {
   const input = document.getElementById('comment-input-' + uid);
   if (!input || !input.value.trim()) return;
-  
+
   // Anti-Spam: Rate Limiting (5 seconds)
   const now = Date.now();
   if (now - lastCommentTime < 5000) {
     alert("Please wait a few seconds before posting another comment to prevent spam.");
     return;
   }
-  
+
   let text = input.value.trim();
-  
+
   // Anti-Spam: Max Length (Prevent massive walls of text)
   if (text.length > 300) {
     alert("Comment is too long! Please keep it under 300 characters.");
@@ -790,7 +790,7 @@ window.addComment = function(uid) {
   const comments = getComments(uid);
   comments.push({ text, date: new Date().toISOString() });
   localStorage.setItem('comments_' + uid, JSON.stringify(comments));
-  
+
   lastCommentTime = Date.now();
   input.value = "";
   renderComments(uid);
@@ -799,13 +799,13 @@ window.addComment = function(uid) {
 // ---- INIT ----
 document.addEventListener("DOMContentLoaded", async () => {
   setLiveDate();
-  
+
   // Set copyright year dynamically
   const yearSpan = document.getElementById("copyright-year");
   if (yearSpan) {
     yearSpan.textContent = new Date().getFullYear();
   }
-  
+
   // Fetch JSON data dynamically
   const [rawJobs, rawResult, rawScholarship] = await Promise.all([
     fetchSectionData('/data/jobs.json'),
@@ -848,13 +848,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const centralJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && (j.group === 'Central' || (j.tag !== 'Assam' && j.tag !== 'APSC' && j.group !== 'Assam')));
   const expiredJobs = jobsData.filter(j => j.status !== 'upcoming' && j.raw_last_date && isExpired(j.raw_last_date)).slice(0, 5);
   const upcomingJobs = jobsData.filter(j => j.status === 'upcoming');
-  
+
   const activeResult = resultData.filter(r => r.status !== 'upcoming');
   const activeScholarship = scholarshipData.filter(s => s.status !== 'upcoming');
 
   renderPosts("assam-posts-list", assamJobs);
   renderPosts("central-posts-list", centralJobs);
-  
+
   if (upcomingJobs.length > 0) {
     renderPosts("upcoming-posts-list", upcomingJobs);
   }
@@ -888,14 +888,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (btnExpired) {
     btnExpired.addEventListener("click", () => {
       document.querySelectorAll('#job-tabs .job-tab').forEach(t => t.classList.remove('active'));
-      
+
       const assamContainer = document.getElementById('assam-jobs-container');
       const centralContainer = document.getElementById('central-jobs-container');
       const upcomingContainer = document.getElementById('upcoming-jobs-container');
       if (assamContainer) assamContainer.classList.remove('active');
       if (centralContainer) centralContainer.classList.remove('active');
       if (upcomingContainer) upcomingContainer.classList.remove('active');
-      
+
       const expiredContainer = document.getElementById('expired-jobs-container');
       if (expiredContainer) expiredContainer.classList.add('active');
     });
