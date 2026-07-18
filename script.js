@@ -261,7 +261,7 @@ function generatePostHTML(data) {
         ${(item.apply_date || item.education || item.other_details || item.details || item.salary || item.location || item.application_fee || item.apply_link) ? `
         <button type="button" class="view-details-btn" onclick="event.stopPropagation(); toggleJobDetails(this.closest('.post-item'))">👁️ View Details</button>
         <div class="post-details" onclick="event.stopPropagation()">
-          ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.last_date || 'the deadline'}</strong>. <a href="#assam-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
+          ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.last_date || 'the deadline'}</strong>. <a href="https://newjobupdates.in/#assam-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
           ${safeMainDetails ? `<div class="extended-details-content">${safeMainDetails}</div>` : ''}
           <div class="post-details-grid">
             ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> <span class="highlight-date text-right" style="color:var(--primary);">${item.apply_date}</span></div>` : ''}
