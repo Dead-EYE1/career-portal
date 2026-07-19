@@ -1670,12 +1670,6 @@ html.light-theme .theme-icon-moon {
 }
 
 @media (max-width: 900px) {
-  .desktop-quick-nav {
-    display: none;
-  }
-  .mobile-quick-nav {
-    display: grid;
-  }
 }
 
 .qnav-box {
@@ -2555,6 +2549,11 @@ html.light-theme .theme-icon-moon {
 
   .breaking-news-bar {
     position: static;
+  }
+
+  /* Hide the sidebar WhatsApp banner on mobile so only the top one is visible */
+  #join-banner {
+    display: none;
   }
 
   /* 2×2 grid for Quick Nav so all items fit on screen without scrolling */

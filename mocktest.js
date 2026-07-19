@@ -1528,6 +1528,11 @@ ${formatExplanation(explanationLangText)}</div>
       const statusContainer = document.getElementById('save-status-container');
       if (statusContainer) statusContainer.innerHTML = '';
       
+      // Remove test param from URL so refresh doesn't jump back into the quiz
+      const url = new URL(window.location);
+      url.searchParams.delete('test');
+      window.history.replaceState({}, '', url);
+
       if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
     }
 
@@ -1540,6 +1545,13 @@ ${formatExplanation(explanationLangText)}</div>
       const statusContainer = document.getElementById('save-status-container');
       if (statusContainer) statusContainer.innerHTML = '';
       
+      // Clear all URL params so refresh stays on start screen
+      const url = new URL(window.location);
+      url.searchParams.delete('exam');
+      url.searchParams.delete('sub');
+      url.searchParams.delete('test');
+      window.history.replaceState({}, '', url);
+
       startScreen.classList.remove('hidden');
     }
 
