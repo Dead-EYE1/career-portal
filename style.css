@@ -154,7 +154,6 @@
 }
 
 .light-theme .badge-admit,
-.light-theme .badge-result,
 .light-theme .badge-scholarship {
   background: #f1f5f9;
   color: #64748b;
@@ -1173,7 +1172,6 @@ html.light-theme .theme-icon-moon {
 }
 
 .badge-admit,
-.badge-result,
 .badge-scholarship {
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-secondary);
@@ -1731,15 +1729,6 @@ html.light-theme .theme-icon-moon {
 
 .qnav-admit:hover .qnav-label,
 .qnav-admit:hover .qnav-count {
-  color: #fff;
-}
-
-.qnav-result:hover {
-  background: linear-gradient(135deg, var(--purple), #9c27b0);
-}
-
-.qnav-result:hover .qnav-label,
-.qnav-result:hover .qnav-count {
   color: #fff;
 }
 

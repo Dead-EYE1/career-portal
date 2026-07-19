@@ -45,7 +45,6 @@ function getBadgeClass(badge) {
     new: "badge-new",
     hot: "badge-hot",
     admit: "badge-admit",
-    result: "badge-result",
     scholarship: "badge-scholarship",
   };
   return map[badge] || "badge-new";
@@ -56,7 +55,6 @@ function getBadgeText(badge) {
     new: "NEW",
     hot: "HOT",
     admit: "ADMIT",
-    result: "RESULT",
     scholarship: "AWARD",
   };
   return map[badge] || "NEW";
@@ -65,7 +63,6 @@ function getBadgeText(badge) {
 function getButtonText(badge) {
   const map = {
     admit: "Download Now",
-    result: "Check Result",
     scholarship: "Apply Now",
     new: "Apply Now",
     hot: "Apply Now"
@@ -187,12 +184,7 @@ window.shareOnWhatsApp = function (uid) {
   const url = `https://newjobupdates.in/job/${uid}`;
 
   let text = '';
-  if (job.section === "Result") {
-    text = `📊 *${title}*\n\n`;
-    if (job.tag) text += `📌 ${job.tag}\n`;
-    if (job.date) text += `📅 ${job.date}\n`;
-    text += `\n Check Result: ${url}\n`;
-  } else if (job.section === "Scholarship") {
+  if (job.section === "Scholarship") {
     text = `🏆 *${title}*\n\n`;
     if (job.education) text += `🎓 ${job.education}\n`;
     if (job.last_date) text += `⏰ Last Date: ${job.last_date}\n`;
@@ -807,9 +799,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Fetch JSON data dynamically
-  const [rawJobs, rawResult, rawScholarship] = await Promise.all([
+  const [rawJobs, rawScholarship] = await Promise.all([
     fetchSectionData('/data/jobs.json'),
-    fetchSectionData('/data/result.json'),
     fetchSectionData('/data/scholarship.json')
   ]);
 
@@ -835,12 +826,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     return b.id - a.id;
   });
-  const resultData = normaliseDate(rawResult).map(r => ({ ...r, section: "Result", uid: `result-${r.id}` }));
   const scholarshipData = normaliseDate(rawScholarship).map(s => ({ ...s, section: "Scholarship", uid: `scholar-${s.id}` }));
 
   allData = [
     ...jobsData,
-    ...resultData,
     ...scholarshipData
   ];
 
@@ -849,7 +838,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const expiredJobs = jobsData.filter(j => j.status !== 'upcoming' && j.raw_last_date && isExpired(j.raw_last_date)).slice(0, 5);
   const upcomingJobs = jobsData.filter(j => j.status === 'upcoming');
 
-  const activeResult = resultData.filter(r => r.status !== 'upcoming');
   const activeScholarship = scholarshipData.filter(s => s.status !== 'upcoming');
 
   renderPosts("assam-posts-list", assamJobs);
@@ -867,7 +855,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  renderPosts("result-list", activeResult);
   renderPosts("scholarship-list", activeScholarship);
 
 
