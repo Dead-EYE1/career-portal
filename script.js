@@ -101,11 +101,6 @@ function toggleJobDetails(el) {
         btn.innerHTML = '❌ Close Details';
         btn.classList.add('open-btn');
       }
-
-      const uid = el.getAttribute('data-uid');
-      if (uid && typeof renderComments === 'function') {
-        renderComments(uid);
-      }
     }
   }
 }
@@ -283,16 +278,6 @@ function generatePostHTML(data) {
             </div>
           </div>
           
-          <div class="comments-section" id="comments-${item.uid}" onclick="event.stopPropagation()">
-            <h4 class="comments-title">Comments</h4>
-            <div class="comments-list" id="comments-list-${item.uid}">
-              <div style="font-size: 0.85rem; color: var(--text-muted); text-align: center; padding: 10px 0;">Loading comments...</div>
-            </div>
-            <div class="comment-form">
-              <input type="text" id="comment-input-${item.uid}" placeholder="Write a comment..." class="comment-input" onkeydown="if(event.key === 'Enter') addComment('${item.uid}')" />
-              <button type="button" onclick="addComment('${item.uid}')" class="comment-submit-btn">Post</button>
-            </div>
-          </div>
           
         </div>
         ` : ''}
@@ -765,71 +750,6 @@ function generateJobSchema(jobs) {
   document.head.appendChild(script);
 }
 
-// ---- COMMENTS LOGIC ----
-function getComments(uid) {
-  try {
-    const data = localStorage.getItem('comments_' + uid);
-    return data ? JSON.parse(data) : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-window.renderComments = function (uid) {
-  const list = document.getElementById('comments-list-' + uid);
-  if (!list) return;
-  const comments = getComments(uid);
-  if (comments.length === 0) {
-    list.innerHTML = `<div style="font-size: 0.85rem; color: var(--text-muted); text-align: center; padding: 10px 0;">No comments yet. Be the first!</div>`;
-    return;
-  }
-  list.innerHTML = comments.map(c => `
-    <div class="comment-item">
-      <strong>Guest User</strong>
-      <div class="comment-text">${c.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
-    </div>
-  `).join("");
-};
-
-let lastCommentTime = 0;
-
-window.addComment = function (uid) {
-  const input = document.getElementById('comment-input-' + uid);
-  if (!input || !input.value.trim()) return;
-
-  // Anti-Spam: Rate Limiting (5 seconds)
-  const now = Date.now();
-  if (now - lastCommentTime < 5000) {
-    alert("Please wait a few seconds before posting another comment to prevent spam.");
-    return;
-  }
-
-  let text = input.value.trim();
-
-  // Anti-Spam: Max Length (Prevent massive walls of text)
-  if (text.length > 300) {
-    alert("Comment is too long! Please keep it under 300 characters.");
-    return;
-  }
-
-  // Anti-Spam: Basic Profanity Filter (Example)
-  const blockedWords = ['spam', 'hate', 'fake'];
-  for (let word of blockedWords) {
-    if (text.toLowerCase().includes(word)) {
-      alert("Your comment contains blocked words and cannot be posted.");
-      return;
-    }
-  }
-
-  const comments = getComments(uid);
-  comments.push({ text, date: new Date().toISOString() });
-  localStorage.setItem('comments_' + uid, JSON.stringify(comments));
-
-  lastCommentTime = Date.now();
-  input.value = "";
-  renderComments(uid);
-};
-
 // ---- INIT ----
 document.addEventListener("DOMContentLoaded", async () => {
   setLiveDate();
@@ -973,3 +893,223 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   console.log("✅ New Job Portal Loaded Successfully");
 });
+
+// --- CONTACT MODAL LOGIC ---
+window.openContactModal = function(e) {
+  if (e) e.preventDefault();
+  const modal = document.getElementById('contact-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // prevent scrolling
+  }
+};
+
+window.closeContactModal = function() {
+  const modal = document.getElementById('contact-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+};
+
+window.submitContactForm = async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn = document.getElementById('contact-submit-btn');
+  const status = document.getElementById('contact-status');
+  
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  status.textContent = '';
+  status.className = 'contact-status';
+  
+  const formData = new FormData(form);
+  
+  try {
+    // Dynamically import Firebase
+    const { initializeApp, getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const { getFirestore, collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyAh1dbSY0lLbYAZSzfPPpTlru3OmeZ3p_E",
+      authDomain: "newjobupdates-c234a.firebaseapp.com",
+      projectId: "newjobupdates-c234a",
+      storageBucket: "newjobupdates-c234a.firebasestorage.app",
+      messagingSenderId: "275056131922",
+      appId: "1:275056131922:web:2b44bb31cf42e3897c448b"
+    };
+
+    let app;
+    try {
+      app = getApp();
+    } catch (err) {
+      app = initializeApp(firebaseConfig);
+    }
+    const db = getFirestore(app);
+    
+    await addDoc(collection(db, 'contact_messages'), {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      message: formData.get('message'),
+      createdAt: serverTimestamp()
+    });
+    
+    status.textContent = 'Message sent successfully! We will get back to you soon.';
+    status.className = 'contact-status success';
+    form.reset();
+    btn.textContent = 'Sent!';
+    setTimeout(() => {
+      closeContactModal();
+      btn.disabled = false;
+      btn.textContent = 'Send Message';
+      status.textContent = '';
+    }, 2000);
+  } catch (error) {
+    console.error("Error submitting contact form:", error);
+    status.textContent = 'Oops! There was a problem saving your message.';
+    status.className = 'contact-status error';
+    btn.disabled = false;
+    btn.textContent = 'Send Message';
+  }
+};
+
+// Close modal when clicking outside of it
+document.addEventListener('click', function(e) {
+  const contactModal = document.getElementById('contact-modal');
+  if (contactModal && !contactModal.classList.contains('hidden') && e.target === contactModal) {
+    closeContactModal();
+  }
+  const infoModal = document.getElementById('info-modal');
+  if (infoModal && !infoModal.classList.contains('hidden') && e.target === infoModal) {
+    closeInfoModal();
+  }
+});
+
+// --- INFO MODAL LOGIC (About, Disclaimer, Privacy, Terms, Advertise) ---
+const infoPages = {
+  about: {
+    title: 'About Us',
+    body: `
+      <p><strong>NewJobUpdates.in</strong> is a dedicated career portal designed to help job seekers across India — especially from Assam and the Northeast — stay updated with the latest government job notifications, admit cards, results, and exam schedules.</p>
+      <h3>Our Mission</h3>
+      <p>We aim to bridge the information gap by providing timely, accurate, and well-organized job updates so that every aspirant has an equal opportunity to prepare and apply for competitive exams.</p>
+      <h3>What We Offer</h3>
+      <ul>
+        <li>📋 Latest Govt Job Notifications (SSC, UPSC, State-level exams)</li>
+        <li>📝 Free Mock Tests with instant scoring and detailed solutions</li>
+        <li>🎓 Scholarship alerts for students</li>
+        <li>📬 Email alerts so you never miss a deadline</li>
+      </ul>
+      <h3>Our Team</h3>
+      <p>NewJobUpdates.in is maintained by a small, passionate team of developers and educators who believe that access to information should be free and timely. We continuously improve the platform based on user feedback.</p>
+      <p>Have questions or suggestions? Feel free to reach out via the <a href="#" onclick="closeInfoModal(); setTimeout(()=>openContactModal(), 300); return false;">Contact Us</a> page.</p>
+    `
+  },
+  disclaimer: {
+    title: 'Disclaimer',
+    body: `
+      <p>The information provided on <strong>NewJobUpdates.in</strong> is for general informational purposes only. While we strive to keep the information up-to-date and accurate, we make no representations or warranties of any kind — express or implied — about the completeness, accuracy, reliability, or availability of the information, products, services, or related graphics contained on the website.</p>
+      <h3>External Links</h3>
+      <p>This website may contain links to external websites that are not operated by us. We have no control over the content, privacy policies, or practices of any third-party sites and assume no responsibility for them.</p>
+      <h3>Job Notification Accuracy</h3>
+      <p>All job notifications, exam dates, eligibility criteria, and other details published on this site are sourced from official government websites and public notices. However, we strongly recommend that users verify all information from the official source before taking any action (e.g., applying for a job or paying a fee).</p>
+      <h3>No Professional Advice</h3>
+      <p>The content on this site does not constitute professional career advice. Users should consult with appropriate professionals or official bodies for specific career-related decisions.</p>
+      <p>By using this website, you acknowledge and agree that you do so at your own risk.</p>
+    `
+  },
+  privacy: {
+    title: 'Privacy Policy',
+    body: `
+      <p><strong>Effective Date:</strong> January 1, 2025</p>
+      <p>At <strong>NewJobUpdates.in</strong>, we respect your privacy and are committed to protecting any personal information you share with us.</p>
+      <h3>Information We Collect</h3>
+      <ul>
+        <li><strong>Contact Form:</strong> When you submit the contact form, we collect your name, email address, and message. This data is stored securely in our database and used only to respond to your inquiry.</li>
+        <li><strong>Mock Test Scores:</strong> If you sign in via Google, we store your test scores linked to your account for tracking your progress.</li>
+        <li><strong>Newsletter:</strong> If you subscribe to our email alerts, we store your email address to send job notifications.</li>
+        <li><strong>Analytics:</strong> We use Google Analytics to understand site traffic and improve user experience. This may collect anonymized data such as browser type, device, and pages visited.</li>
+      </ul>
+      <h3>How We Use Your Information</h3>
+      <ul>
+        <li>To respond to your messages and inquiries</li>
+        <li>To save and display your mock test progress</li>
+        <li>To send job update emails (only if you subscribed)</li>
+        <li>To improve website performance and content</li>
+      </ul>
+      <h3>Data Security</h3>
+      <p>We use Firebase (by Google) for authentication and data storage, which provides industry-standard security measures. We do not sell, trade, or share your personal information with third parties.</p>
+      <h3>Your Rights</h3>
+      <p>You can request deletion of your data at any time by contacting us through the Contact form. You may also unsubscribe from our email alerts at any time.</p>
+      <h3>Cookies</h3>
+      <p>This website may use cookies for analytics and authentication purposes. By continuing to use the site, you consent to our use of cookies.</p>
+    `
+  },
+  terms: {
+    title: 'Terms & Conditions',
+    body: `
+      <p><strong>Last updated:</strong> January 1, 2025</p>
+      <p>By accessing and using <strong>NewJobUpdates.in</strong>, you agree to be bound by the following terms and conditions.</p>
+      <h3>Use of Content</h3>
+      <p>All content on this website — including text, graphics, and data — is provided for informational purposes only. You may not reproduce, distribute, or republish any content from this site without prior written permission.</p>
+      <h3>User Accounts</h3>
+      <p>When you sign in using Google, you agree to provide accurate information. You are responsible for maintaining the confidentiality of your account and for all activities that occur under it.</p>
+      <h3>Mock Tests</h3>
+      <p>Mock tests are provided free of charge for educational purposes. We do not guarantee that these tests reflect actual exam patterns, and scores are not official. Use them as a study aid only.</p>
+      <h3>Prohibited Conduct</h3>
+      <ul>
+        <li>Using the site for any unlawful purpose</li>
+        <li>Attempting to gain unauthorized access to our systems</li>
+        <li>Posting spam, offensive, or misleading content</li>
+        <li>Scraping or automated data collection from the site</li>
+      </ul>
+      <h3>Limitation of Liability</h3>
+      <p>NewJobUpdates.in shall not be liable for any direct, indirect, or consequential damages arising from the use of this website. We are not responsible for any missed deadlines or incorrect information — always verify from official sources.</p>
+      <h3>Changes to Terms</h3>
+      <p>We reserve the right to update these terms at any time. Continued use of the website after changes constitutes acceptance of the new terms.</p>
+    `
+  },
+  advertise: {
+    title: 'Advertise With Us',
+    body: `
+      <p>Looking to reach thousands of active job seekers and competitive exam aspirants? <strong>NewJobUpdates.in</strong> offers affordable advertising opportunities to help your brand connect with a highly engaged audience.</p>
+      <h3>Why Advertise With Us?</h3>
+      <ul>
+        <li>🎯 <strong>Targeted Audience:</strong> Our visitors are students, graduates, and professionals actively seeking government jobs and career opportunities.</li>
+        <li>📈 <strong>Growing Traffic:</strong> We have a steadily growing user base from Assam and across India.</li>
+        <li>💰 <strong>Affordable Rates:</strong> We offer competitive pricing for banner ads, sponsored posts, and email promotions.</li>
+        <li>🤝 <strong>Flexible Formats:</strong> Choose from banner placements, sponsored job listings, newsletter sponsorships, and more.</li>
+      </ul>
+      <h3>Ad Formats Available</h3>
+      <ul>
+        <li><strong>Banner Ads</strong> — Displayed across the site (header, sidebar, or footer positions)</li>
+        <li><strong>Sponsored Posts</strong> — Featured job listings or educational content</li>
+        <li><strong>Newsletter Ads</strong> — Reach subscribers directly in their inbox</li>
+        <li><strong>Custom Campaigns</strong> — Tailored advertising solutions for your needs</li>
+      </ul>
+      <h3>Get in Touch</h3>
+      <p>Interested? Reach out to us through the <a href="#" onclick="closeInfoModal(); setTimeout(()=>openContactModal(), 300); return false;">Contact Us</a> page with the subject "Advertising Inquiry" and we'll get back to you with pricing and placement options.</p>
+    `
+  }
+};
+
+window.openInfoModal = function(e, page) {
+  if (e) e.preventDefault();
+  const modal = document.getElementById('info-modal');
+  const title = document.getElementById('info-modal-title');
+  const body = document.getElementById('info-modal-body');
+  const data = infoPages[page];
+  if (!modal || !data) return;
+  title.textContent = data.title;
+  body.innerHTML = data.body;
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeInfoModal = function() {
+  const modal = document.getElementById('info-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+};

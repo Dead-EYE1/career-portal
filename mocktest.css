@@ -2172,6 +2172,11 @@ html.light-theme .theme-icon-moon { display: none; }
   flex-direction: column;
   gap: 8px;
 }
+.error-report-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
 .error-report-row {
   display: flex;
   gap: 8px;

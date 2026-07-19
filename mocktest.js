@@ -377,13 +377,18 @@
         reportTextElem.value = '';
         statusElem.textContent = 'Thank you for your feedback!';
         statusElem.className = 'success';
-        btn.textContent = 'Submitted';
+        btn.textContent = 'Submitted ✓';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = 'Submit';
+          statusElem.textContent = '';
+        }, 3000);
       } catch (error) {
         console.error('Error submitting report:', error);
         statusElem.textContent = 'Failed to submit report. Please try again.';
         statusElem.className = 'error';
         btn.disabled = false;
-        btn.textContent = 'Submit Report';
+        btn.textContent = 'Submit';
       }
     };
 
