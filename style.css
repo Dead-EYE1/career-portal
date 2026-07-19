@@ -1654,7 +1654,7 @@ html.light-theme .theme-icon-moon {
    ============================================= */
 .quick-nav-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
   margin-bottom: 22px;
   width: 100%;
@@ -1663,7 +1663,6 @@ html.light-theme .theme-icon-moon {
 }
 
 .desktop-quick-nav {
-  grid-template-columns: 1fr 1fr;
 }
 
 .mobile-quick-nav {
@@ -3133,3 +3132,198 @@ html.light-theme .theme-icon-moon {
 
 /* Responsive design for small mobile screens — header layout is handled by
    the 700px breakpoint above; only keep non-header tweaks here if needed. */
+
+/* =============================================
+   SCHOLARSHIP GRID AND CARDS
+   ============================================= */
+.scholarship-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 10px 0;
+}
+
+.scholar-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.scholar-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.scholar-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.light-theme .scholar-card {
+  background: #ffffff;
+  border: 1px solid #d1fae5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.light-theme .scholar-card:hover {
+  box-shadow: 0 6px 12px rgba(16, 185, 129, 0.08);
+  border-color: #a7f3d0;
+}
+
+.scholar-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.scholar-icon-wrap {
+  width: 38px;
+  height: 38px;
+  background: rgba(16, 185, 129, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.light-theme .scholar-icon-wrap {
+  background: #ecfdf5;
+  border-color: #d1fae5;
+}
+
+.scholar-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 50px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.light-theme .scholar-badge {
+  color: #065f46;
+  background: #d1fae5;
+}
+
+.scholar-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.scholar-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.scholar-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.s-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.s-meta-item span {
+  font-size: 0.9rem;
+}
+
+.scholar-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(16, 185, 129, 0.15);
+}
+
+.scholar-apply-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
+}
+
+.scholar-apply-btn:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+}
+
+.scholar-share-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.scholar-share-btn:hover {
+  background: #22c55e;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Expired Scholarship Card Override */
+.scholar-card.expired-card {
+  opacity: 0.7;
+  filter: grayscale(0.5);
+}
+
+.scholar-card.expired-card::before {
+  background: var(--text-muted);
+}
+
+.scholar-card.expired-card .scholar-badge {
+  background: rgba(100, 116, 139, 0.2);
+  color: var(--text-muted);
+}
+
+.scholar-card.expired-card .scholar-apply-btn {
+  background: var(--text-muted);
+  box-shadow: none;
+}

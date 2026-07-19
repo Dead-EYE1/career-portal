@@ -510,7 +510,11 @@
     <!-- Section-Wise Breakdown -->
     <div class="section-breakdown" id="section-breakdown"></div>
 
-    <button class="retry-btn result-retry-btn" id="reattempt-btn" onclick="reattemptTest()">🔄 Reattempt Test</button>
+    <div class="result-action-row" style="display: flex; gap: 10px; margin-bottom: 24px;">
+      <button class="retry-btn result-retry-btn" style="flex: 3; margin: 0; padding: 14px 10px; font-size: 0.9rem;" id="reattempt-btn" onclick="reattemptTest()">🔄 Reattempt Test</button>
+      <button class="back-select-btn" style="flex: 2; margin: 0; padding: 14px 10px; font-size: 0.9rem; text-align: center;" onclick="goBackToTestSelection()">↻ Tests</button>
+      <button class="back-select-btn" style="flex: 1; margin: 0; padding: 14px 10px; font-size: 0.9rem; text-align: center;" onclick="restartQuiz()">🏠 Home</button>
+    </div>
 
     <div class="solutions-container" id="solutions-container"></div>
 
@@ -518,8 +522,6 @@
     <div id="save-status-container"></div>
 
     <div class="result-action-buttons">
-      <button class="back-select-btn" onclick="restartQuiz()">↻ Choose Another Test</button>
-      <button class="back-select-btn" onclick="goBackToTestSelection()">← Back to Test Selection</button>
       <button class="logout-result-btn hidden" id="result-logout-btn" onclick="handleLogout()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
           stroke-linejoin="round" class="logout-result-icon">
