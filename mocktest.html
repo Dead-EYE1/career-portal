@@ -510,6 +510,15 @@
     <!-- Section-Wise Breakdown -->
     <div class="section-breakdown" id="section-breakdown"></div>
 
+    <!-- Error Report Section -->
+    <div class="error-report-container compact">
+      <div class="error-report-row">
+        <input type="text" id="error-report-text" placeholder="Spotted an error in a question? Let us know!" />
+        <button class="error-report-btn" id="submit-error-btn" onclick="submitErrorReport()">Submit</button>
+      </div>
+      <div id="error-report-status"></div>
+    </div>
+
     <div class="result-action-row" style="display: flex; gap: 10px; margin-bottom: 24px;">
       <button class="retry-btn result-retry-btn" style="flex: 3; margin: 0; padding: 14px 10px; font-size: 0.9rem;" id="reattempt-btn" onclick="reattemptTest()">🔄 Reattempt Test</button>
       <button class="back-select-btn" style="flex: 2; margin: 0; padding: 14px 10px; font-size: 0.9rem; text-align: center;" onclick="goBackToTestSelection()">↻ Tests</button>

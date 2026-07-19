@@ -2160,3 +2160,64 @@ html.light-theme .theme-icon-moon { display: none; }
   width: 16px;
   height: 16px;
 }
+
+/* --- Error Report Section --- */
+.error-report-container.compact {
+  background: var(--bg-card);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.error-report-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.error-report-container input {
+  flex-grow: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+.error-report-container input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+.error-report-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.error-report-btn:hover {
+  opacity: 0.9;
+}
+.error-report-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+#error-report-status {
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding-left: 4px;
+}
+#error-report-status.success {
+  color: var(--green);
+}
+#error-report-status.error {
+  color: var(--red);
+}

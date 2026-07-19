@@ -1,7 +1,7 @@
 // ── Firebase Imports ───────────────────────────────
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
-    import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, where, serverTimestamp, addDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
     // ── Firebase Config ─────────────────────────────────
@@ -338,6 +338,55 @@
         statusContainer.innerHTML = '<div class="save-status error">⚠ Could not save score. Please try again.</div>';
       }
     }
+
+    // ── Report Error ─────────────────────────────────────────
+    window.submitErrorReport = async function() {
+      const reportTextElem = document.getElementById('error-report-text');
+      const statusElem = document.getElementById('error-report-status');
+      const btn = document.getElementById('submit-error-btn');
+      
+      if (!reportTextElem || !statusElem) return;
+      
+      const reportText = reportTextElem.value.trim();
+      if (!reportText) {
+        statusElem.textContent = 'Please enter a description of the error.';
+        statusElem.className = 'error';
+        return;
+      }
+      
+      if (!currentUser) {
+        statusElem.textContent = 'You must be logged in to submit a report.';
+        statusElem.className = 'error';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+      statusElem.textContent = '';
+      
+      try {
+        await addDoc(collection(db, 'question_errors'), {
+          userId: currentUser.uid,
+          studentName: currentUser.displayName,
+          exam: selectedCategory,
+          testId: selectedTestId,
+          reportText: reportText,
+          createdAt: serverTimestamp()
+        });
+        
+        reportTextElem.value = '';
+        statusElem.textContent = 'Thank you for your feedback!';
+        statusElem.className = 'success';
+        btn.textContent = 'Submitted';
+      } catch (error) {
+        console.error('Error submitting report:', error);
+        statusElem.textContent = 'Failed to submit report. Please try again.';
+        statusElem.className = 'error';
+        btn.disabled = false;
+        btn.textContent = 'Submit Report';
+      }
+    };
+
 
     // ── Scoring & Sectional Constants ────────────────────
     const CORRECT_MARKS = 2;
