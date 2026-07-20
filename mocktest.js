@@ -1419,11 +1419,8 @@ ${formatExplanation(explanationLangText)}</div>
 
     // ── Back Button Action ────────────────────────────────
     function goBackToCategories() {
-      if (subScreen) subScreen.classList.add('hidden');
-      startScreen.classList.remove('hidden');
-      
-      const cards = document.querySelectorAll('.category-card');
-      cards.forEach(c => c.classList.remove('selected'));
+      pushUrlState(null, null, null);
+      initFromURL(true);
     }
 
     // ── Render Sub-Category Grid Dynamically ────────────
@@ -1464,6 +1461,7 @@ ${formatExplanation(explanationLangText)}</div>
 
     function selectSubCategory(subCategory) {
       selectedSubCategory = subCategory;
+      pushUrlState(selectedCategory, subCategory, null);
       loadTestsDynamically(selectedCategory, subCategory);
     }
 
@@ -1570,8 +1568,8 @@ ${formatExplanation(explanationLangText)}</div>
 
     // ── Test Selection Back Button Action ─────────────────
     function goBackToSubCategories() {
-      if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
-      if (subScreen) subScreen.classList.remove('hidden');
+      pushUrlState(selectedCategory, null, null);
+      initFromURL(true);
     }
 
     // ── Result Screen Back Button Action ──────────────────
@@ -1582,12 +1580,8 @@ ${formatExplanation(explanationLangText)}</div>
       const statusContainer = document.getElementById('save-status-container');
       if (statusContainer) statusContainer.innerHTML = '';
       
-      // Remove test param from URL so refresh doesn't jump back into the quiz
-      const url = new URL(window.location);
-      url.searchParams.delete('test');
-      window.history.replaceState({}, '', url);
-
-      if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
+      pushUrlState(selectedCategory, selectedSubCategory, null);
+      initFromURL(true);
     }
 
     // ── Restart (go back to start screen) ────────────────
@@ -1598,15 +1592,8 @@ ${formatExplanation(explanationLangText)}</div>
       
       const statusContainer = document.getElementById('save-status-container');
       if (statusContainer) statusContainer.innerHTML = '';
-      
-      // Clear all URL params so refresh stays on start screen
-      const url = new URL(window.location);
-      url.searchParams.delete('exam');
-      url.searchParams.delete('sub');
-      url.searchParams.delete('test');
-      window.history.replaceState({}, '', url);
-
-      startScreen.classList.remove('hidden');
+      pushUrlState(null, null, null);
+      initFromURL(true);
     }
 
     // ── Reattempt Test (same test, reset all state) ──────
@@ -1667,8 +1654,8 @@ ${formatExplanation(explanationLangText)}</div>
         sessionStorage.removeItem('current_answers');
         sessionStorage.removeItem('is_reattempting');
         if (timerInterval) clearInterval(timerInterval);
-        quizScreen.classList.add('hidden');
-        if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
+        pushUrlState(selectedCategory, selectedSubCategory, null);
+        initFromURL(true);
         
         activeSectionIndex = 0;
         currentIndex = 0;
@@ -1765,26 +1752,85 @@ ${formatExplanation(explanationLangText)}</div>
     window.toggleAuthMode = toggleAuthMode;
     window.handlePhoneAuth = handlePhoneAuth;
 
+    // ── Navigation State Helpers ─────────────────────────
+    const pushUrlState = (exam, sub, test) => {
+      const url = new URL(window.location);
+      const curExam = url.searchParams.get('exam') || '';
+      const curSub = url.searchParams.get('sub') || '';
+      const curTest = url.searchParams.get('test') || '';
+      const targetExam = exam || '';
+      const targetSub = sub || '';
+      const targetTest = test || '';
+      
+      if (targetExam !== curExam || targetSub !== curSub || targetTest !== curTest) {
+        if (exam) url.searchParams.set('exam', exam); else url.searchParams.delete('exam');
+        if (sub) url.searchParams.set('sub', sub); else url.searchParams.delete('sub');
+        if (test) url.searchParams.set('test', test); else url.searchParams.delete('test');
+        window.history.pushState({}, '', url);
+      }
+    };
+
+    const hideAllScreens = () => {
+      if (startScreen) startScreen.classList.add('hidden');
+      if (subScreen) subScreen.classList.add('hidden');
+      if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
+      if (quizScreen) quizScreen.classList.add('hidden');
+      if (resultScreen) resultScreen.classList.add('hidden');
+    };
+
     // ── Check URL Params for Direct Exam Linking ─────────
-    const initFromURL = () => {
+    const initFromURL = (isPopState = false) => {
       const urlParams = new URLSearchParams(window.location.search);
       const examParam = urlParams.get('exam');
       const subParam = urlParams.get('sub');
       const testParam = urlParams.get('test');
       
+      if (isPopState) hideAllScreens();
+
       if (examParam && subParam && testParam) {
         selectedCategory = examParam;
         selectedSubCategory = subParam;
-        startScreen.classList.add('hidden');
+        
+        // Initialize the sub-category screen state in case they navigate back
+        selectCategory(examParam, null);
+        
         fetchQuestions(examParam, subParam, testParam, 'en');
+      } else if (examParam && subParam) {
+        selectedCategory = examParam;
+        selectedSubCategory = subParam;
+        selectCategory(examParam, null);
+        loadTestsDynamically(examParam, subParam);
       } else if (examParam) {
         selectCategory(examParam, null);
+      } else {
+        if (isPopState) {
+          startScreen.classList.remove('hidden');
+          const cards = document.querySelectorAll('.category-card');
+          cards.forEach(c => c.classList.remove('selected'));
+        }
       }
     };
+
+    window.addEventListener('popstate', (e) => {
+      if (quizScreen && !quizScreen.classList.contains('hidden')) {
+          if (!confirm("Are you sure you want to exit the test? Your progress will be lost.")) {
+              // User cancelled going back! Restore the URL for the quiz
+              pushUrlState(selectedCategory, selectedSubCategory, selectedTestId);
+              return;
+          }
+          sessionStorage.removeItem('current_answers');
+          sessionStorage.removeItem('is_reattempting');
+          if (timerInterval) clearInterval(timerInterval);
+          activeSectionIndex = 0;
+          currentIndex = 0;
+      }
+      initFromURL(true);
+    });
+
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initFromURL);
+      document.addEventListener('DOMContentLoaded', () => initFromURL(false));
     } else {
-      initFromURL();
+      initFromURL(false);
     }
 
     // ── Theme Toggle Event Listener ──────────────────────
