@@ -472,11 +472,7 @@
     // ── Fetch & Sort Sectional Questions ─────────────────
     async function fetchQuestions(category, subCategory, testId, testLang = 'en') {
       // Update the URL to allow resuming on refresh
-      const url = new URL(window.location);
-      url.searchParams.set('exam', category);
-      url.searchParams.set('sub', subCategory);
-      if (testId) url.searchParams.set('test', testId);
-      window.history.pushState({}, '', url);
+      pushUrlState(category, subCategory, testId);
 
       selectedTestId = testId || '';
       showGlobalLoader('Preparing questions...', fetchQuestions, category, subCategory, testId, testLang);
@@ -1362,6 +1358,7 @@ ${formatExplanation(explanationLangText)}</div>
       
       if (btn) {
         btn.classList.add('selected');
+        pushUrlState(category, null, null);
       } else {
         const targetBtn = Array.from(cards).find(c => c.getAttribute('onclick') && c.getAttribute('onclick').includes(`'${category}'`));
         if (targetBtn) targetBtn.classList.add('selected');
@@ -1753,7 +1750,7 @@ ${formatExplanation(explanationLangText)}</div>
     window.handlePhoneAuth = handlePhoneAuth;
 
     // ── Navigation State Helpers ─────────────────────────
-    const pushUrlState = (exam, sub, test) => {
+    function pushUrlState(exam, sub, test) {
       const url = new URL(window.location);
       const curExam = url.searchParams.get('exam') || '';
       const curSub = url.searchParams.get('sub') || '';
@@ -1768,15 +1765,15 @@ ${formatExplanation(explanationLangText)}</div>
         if (test) url.searchParams.set('test', test); else url.searchParams.delete('test');
         window.history.pushState({}, '', url);
       }
-    };
+    }
 
-    const hideAllScreens = () => {
+    function hideAllScreens() {
       if (startScreen) startScreen.classList.add('hidden');
       if (subScreen) subScreen.classList.add('hidden');
       if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
       if (quizScreen) quizScreen.classList.add('hidden');
       if (resultScreen) resultScreen.classList.add('hidden');
-    };
+    }
 
     // ── Check URL Params for Direct Exam Linking ─────────
     const initFromURL = (isPopState = false) => {
