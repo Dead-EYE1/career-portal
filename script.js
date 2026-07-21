@@ -229,60 +229,37 @@ window.copyJobLink = function (uid, btnElement) {
 function generatePostHTML(data) {
   return data.map(item => {
     const isPastDeadline = item.raw_last_date ? isExpired(item.raw_last_date) : false;
-    const safeDetails = wrapTablesInResponsiveDiv(item.other_details);
-    const safeMainDetails = wrapTablesInResponsiveDiv(item.details);
     const expiredClass = isPastDeadline ? "expired-card-item" : "";
     const badgeClass = isPastDeadline ? "badge-expired" : getBadgeClass(item.badge);
     const badgeText = isPastDeadline ? "CLOSED" : (item.organization || item.section || getBadgeText(item.badge));
 
     return `
-    <div class="post-item ${expiredClass}" data-uid="${item.uid}" role="listitem" tabindex="0" aria-label="${item.title}" onclick="toggleJobDetails(this)" onkeydown="if(event.key === 'Enter' || event.key === ' ') { toggleJobDetails(this); event.preventDefault(); }">
-      <span class="post-badge ${badgeClass}">${badgeText}</span>
-      <div class="post-content">
-        <div class="post-title">${highlightExamKeywords(item.title)}</div>
-        <div class="post-meta">
-          <span>📅 ${item.apply_date || item.date}</span>
-          ${item.posts ? `<span>👤 ${item.posts}</span>` : ""}
-          <span class="post-meta-tag">🏷️ ${item.tag}</span>
-        </div>
-        ${(item.apply_date || item.education || item.other_details || item.details || item.salary || item.location || item.application_fee || item.apply_link) ? `
-        <button type="button" class="view-details-btn" onclick="event.stopPropagation(); toggleJobDetails(this.closest('.post-item'))">👁️ View Details</button>
-        <div class="post-details" onclick="event.stopPropagation()">
-          ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${item.last_date || 'the deadline'}</strong>. <a href="https://newjobupdates.in/#assam-jobs-section">Click here to view latest live jobs</a>.</div>` : ''}
-          ${safeMainDetails ? `<div class="extended-details-content">${safeMainDetails}</div>` : ''}
-          <div class="post-details-grid">
-            ${item.apply_date ? `<div class="detail-item"><strong>Apply Date:</strong> <span class="highlight-date text-right" style="color:var(--primary);">${item.apply_date}</span></div>` : ''}
-            ${item.last_date ? `<div class="detail-item"><strong>Closing Date:</strong> <span class="highlight-date text-right">${item.last_date}</span></div>` : ''}
-            ${item.salary ? `<div class="detail-item"><strong>Salary:</strong> <span class="text-right">${item.salary}</span></div>` : ''}
-            ${item.location ? `<div class="detail-item"><strong>Location:</strong> <span class="text-right">${item.location}</span></div>` : ''}
-            ${item.application_fee ? `<div class="detail-item"><strong>Application Fee:</strong> <span class="text-right">${item.application_fee}</span></div>` : ''}
-            ${item.education ? `<div class="detail-item full-width"><strong>Education:</strong> <div class="text-left mt-1">${item.education}</div></div>` : ''}
-            ${item.other_details ? `<div class="detail-item full-width"><strong>Other Details:</strong> <div class="text-left mt-1">${safeDetails}</div></div>` : ''}
-          </div>
-          <div class="action-buttons" style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
-            <a href="${item.apply_link || '#'}" class="apply-btn" style="margin-top: 0;" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">${getButtonText(item.badge)}</a>
-            
-            <div class="share-buttons-row">
-              <button type="button" class="action-share-btn whatsapp" onclick="event.stopPropagation(); shareOnWhatsApp('${item.uid}')" title="Share on WhatsApp">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.487-1.761-1.663-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-                WhatsApp
-              </button>
-              <button type="button" class="action-share-btn general" onclick="event.stopPropagation(); shareGeneral('${item.uid}')" title="Share Link">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                Share
-              </button>
-              <button type="button" class="action-share-btn copy" onclick="event.stopPropagation(); copyJobLink('${item.uid}', this)" title="Copy Link">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                Copy
-              </button>
-            </div>
-          </div>
-          
-          
-        </div>
-        ` : ''}
+    <div class="post-item compact-card ${expiredClass}" data-uid="${item.uid}">
+      <div class="compact-card-header">
+        <span class="post-badge ${badgeClass}">${badgeText}</span>
+        <span class="post-meta-tag">🏷️ ${item.tag}</span>
       </div>
-      <span class="post-arrow">›</span>
+      
+      <div class="compact-card-body">
+        <h3 class="post-title">${highlightExamKeywords(item.title)}</h3>
+        <div class="compact-meta">
+          ${item.posts ? `<div class="meta-row"><span>👤 Vacancies:</span> <strong>${item.posts}</strong></div>` : ""}
+          ${item.last_date ? `<div class="meta-row"><span>⏰ Deadline:</span> <strong style="color:var(--primary);">${item.last_date}</strong></div>` : ""}
+        </div>
+      </div>
+      
+      <div class="compact-card-footer">
+        <a href="/job.html?id=${item.uid}" class="view-details-btn compact-btn">👁️ View Details</a>
+        
+        <div class="compact-share-actions">
+          <button type="button" class="icon-btn whatsapp" onclick="event.stopPropagation(); shareOnWhatsApp('${item.uid}')" aria-label="Share on WhatsApp">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.487-1.761-1.663-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+          </button>
+          <button type="button" class="icon-btn copy" onclick="event.stopPropagation(); copyJobLink('${item.uid}', this)" aria-label="Copy Link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </div>
+      </div>
     </div>
   `}).join("");
 }
@@ -808,13 +785,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (upcomingJobs.length > 0) {
     renderPosts("upcoming-posts-list", upcomingJobs);
   }
-  if (expiredJobs.length > 0) {
-    renderPosts("expired-posts-list", expiredJobs);
-  } else {
-    const expiredList = document.getElementById("expired-posts-list");
-    if (expiredList) {
-      expiredList.innerHTML = `<div style="padding: 30px 20px; text-align: center; color: var(--text-muted);"><div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div><p>No expired jobs found.</p></div>`;
-    }
+
+  // We are completely removing expired jobs from the homepage logic.
+  // Expired jobs will ONLY be fetched on archived-jobs.html.
+  const expiredList = document.getElementById("expired-posts-list");
+  if (expiredList) {
+    expiredList.innerHTML = '';
   }
 
   renderScholarships("scholarship-list", activeScholarship);
@@ -830,31 +806,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   initThemeToggle();
   initSearch();
   initJobTabs();
-
-  // Expired Jobs Tab Logic
-  const btnExpired = document.getElementById("view-expired-jobs");
-  const btnBackActive = document.getElementById("back-to-active-jobs");
-  if (btnExpired) {
-    btnExpired.addEventListener("click", () => {
-      document.querySelectorAll('#job-tabs .job-tab').forEach(t => t.classList.remove('active'));
-
-      const assamContainer = document.getElementById('assam-jobs-container');
-      const centralContainer = document.getElementById('central-jobs-container');
-      const upcomingContainer = document.getElementById('upcoming-jobs-container');
-      if (assamContainer) assamContainer.classList.remove('active');
-      if (centralContainer) centralContainer.classList.remove('active');
-      if (upcomingContainer) upcomingContainer.classList.remove('active');
-
-      const expiredContainer = document.getElementById('expired-jobs-container');
-      if (expiredContainer) expiredContainer.classList.add('active');
-    });
-  }
-  if (btnBackActive) {
-    btnBackActive.addEventListener("click", () => {
-      const activeTab = document.querySelector('#job-tabs .job-tab[data-target="assam-jobs-container"]');
-      if (activeTab) activeTab.click(); // This automatically handles the container switching
-    });
-  }
 
   // Delay animations slightly
   setTimeout(initAnimations, 100);

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Archived & Expired Jobs | newjobupdates.in</title>
+  <meta name="description" content="View past and expired job notifications." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="/style.css">
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        document.documentElement.classList.add('light-theme');
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <div class="top-promo-banner">
+    <span>📢 Get Instant Alerts for Latest Govt Jobs, Admit Cards & Results!</span>
+    <a href="/#assam-jobs-section" class="promo-btn">View Job Details</a>
+  </div>
+
+  <header class="header" id="main-header">
+    <div class="container header-inner">
+      <a href="/" class="logo" id="logo-link">
+        <div class="logo-icon">NJ</div>
+        <div class="logo-text">
+          <h1 class="logo-main">New Job</h1>
+          <span class="logo-sub">Jobs | Mocktest</span>
+        </div>
+      </a>
+      <div class="header-actions">
+        <button type="button" class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="theme-icon-moon">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="theme-icon-sun">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="main-nav" id="main-nav">
+    <div class="container nav-inner">
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="/" class="nav-link">🏠 Home</a></li>
+        <li><a href="/#assam-jobs-section" class="nav-link">Govt Jobs</a></li>
+        <li><a href="/mocktest.html" class="nav-link">📝 Mock Test</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main-layout container" id="main-content" style="padding-top: 30px;">
+    <section class="content-area">
+      <div class="section-block">
+        <div class="section-header">
+          <h2 class="section-title">⚠️ Archived & Expired Jobs</h2>
+          <a href="/" class="view-all-link">← Back to Active Jobs</a>
+        </div>
+        <div class="posts-list" id="archived-posts-list">
+          <p style="text-align:center; padding:40px;">Loading archived jobs...</p>
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="join-banner">
+        <a href="https://whatsapp.com/channel/0029VbCL2TO9Bb60qlR7KA0r" target="_blank" rel="noopener noreferrer"
+          class="join-card whatsapp">
+          <div class="join-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347" />
+            </svg>
+          </div>
+          <div class="join-text">
+            <span class="join-title">WhatsApp Channel</span>
+            <span class="join-sub">Get instant job alerts</span>
+          </div>
+        </a>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer" id="footer" style="margin-top: 40px;">
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>© <span id="copyright-year">2026</span> <strong>NewJobUpdates.in</strong>. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      initThemeToggle();
+      
+      const yearSpan = document.getElementById("copyright-year");
+      if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+
+      try {
+        const [rawJobs, rawScholarship] = await Promise.all([
+          fetchSectionData('/data/jobs.json'),
+          fetchSectionData('/data/scholarship.json')
+        ]);
+        const jobsData = normaliseDate(rawJobs).map(j => ({ ...j, section: "Govt Job", uid: `job-${j.id}` }));
+        const expiredJobs = jobsData.filter(j => j.status !== 'upcoming' && j.raw_last_date && isExpired(j.raw_last_date)).sort((a,b) => b.id - a.id);
+        
+        const container = document.getElementById('archived-posts-list');
+        
+        if (expiredJobs.length > 0) {
+          container.innerHTML = generatePostHTML(expiredJobs);
+        } else {
+          container.innerHTML = '<div style="padding: 30px 20px; text-align: center; color: var(--text-muted);"><div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div><p>No expired jobs found.</p></div>';
+        }
+
+      } catch (e) {
+        document.getElementById('archived-posts-list').innerHTML = '<p class="no-results">Error loading archived jobs. Please try again.</p>';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1662,9 +1662,6 @@ html.light-theme .theme-icon-moon {
   box-sizing: border-box;
 }
 
-.desktop-quick-nav {
-}
-
 .mobile-quick-nav {
   display: none;
 }
@@ -3489,4 +3486,200 @@ html.light-theme .theme-icon-moon {
 .info-modal-body a {
   color: var(--primary);
   text-decoration: underline;
+}
+
+/* =============================================
+   COMPACT CARDS (NEW JOB FEED)
+   ============================================= */
+.compact-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: var(--transition);
+}
+.compact-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.compact-card-body .post-title {
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.compact-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+.compact-meta .meta-row {
+  display: flex;
+  gap: 8px;
+}
+.compact-card-footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-light);
+  padding-top: 16px;
+}
+.compact-btn {
+  background: var(--primary);
+  color: #fff;
+  padding: 0 16px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s;
+  text-decoration: none;
+}
+.compact-btn:hover {
+  background: var(--primary-dark);
+}
+.compact-share-actions {
+  display: flex;
+  gap: 8px;
+}
+.icon-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+.icon-btn:hover {
+  background: var(--border-light);
+  color: var(--text-primary);
+}
+.icon-btn.whatsapp:hover {
+  color: #25D366;
+  border-color: #25D366;
+}
+
+/* =============================================
+   TOP PROMO BANNER
+   ============================================= */
+.top-promo-banner {
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  text-align: center;
+  padding: 10px 15px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  z-index: 100;
+  position: relative;
+}
+.top-promo-banner .promo-btn {
+  background: #fff;
+  color: var(--primary-dark);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.top-promo-banner .promo-btn:hover {
+  background: var(--border-light);
+}
+@media (max-width: 768px) {
+}
+
+/* =============================================
+   STRUCTURED JOB DETAILS PAGE
+   ============================================= */
+.structured-job-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 20px;
+}
+.job-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.job-section-title {
+  font-size: 1.25rem;
+  color: var(--primary);
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-light);
+  padding-bottom: 8px;
+  font-family: var(--font-heading);
+}
+.job-details-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.job-details-table th, .job-details-table td {
+  padding: 12px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.job-details-table th {
+  background: var(--bg);
+  width: 35%;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.job-details-table td {
+  color: var(--text-primary);
+}
+.job-other-details {
+  margin-top: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.job-fee-box {
+  background: var(--bg);
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--primary);
+  color: var(--text-primary);
+}
+.job-links-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 600px) {
+  .job-links-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.apply-btn.secondary {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+.apply-btn.secondary:hover {
+  background: var(--primary);
+  color: #fff;
 }

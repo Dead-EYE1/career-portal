@@ -13,6 +13,10 @@
   ],
   "rewrites": [
     {
+      "source": "/post/(.*)",
+      "destination": "/job.html?id=$1"
+    },
+    {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "mocktest.newjobupdates.in" }],
       "destination": "/mocktest.html"
