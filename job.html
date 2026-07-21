@@ -60,6 +60,7 @@
         <li><a href="/" class="nav-link">🏠 Home</a></li>
         <li><a href="/#assam-jobs-section" class="nav-link">Govt Jobs</a></li>
         <li><a href="/mocktest.html" class="nav-link">📝 Mock Test</a></li>
+        <li><a href="#" class="nav-link" id="nav-contact" onclick="openContactModal(event)">📞 Contact</a></li>
       </ul>
     </div>
   </nav>
@@ -70,20 +71,7 @@
         <p style="text-align:center; padding:40px;">Loading job details...</p>
       </div>
       
-      <!-- Comments Section -->
-      <div class="comments-section" id="comments-section" style="display: none; margin-top: 40px;">
-        <h3 class="comments-title">Comments</h3>
-        <p id="comments-loading-text" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">Loading comments...</p>
-        
-        <form class="comment-form" id="comment-form">
-          <input type="text" class="comment-input" id="comment-name" placeholder="Your Name" required />
-          <textarea class="comment-input" id="comment-text" placeholder="Write a comment..." rows="3" required style="resize:vertical;"></textarea>
-          <button type="submit" class="comment-submit-btn">Post Comment</button>
-        </form>
-        <div class="comments-list" id="comments-list">
-          <!-- Comments dynamically injected here -->
-        </div>
-      </div>
+
     </section>
 
     <aside class="sidebar">
@@ -111,6 +99,31 @@
       </div>
     </div>
   </footer>
+
+  <!-- Contact Modal -->
+  <div id="contact-modal" class="contact-modal-overlay hidden">
+    <div class="contact-modal-content">
+      <button class="contact-close-btn" onclick="closeContactModal()">&times;</button>
+      <h2>Contact Us</h2>
+      <p>Send us a message and we'll get back to you shortly.</p>
+      <form id="contact-form" onsubmit="submitContactForm(event)">
+        <div class="form-group">
+          <label for="contact-name">Name <span class="required">*</span></label>
+          <input type="text" id="contact-name" name="name" required placeholder="Your Name" />
+        </div>
+        <div class="form-group">
+          <label for="contact-email">Email <span class="required">*</span></label>
+          <input type="email" id="contact-email" name="email" required placeholder="your.email@example.com" />
+        </div>
+        <div class="form-group">
+          <label for="contact-message">Message <span class="required">*</span></label>
+          <textarea id="contact-message" name="message" required placeholder="How can we help you?"></textarea>
+        </div>
+        <button type="submit" id="contact-submit-btn" class="contact-submit-btn">Send Message</button>
+        <div id="contact-status" class="contact-status"></div>
+      </form>
+    </div>
+  </div>
 
   <script src="/script.js"></script>
   <script>
@@ -245,63 +258,14 @@
         
         document.getElementById('job-detail-container').innerHTML = html;
         
-        // Show comments section and simulate loading
-        const commentsSec = document.getElementById('comments-section');
-        commentsSec.style.display = 'block';
-        
-        setTimeout(() => {
-          document.getElementById('comments-loading-text').style.display = 'none';
-          document.getElementById('comments-list').innerHTML = `
-            <div class="comment-item">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-                <strong style="color:var(--text-primary); display:flex; align-items:center; gap:8px;">
-                  <span style="background:var(--primary); color:#fff; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem;">S</span>
-                  System
-                </strong>
-                <span style="color:var(--text-muted); font-size: 0.8rem;">Just now</span>
-              </div>
-              <div class="comment-text">Be the first to comment on this job!</div>
-            </div>`;
-        }, 1200);
+
 
       } catch (e) {
         document.getElementById('job-detail-container').innerHTML = '<p class="no-results">Error loading job details. Please try again.</p>';
       }
     });
     
-    // Setup dummy comment form handler
-    document.getElementById('comment-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = document.getElementById('comment-name').value;
-      const text = document.getElementById('comment-text').value;
-      const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      const initial = name.charAt(0).toUpperCase();
-      
-      const commentHtml = `
-        <div class="comment-item" style="animation: fadeIn 0.3s ease-out;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-            <strong style="color:var(--text-primary); display:flex; align-items:center; gap:8px;">
-              <span style="background:var(--primary); color:#fff; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem;">${initial}</span>
-              ${name}
-            </strong>
-            <span style="color:var(--text-muted); font-size: 0.8rem;">${date}</span>
-          </div>
-          <div class="comment-text">${text}</div>
-        </div>`;
-      document.getElementById('comments-list').insertAdjacentHTML('afterbegin', commentHtml);
-      
-      document.getElementById('comment-name').value = '';
-      document.getElementById('comment-text').value = '';
-      
-      const btn = document.querySelector('.comment-submit-btn');
-      const originalText = btn.textContent;
-      btn.textContent = 'Comment Posted!';
-      btn.style.background = 'var(--green)';
-      setTimeout(() => {
-        btn.textContent = originalText;
-        btn.style.background = '';
-      }, 2000);
-    });
+
   </script>
 </body>
 </html>
