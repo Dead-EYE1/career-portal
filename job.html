@@ -158,87 +158,88 @@
         const safeMainDetails = wrapTablesInResponsiveDiv(job.details);
         const badgeClass = isPastDeadline ? "badge-expired" : getBadgeClass(job.badge);
         const badgeText = isPastDeadline ? "CLOSED" : (job.organization || job.section || getBadgeText(job.badge));
-        
         const html = `
-          <div class="post-item expanded-card" style="margin-bottom:0; border:none; box-shadow:none;">
-            <div class="job-header-banner" style="text-align: center; padding-bottom: 20px;">
-              <span class="post-badge ${badgeClass}">${badgeText}</span>
-              <h1 class="post-title" style="font-size: 1.8rem; margin: 15px 0;">${job.title}</h1>
-              <div class="post-meta" style="justify-content: center; margin-bottom: 20px;">
-                <span>📅 ${job.apply_date || job.date || 'TBA'}</span>
-                ${job.posts ? `<span>👤 ${job.posts}</span>` : ""}
-                <span class="post-meta-tag">🏷️ ${job.tag || 'Update'}</span>
-              </div>
+          <div class="job-detail-page-header" style="background: var(--bg-card); border-radius: var(--radius-md); padding: 30px 20px; text-align: center; margin-bottom: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+            <span class="post-badge ${badgeClass}" style="margin-bottom:15px; display:inline-block;">${badgeText}</span>
+            <h1 class="post-title" style="font-size: 2rem; margin: 0 0 15px 0; line-height:1.3; color: var(--text-primary);">${job.title}</h1>
+            <div class="post-meta" style="justify-content: center; font-size: 0.95rem;">
+              <span>📅 ${job.apply_date || job.date || 'TBA'}</span>
+              ${job.posts ? `<span>👤 ${job.posts}</span>` : ""}
+              <span class="post-meta-tag">🏷️ ${job.tag || 'Update'}</span>
             </div>
+          </div>
+          
+          ${isPastDeadline ? `<div class="expired-banner" style="margin-bottom:24px;">⚠️ This application window closed on <strong>${job.last_date || 'the deadline'}</strong>. <a href="/">Click here to view latest live jobs</a>.</div>` : ''}
+
+          <div class="structured-job-content">
             
-            ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${job.last_date || 'the deadline'}</strong>. <a href="/">Click here to view latest live jobs</a>.</div>` : ''}
-
-            <div class="structured-job-content">
-              
-              <div class="job-section">
-                <h3 class="job-section-title">A. Key Highlights & Overview</h3>
-                <table class="job-details-table">
-                  ${job.organization ? `<tr><th>Organization</th><td>${job.organization}</td></tr>` : ''}
-                  <tr><th>Post Name</th><td>${job.title}</td></tr>
-                  ${job.posts ? `<tr><th>Total Vacancies</th><td>${job.posts}</td></tr>` : ''}
-                  ${job.salary ? `<tr><th>Pay Scale</th><td>${job.salary}</td></tr>` : ''}
-                  ${job.location ? `<tr><th>Job Location</th><td>${job.location}</td></tr>` : ''}
-                </table>
-              </div>
-
-              <div class="job-section">
-                <h3 class="job-section-title">B. Eligibility Criteria</h3>
-                <table class="job-details-table">
-                  ${job.education ? `<tr><th>Education</th><td>${job.education}</td></tr>` : ''}
-                </table>
-                ${job.other_details ? `<div class="job-other-details">${safeDetails}</div>` : ''}
-              </div>
-
-              <div class="job-section">
-                <h3 class="job-section-title">C. Important Dates</h3>
-                <table class="job-details-table">
-                  ${job.date ? `<tr><th>Notification Date</th><td>${job.date}</td></tr>` : ''}
-                  ${job.apply_date ? `<tr><th>Application Start</th><td>${job.apply_date}</td></tr>` : ''}
-                  ${job.last_date ? `<tr><th>Application End</th><td><strong style="color:var(--primary);">${job.last_date}</strong></td></tr>` : ''}
-                </table>
-              </div>
-
-              ${job.application_fee ? `
-              <div class="job-section">
-                <h3 class="job-section-title">D. Application Fee & Payment</h3>
-                <div class="job-fee-box">${job.application_fee}</div>
-              </div>
-              ` : ''}
-
-              ${safeMainDetails ? `
-              <div class="job-section">
-                <h3 class="job-section-title">E. Selection Process & Further Details</h3>
-                <div class="extended-details-content">${safeMainDetails}</div>
-              </div>
-              ` : ''}
-
-              <div class="job-section action-section">
-                <h3 class="job-section-title">F. Important Links</h3>
-                <div class="job-links-grid">
-                  <a href="${job.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Online Now</a>
-                  ${job.notification_link ? `<a href="${job.notification_link}" class="apply-btn secondary" target="_blank">Official Notification PDF</a>` : ''}
-                  ${job.syllabus_link ? `<a href="${job.syllabus_link}" class="apply-btn secondary" target="_blank">Official Syllabus</a>` : ''}
-                  ${job.website_link ? `<a href="${job.website_link}" class="apply-btn secondary" target="_blank">Official Website</a>` : ''}
-                </div>
-                
-                <div class="share-buttons-row" style="margin-top:20px; justify-content:center;">
-                  <button type="button" class="action-share-btn whatsapp" onclick="shareOnWhatsApp('${job.uid}')" title="Share on WhatsApp">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.487-1.761-1.663-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-                    Share on WhatsApp
-                  </button>
-                  <button type="button" class="action-share-btn copy" onclick="copyJobLink('${job.uid}', this)" title="Copy Link">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                    Copy Link
-                  </button>
-                </div>
-              </div>
-
+            <div class="job-section">
+              <h3 class="job-section-title">A. Key Highlights & Overview</h3>
+              <table class="job-details-table">
+                ${job.organization ? `<tr><th>Organization</th><td>${job.organization}</td></tr>` : ''}
+                <tr><th>Post Name</th><td>${job.title}</td></tr>
+                ${job.posts ? `<tr><th>Total Vacancies</th><td>${job.posts}</td></tr>` : ''}
+                ${job.salary ? `<tr><th>Pay Scale</th><td>${job.salary}</td></tr>` : ''}
+                ${job.location ? `<tr><th>Job Location</th><td>${job.location}</td></tr>` : ''}
+              </table>
             </div>
+
+            ${(job.education || job.other_details) ? `
+            <div class="job-section">
+              <h3 class="job-section-title">B. Eligibility Criteria</h3>
+              ${job.education ? `
+              <table class="job-details-table">
+                <tr><th>Education</th><td>${job.education}</td></tr>
+              </table>
+              ` : ''}
+              ${job.other_details ? `<div class="job-other-details">${safeDetails}</div>` : ''}
+            </div>
+            ` : ''}
+
+            <div class="job-section">
+              <h3 class="job-section-title">C. Important Dates</h3>
+              <table class="job-details-table">
+                ${job.date ? `<tr><th>Notification Date</th><td>${job.date}</td></tr>` : ''}
+                ${job.apply_date ? `<tr><th>Application Start</th><td>${job.apply_date}</td></tr>` : ''}
+                ${job.last_date ? `<tr><th>Application End</th><td><strong style="color:var(--primary);">${job.last_date}</strong></td></tr>` : ''}
+              </table>
+            </div>
+
+            ${job.application_fee ? `
+            <div class="job-section">
+              <h3 class="job-section-title">D. Application Fee & Payment</h3>
+              <div class="job-fee-box">${job.application_fee}</div>
+            </div>
+            ` : ''}
+
+            ${safeMainDetails ? `
+            <div class="job-section">
+              <h3 class="job-section-title">E. Selection Process & Further Details</h3>
+              <div class="extended-details-content">${safeMainDetails}</div>
+            </div>
+            ` : ''}
+
+            <div class="job-section action-section">
+              <h3 class="job-section-title">F. Important Links</h3>
+              <div class="job-links-grid">
+                <a href="${job.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Online Now</a>
+                ${job.notification_link ? `<a href="${job.notification_link}" class="apply-btn secondary" target="_blank">Official Notification PDF</a>` : ''}
+                ${job.syllabus_link ? `<a href="${job.syllabus_link}" class="apply-btn secondary" target="_blank">Official Syllabus</a>` : ''}
+                ${job.website_link ? `<a href="${job.website_link}" class="apply-btn secondary" target="_blank">Official Website</a>` : ''}
+              </div>
+              
+              <div class="share-buttons-row" style="margin-top:20px; justify-content:flex-end; border-top: 1px solid var(--border-light); padding-top: 20px;">
+                <button type="button" class="action-share-btn whatsapp" onclick="shareOnWhatsApp('${job.uid}')" title="Share on WhatsApp">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.487-1.761-1.663-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                  Share on WhatsApp
+                </button>
+                <button type="button" class="action-share-btn copy" onclick="copyJobLink('${job.uid}', this)" title="Copy Link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  Copy Link
+                </button>
+              </div>
+            </div>
+
           </div>
         `;
         
@@ -250,7 +251,17 @@
         
         setTimeout(() => {
           document.getElementById('comments-loading-text').style.display = 'none';
-          document.getElementById('comments-list').innerHTML = '<div class="comment-item"><strong style="color:var(--text-primary);">System</strong><div class="comment-text">Be the first to comment!</div></div>';
+          document.getElementById('comments-list').innerHTML = `
+            <div class="comment-item">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                <strong style="color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+                  <span style="background:var(--primary); color:#fff; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem;">S</span>
+                  System
+                </strong>
+                <span style="color:var(--text-muted); font-size: 0.8rem;">Just now</span>
+              </div>
+              <div class="comment-text">Be the first to comment on this job!</div>
+            </div>`;
         }, 1200);
 
       } catch (e) {
@@ -263,12 +274,33 @@
       e.preventDefault();
       const name = document.getElementById('comment-name').value;
       const text = document.getElementById('comment-text').value;
+      const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const initial = name.charAt(0).toUpperCase();
       
-      const commentHtml = `<div class="comment-item"><strong style="color:var(--text-primary);">${name}</strong><div class="comment-text">${text}</div></div>`;
+      const commentHtml = `
+        <div class="comment-item" style="animation: fadeIn 0.3s ease-out;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+            <strong style="color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+              <span style="background:var(--primary); color:#fff; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem;">${initial}</span>
+              ${name}
+            </strong>
+            <span style="color:var(--text-muted); font-size: 0.8rem;">${date}</span>
+          </div>
+          <div class="comment-text">${text}</div>
+        </div>`;
       document.getElementById('comments-list').insertAdjacentHTML('afterbegin', commentHtml);
       
       document.getElementById('comment-name').value = '';
       document.getElementById('comment-text').value = '';
+      
+      const btn = document.querySelector('.comment-submit-btn');
+      const originalText = btn.textContent;
+      btn.textContent = 'Comment Posted!';
+      btn.style.background = 'var(--green)';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.background = '';
+      }, 2000);
     });
   </script>
 </body>

@@ -3203,6 +3203,10 @@ html.light-theme .theme-icon-moon {
   border-color: #d1fae5;
 }
 
+.scholarship-section {
+  margin-top: 30px;
+}
+
 .scholar-badge {
   font-size: 0.65rem;
   font-weight: 700;
@@ -3334,6 +3338,7 @@ html.light-theme .theme-icon-moon {
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -3524,12 +3529,14 @@ html.light-theme .theme-icon-moon {
 .compact-card-footer {
   margin-top: 12px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 12px;
   align-items: center;
   border-top: 1px solid var(--border-light);
   padding-top: 16px;
 }
 .compact-btn {
+  margin: 0;
   background: var(--primary);
   color: #fff;
   padding: 0 16px;
@@ -3540,17 +3547,21 @@ html.light-theme .theme-icon-moon {
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
   font-weight: 500;
+  line-height: 1;
   transition: background 0.2s;
   text-decoration: none;
+  box-sizing: border-box;
 }
 .compact-btn:hover {
   background: var(--primary-dark);
 }
 .compact-share-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 .icon-btn {
+  margin: 0;
   background: var(--bg-card);
   border: 1px solid var(--border);
   color: var(--text-secondary);
@@ -3562,6 +3573,7 @@ html.light-theme .theme-icon-moon {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
+  box-sizing: border-box;
 }
 .icon-btn svg {
   width: 18px;

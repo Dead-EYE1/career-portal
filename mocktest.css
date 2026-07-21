@@ -1771,6 +1771,7 @@ html.light-theme .theme-icon-moon { display: none; }
   color: var(--text-secondary);
   background: rgba(127, 90, 240, 0.08);
   border-right: 1px solid var(--border);
+  -webkit-user-select: none;
   user-select: none;
   flex-shrink: 0;
 }
