@@ -2195,57 +2195,65 @@ html.light-theme .theme-icon-moon { display: none; }
 /* --- Error Report Section --- */
 .error-report-container.compact {
   background: var(--bg-card);
-  padding: 12px;
+  padding: 14px 16px;
   border-radius: 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   margin-bottom: 24px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 .error-report-label {
   font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--text-color);
+  font-size: 0.95rem;
+  color: var(--text-primary);
 }
 .error-report-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
+  width: 100%;
 }
 .error-report-container input {
-  flex-grow: 1;
-  padding: 10px 12px;
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
   border-radius: 8px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-color);
-  color: var(--text-color);
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: inherit;
   font-size: 0.9rem;
 }
 .error-report-container input:focus {
   outline: none;
-  border-color: var(--primary);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
 }
 .error-report-btn, #submitReportBtn {
-  background: var(--primary);
-  color: white;
+  background: var(--accent);
+  color: #ffffff;
   border: none;
   border-radius: 8px;
-  padding: 10px 16px;
+  padding: 10px 18px;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: opacity 0.2s;
-  display: inline-block;
+  transition: all 0.2s ease;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1;
+  flex-shrink: 0;
 }
 .error-report-btn:hover, #submitReportBtn:hover {
   opacity: 0.9;
+  transform: translateY(-1px);
 }
 .error-report-btn:disabled, #submitReportBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 #error-report-status {
   font-size: 0.85rem;
