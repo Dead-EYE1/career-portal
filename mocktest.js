@@ -198,10 +198,24 @@
     const authNameInput   = document.getElementById('auth-name-input');
     const authPhoneInput  = document.getElementById('auth-phone-input');
     const authPasswordInput = document.getElementById('auth-password-input');
+    const togglePasswordBtn = document.getElementById('togglePassword');
     const authSubmitBtn   = document.getElementById('auth-submit-btn');
     const authStatusMsg   = document.getElementById('auth-status-msg');
     const authToggleText  = document.getElementById('auth-toggle-text');
     const authToggleBtn   = document.getElementById('auth-toggle-btn');
+
+    if (togglePasswordBtn && authPasswordInput) {
+      togglePasswordBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (authPasswordInput.type === 'password') {
+          authPasswordInput.type = 'text';
+          togglePasswordBtn.textContent = '🙈';
+        } else {
+          authPasswordInput.type = 'password';
+          togglePasswordBtn.textContent = '👁️';
+        }
+      });
+    }
 
     function toggleAuthMode() {
       isSignupMode = !isSignupMode;
@@ -236,7 +250,11 @@
       if (authNameGroup) authNameGroup.classList.add('hidden');
       if (authNameInput) authNameInput.value = '';
       if (authPhoneInput) authPhoneInput.value = '';
-      if (authPasswordInput) authPasswordInput.value = '';
+      if (authPasswordInput) {
+        authPasswordInput.value = '';
+        authPasswordInput.type = 'password';
+      }
+      if (togglePasswordBtn) togglePasswordBtn.textContent = '👁️';
       if (authSubmitBtn) { authSubmitBtn.disabled = false; authSubmitBtn.textContent = 'Login'; }
       if (authToggleText) authToggleText.textContent = 'New here? ';
       if (authToggleBtn) authToggleBtn.textContent = 'Sign up';
@@ -340,10 +358,31 @@
     }
 
     // ── Report Error ─────────────────────────────────────────
+    function resetErrorReportUI() {
+      const btn = document.getElementById('submitReportBtn') || document.getElementById('submit-error-btn');
+      const reportTextElem = document.getElementById('error-report-text');
+      const statusElem = document.getElementById('error-report-status');
+
+      if (btn) {
+        btn.disabled = false;
+        btn.style.display = '';
+        btn.classList.remove('hidden');
+        btn.textContent = 'Submit Report';
+      }
+      if (reportTextElem) {
+        reportTextElem.value = '';
+      }
+      if (statusElem) {
+        statusElem.textContent = '';
+        statusElem.className = '';
+      }
+    }
+    window.resetErrorReportUI = resetErrorReportUI;
+
     window.submitErrorReport = async function() {
       const reportTextElem = document.getElementById('error-report-text');
       const statusElem = document.getElementById('error-report-status');
-      const btn = document.getElementById('submit-error-btn');
+      const btn = document.getElementById('submitReportBtn') || document.getElementById('submit-error-btn');
       
       if (!reportTextElem || !statusElem) return;
       
@@ -360,8 +399,10 @@
         return;
       }
 
-      btn.disabled = true;
-      btn.textContent = 'Submitting...';
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+      }
       statusElem.textContent = '';
       
       try {
@@ -377,18 +418,22 @@
         reportTextElem.value = '';
         statusElem.textContent = 'Thank you for your feedback!';
         statusElem.className = 'success';
-        btn.textContent = 'Submitted ✓';
+        if (btn) {
+          btn.textContent = 'Submitted ✓';
+        }
         setTimeout(() => {
-          btn.disabled = false;
-          btn.textContent = 'Submit';
-          statusElem.textContent = '';
+          resetErrorReportUI();
         }, 3000);
       } catch (error) {
         console.error('Error submitting report:', error);
         statusElem.textContent = 'Failed to submit report. Please try again.';
         statusElem.className = 'error';
-        btn.disabled = false;
-        btn.textContent = 'Submit';
+        if (btn) {
+          btn.disabled = false;
+          btn.style.display = '';
+          btn.classList.remove('hidden');
+          btn.textContent = 'Submit Report';
+        }
       }
     };
 
@@ -653,6 +698,7 @@
               }
               
               renderSolutionsReview();
+              resetErrorReportUI();
               
               hideGlobalLoader();
               resultScreen.classList.remove('hidden');
@@ -1071,6 +1117,7 @@
       recordTimeSpent(lastSectionKey, currentIndex);
 
       quizScreen.classList.add('hidden');
+      resetErrorReportUI();
       resultScreen.classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
 

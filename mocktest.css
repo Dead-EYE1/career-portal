@@ -1794,6 +1794,36 @@ html.light-theme .theme-icon-moon { display: none; }
   font-weight: 400;
 }
 
+/* ── Password Toggle Button ── */
+.password-wrapper {
+  position: relative;
+}
+#togglePassword, .password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px 6px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  -webkit-user-select: none;
+  user-select: none;
+  z-index: 2;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+#togglePassword:hover, .password-toggle-btn:hover {
+  opacity: 0.8;
+  transform: translateY(-50%) scale(1.1);
+}
+
 /* ── OTP Buttons ── */
 .otp-btn {
   display: block;
@@ -2197,7 +2227,7 @@ html.light-theme .theme-icon-moon { display: none; }
   outline: none;
   border-color: var(--primary);
 }
-.error-report-btn {
+.error-report-btn, #submitReportBtn {
   background: var(--primary);
   color: white;
   border: none;
@@ -2208,11 +2238,12 @@ html.light-theme .theme-icon-moon { display: none; }
   cursor: pointer;
   white-space: nowrap;
   transition: opacity 0.2s;
+  display: inline-block;
 }
-.error-report-btn:hover {
+.error-report-btn:hover, #submitReportBtn:hover {
   opacity: 0.9;
 }
-.error-report-btn:disabled {
+.error-report-btn:disabled, #submitReportBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
