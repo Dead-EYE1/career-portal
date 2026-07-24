@@ -3698,3 +3698,186 @@ html.light-theme .theme-icon-moon {
   background: var(--primary);
   color: #fff;
 }
+
+/* =============================================
+   MOCK TEST CTA — "Value Loop" Button
+   ============================================= */
+.mocktest-cta-section {
+  position: relative;
+  margin-top: 36px;
+  padding: 0;
+  text-align: center;
+}
+
+.mocktest-cta-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+  filter: blur(30px);
+  pointer-events: none;
+  animation: ctaGlowPulse 3s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes ctaGlowPulse {
+  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+}
+
+.mocktest-cta-btn {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  padding: 22px 32px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #10b981, #0ea5e9, #6366f1);
+  background-size: 200% 200%;
+  animation: ctaGradientShift 4s ease infinite;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow:
+    0 0 20px rgba(16, 185, 129, 0.35),
+    0 0 60px rgba(14, 165, 233, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+@keyframes ctaGradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.mocktest-cta-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transform: skewX(-25deg);
+  animation: ctaShimmer 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ctaShimmer {
+  0% { left: -100%; }
+  50% { left: 150%; }
+  100% { left: 150%; }
+}
+
+.mocktest-cta-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 0 30px rgba(16, 185, 129, 0.5),
+    0 0 80px rgba(14, 165, 233, 0.25),
+    0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.mocktest-cta-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.mocktest-cta-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.mocktest-cta-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+}
+
+.mocktest-cta-main {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.mocktest-cta-sub {
+  font-size: 0.82rem;
+  font-weight: 500;
+  opacity: 0.88;
+  letter-spacing: 0.01em;
+}
+
+.mocktest-cta-arrow {
+  font-size: 1.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.mocktest-cta-btn:hover .mocktest-cta-arrow {
+  transform: translateX(6px);
+}
+
+/* Light theme adjustments */
+.light-theme .mocktest-cta-glow {
+  background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+}
+
+.light-theme .mocktest-cta-btn {
+  box-shadow:
+    0 0 15px rgba(16, 185, 129, 0.25),
+    0 0 40px rgba(14, 165, 233, 0.1),
+    0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+.light-theme .mocktest-cta-btn:hover {
+  box-shadow:
+    0 0 25px rgba(16, 185, 129, 0.35),
+    0 0 60px rgba(14, 165, 233, 0.18),
+    0 10px 36px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .mocktest-cta-btn {
+    padding: 18px 18px;
+    gap: 12px;
+    border-radius: var(--radius-md);
+  }
+
+  .mocktest-cta-main {
+    font-size: 1rem;
+  }
+
+  .mocktest-cta-sub {
+    font-size: 0.75rem;
+  }
+
+  .mocktest-cta-icon {
+    font-size: 1.6rem;
+  }
+
+  .mocktest-cta-arrow {
+    font-size: 1.4rem;
+  }
+}
