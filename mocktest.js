@@ -481,8 +481,16 @@
       'ssc_cgl': 'SSC CGL',
       'ssc_chsl': 'SSC CHSL',
       'ssc_mts': 'SSC MTS',
+      'ssc_cpo': 'SSC CPO',
       'upsc': 'UPSC',
       'assam_police': 'Assam Police',
+      'agniveer': 'Agniveer',
+      'adre': 'ADRE Grade 3 & 4',
+      'apsc_cce': 'APSC CCE',
+      'assam_tet': 'Assam TET',
+      'banking': 'Banking',
+      'railways': 'Railways',
+      'weekly_quiz': 'Weekly Quiz',
       'others': 'Others'
     };
 
@@ -1399,7 +1407,7 @@ ${formatExplanation(explanationLangText)}</div>
     }
 
     // ── Exams that support Assamese language ─────────────
-    const ASSAMESE_ALLOWED_EXAMS = ['ssc_gd', 'assam_police', 'weekly_quiz'];
+    const ASSAMESE_ALLOWED_EXAMS = ['ssc_gd', 'assam_police', 'weekly_quiz', 'adre', 'apsc_cce', 'assam_tet'];
 
     // ── Category Select Handler ──────────────────────────
     function selectCategory(category, btn) {

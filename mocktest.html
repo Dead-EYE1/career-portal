@@ -200,39 +200,97 @@
     <p class="quiz-desc">Test your knowledge with a quick mock test. Instant scoring with negative marking — just like
       the real exam!</p>
 
-    <!-- Category Grid Section -->
+    <!-- Category Dashboard -->
     <div class="category-section">
       <label class="category-label">Select Exam Category</label>
-      <div class="category-grid">
-        <button class="category-card" onclick="selectCategory('ssc_gd', this)">
-          <span class="icon">🎖️</span>
-          <span class="name">SSC GD</span>
-        </button>
-        <button class="category-card" onclick="selectCategory('ssc_cgl', this)">
-          <span class="icon">💼</span>
-          <span class="name">SSC CGL</span>
-        </button>
-        <button class="category-card" onclick="selectCategory('ssc_chsl', this)">
-          <span class="icon">📄</span>
-          <span class="name">SSC CHSL</span>
-        </button>
-        <button class="category-card" onclick="selectCategory('ssc_mts', this)">
-          <span class="icon">🛠️</span>
-          <span class="name">SSC MTS</span>
-        </button>
-        <button class="category-card" onclick="selectCategory('upsc', this)">
-          <span class="icon">🏛️</span>
-          <span class="name">UPSC</span>
-        </button>
-        <button class="category-card" onclick="selectCategory('assam_police', this)">
-          <span class="icon">👮</span>
-          <span class="name">Assam Police</span>
-        </button>
-        <button class="category-card" onclick="selectCategory('weekly_quiz', this)">
-          <span class="icon">📚</span>
-          <span class="name">Weekly Quiz</span>
-        </button>
+
+      <!-- 🏛️ Central Govt Exams -->
+      <div class="category-group">
+        <div class="category-group-header">
+          <span class="group-icon">🏛️</span>
+          <span class="group-title">Central Govt Exams</span>
+        </div>
+        <div class="category-grid">
+          <button class="category-card" onclick="selectCategory('upsc', this)">
+            <span class="icon">🏛️</span>
+            <span class="name">UPSC</span>
+          </button>
+          <button class="category-card" onclick="selectCategory('ssc_cgl', this)">
+            <span class="icon">💼</span>
+            <span class="name">SSC CGL</span>
+          </button>
+          <button class="category-card" onclick="selectCategory('ssc_chsl', this)">
+            <span class="icon">📄</span>
+            <span class="name">SSC CHSL</span>
+          </button>
+          <button class="category-card" onclick="selectCategory('ssc_mts', this)">
+            <span class="icon">🛠️</span>
+            <span class="name">SSC MTS</span>
+          </button>
+          <button class="category-card" onclick="selectCategory('ssc_gd', this)">
+            <span class="icon">🎖️</span>
+            <span class="name">SSC GD</span>
+          </button>
+          <button class="category-card" onclick="selectCategory('ssc_cpo', this)">
+            <span class="icon">🛡️</span>
+            <span class="name">SSC CPO</span>
+          </button>
+          <button class="category-card" onclick="selectCategory('agniveer', this)">
+            <span class="icon">🔥</span>
+            <span class="name">Agniveer</span>
+          </button>
+        </div>
       </div>
+
+      <!-- 🏔️ Assam State Exams -->
+      <div class="category-group">
+        <div class="category-group-header">
+          <span class="group-icon">🏔️</span>
+          <span class="group-title">Assam State Exams</span>
+          <span class="moving-popular-badge">🔥 Popular</span>
+        </div>
+        <div class="category-grid">
+          <button class="category-card" onclick="selectCategory('adre', this)">
+            <span class="icon">📋</span>
+            <span class="name">ADRE Grade 3 & 4</span>
+          </button>
+          <button class="category-card" onclick="selectCategory('apsc_cce', this)">
+            <span class="icon">🎯</span>
+            <span class="name">APSC CCE</span>
+          </button>
+          <button class="category-card" onclick="selectCategory('assam_tet', this)">
+            <span class="icon">🎓</span>
+            <span class="name">Assam TET</span>
+          </button>
+          <button class="category-card" onclick="selectCategory('assam_police', this)">
+            <span class="icon">👮</span>
+            <span class="name">Assam Police</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 🚂 Sector Specific -->
+      <div class="category-group">
+        <div class="category-group-header">
+          <span class="group-icon">🚂</span>
+          <span class="group-title">Sector Specific</span>
+        </div>
+        <div class="category-grid">
+          <button class="category-card" onclick="selectCategory('banking', this)">
+            <span class="icon">🏦</span>
+            <span class="name">Banking</span>
+          </button>
+          <button class="category-card" onclick="selectCategory('railways', this)">
+            <span class="icon">🚃</span>
+            <span class="name">Railways</span>
+          </button>
+          <button class="category-card" onclick="selectCategory('weekly_quiz', this)">
+            <span class="icon">📚</span>
+            <span class="name">Weekly Quiz</span>
+          </button>
+        </div>
+      </div>
+
     </div>
 
   </div>
