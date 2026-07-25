@@ -147,7 +147,7 @@
       </svg>
     </button>
     <!-- Login Button (shown when logged out) -->
-    <button class="header-login-btn" id="header-login-btn" type="button" onclick="openHeaderLogin()" title="Login">
+    <button class="header-login-btn" id="header-login-btn" type="button" title="Login">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
         stroke-linejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -169,7 +169,7 @@
           </svg>
           Home
         </a>
-        <button class="dropdown-item" id="dropdown-result" type="button" onclick="showMyResults()">
+        <button class="dropdown-item" id="dropdown-result" type="button">
           <svg viewBox="0 0 24 24">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <polyline points="14 2 14 8 20 8" />
@@ -614,7 +614,7 @@
   <div class="card hidden" id="my-results-screen">
     <!-- Back Header -->
     <div class="sub-header">
-      <button class="back-btn" onclick="hideMyResults()" aria-label="Go back to home">
+      <button class="back-btn" id="my-results-back-btn" aria-label="Go back to home">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
           stroke-linejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>

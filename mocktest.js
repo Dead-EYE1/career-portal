@@ -1,8 +1,8 @@
 // ── Firebase Imports ───────────────────────────────
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
-    import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, where, serverTimestamp, addDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, where, serverTimestamp, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     // ── Firebase Config ─────────────────────────────────
     const firebaseConfig = {
@@ -181,6 +181,7 @@
     }
 
     // ── Auth Event Listeners ─────────────────────────────
+    if (headerLoginBtn) headerLoginBtn.addEventListener('click', openHeaderLogin);
     if (dropdownLogout) dropdownLogout.addEventListener('click', handleLogout);
     if (modalLoginBtn) modalLoginBtn.addEventListener('click', handleGoogleLogin);
     if (modalCloseBtn) modalCloseBtn.addEventListener('click', dismissLoginModal);
@@ -1802,6 +1803,8 @@ ${formatExplanation(explanationLangText)}</div>
     window.openHeaderLogin = openHeaderLogin;
     window.toggleAuthMode = toggleAuthMode;
     window.handlePhoneAuth = handlePhoneAuth;
+    window.showMyResults = showMyResults;
+    window.hideMyResults = hideMyResults;
 
     // ── Navigation State Helpers ─────────────────────────
     function pushUrlState(exam, sub, test) {
@@ -1889,13 +1892,15 @@ ${formatExplanation(explanationLangText)}</div>
     const myResultsLoading  = document.getElementById('my-results-loading');
     const myResultsEmpty    = document.getElementById('my-results-empty');
     const myResultsList     = document.getElementById('my-results-list');
+    const myResultsBackBtn  = document.getElementById('my-results-back-btn');
+    const dropdownResult    = document.getElementById('dropdown-result');
 
     function hideAllScreens() {
       [startScreen, subScreen, testSelectionScreen, quizScreen, resultScreen, myResultsScreen]
         .forEach(s => { if (s) s.classList.add('hidden'); });
     }
 
-    window.showMyResults = async function() {
+    async function showMyResults() {
       // Close the profile dropdown
       if (profileDropdown) profileDropdown.classList.remove('open');
 
@@ -2040,11 +2045,15 @@ ${formatExplanation(explanationLangText)}</div>
       });
     }
 
-    window.hideMyResults = function() {
+    function hideMyResults() {
       if (myResultsScreen) myResultsScreen.classList.add('hidden');
       if (startScreen) startScreen.classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    }
+
+    // ── My Results Event Listeners ────────────────────────
+    if (dropdownResult) dropdownResult.addEventListener('click', showMyResults);
+    if (myResultsBackBtn) myResultsBackBtn.addEventListener('click', hideMyResults);
 
     // ── Theme Toggle Event Listener ──────────────────────
     const themeToggleBtn = document.getElementById('theme-toggle');

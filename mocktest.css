@@ -1519,7 +1519,7 @@ html.light-theme .theme-icon-moon { display: none; }
 /* ── Auth UI ──────────────────────────────────── */
 /* Fixed auth container — top-right corner */
 .auth-fixed-bar {
-  position: absolute;
+  position: fixed;
   top: 16px;
   right: 16px;
   z-index: 1000;
