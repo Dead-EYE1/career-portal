@@ -635,14 +635,10 @@
             return hasText || hasImage;
           });
 
-          // Sort questions sequentially by the number at the very end of their ID (following the final '-e')
+          // ✨ THE MAGIC FRONTEND SORT ✨
+          // This forces JavaScript to treat the numbers in the IDs naturally (q1 -> q2 -> q10)
           allQuestionsBySection[sec].sort((a, b) => {
-            const getNum = (id) => {
-              const parts = (id || '').split('-e');
-              const num = parseInt(parts[parts.length - 1], 10);
-              return isNaN(num) ? 0 : num;
-            };
-            return getNum(a.id) - getNum(b.id);
+            return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
           });
         });
 
@@ -1887,6 +1883,168 @@ ${formatExplanation(explanationLangText)}</div>
     } else {
       initFromURL(false);
     }
+
+    // ── My Results Screen ────────────────────────────────
+    const myResultsScreen   = document.getElementById('my-results-screen');
+    const myResultsLoading  = document.getElementById('my-results-loading');
+    const myResultsEmpty    = document.getElementById('my-results-empty');
+    const myResultsList     = document.getElementById('my-results-list');
+
+    function hideAllScreens() {
+      [startScreen, subScreen, testSelectionScreen, quizScreen, resultScreen, myResultsScreen]
+        .forEach(s => { if (s) s.classList.add('hidden'); });
+    }
+
+    window.showMyResults = async function() {
+      // Close the profile dropdown
+      if (profileDropdown) profileDropdown.classList.remove('open');
+
+      if (!currentUser) {
+        showLoginModal(null);
+        return;
+      }
+
+      hideAllScreens();
+      myResultsScreen.classList.remove('hidden');
+      myResultsLoading.classList.remove('hidden');
+      myResultsEmpty.classList.add('hidden');
+      myResultsList.innerHTML = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      try {
+        const scoresQuery = query(
+          collection(db, 'scores'),
+          where('userId', '==', currentUser.uid)
+        );
+        const snapshot = await getDocs(scoresQuery);
+
+        if (snapshot.empty) {
+          myResultsLoading.classList.add('hidden');
+          myResultsEmpty.classList.remove('hidden');
+          return;
+        }
+
+        // Build array and sort by submittedAt descending
+        let results = [];
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          results.push({ id: docSnap.id, ...data });
+        });
+
+        results.sort((a, b) => {
+          const dateA = a.submittedAt?.toDate ? a.submittedAt.toDate() : new Date(0);
+          const dateB = b.submittedAt?.toDate ? b.submittedAt.toDate() : new Date(0);
+          return dateB - dateA;
+        });
+
+        myResultsLoading.classList.add('hidden');
+        renderMyResults(results);
+      } catch (error) {
+        console.error('Error fetching results:', error);
+        myResultsLoading.classList.add('hidden');
+        myResultsList.innerHTML = `
+          <div class="my-results-empty">
+            <div class="empty-icon">⚠️</div>
+            <h3>Something went wrong</h3>
+            <p>Could not load your results. Please check your connection and try again.</p>
+          </div>`;
+      }
+    };
+
+    function renderMyResults(results) {
+      myResultsList.innerHTML = '';
+
+      results.forEach(r => {
+        const examName = categoryNames[r.exam] || (r.exam || '').toUpperCase();
+        const subName = (r.subCategory || '').replace(/_/g, ' ');
+        const testId = r.testId || '';
+        const totalQ = r.totalQuestions || 0;
+        const attempted = r.attempted || 0;
+        const correct = r.correct || 0;
+        const wrong = r.wrong || 0;
+        const score = typeof r.score === 'number' ? r.score : 0;
+        const totalMarks = r.totalMarks || (totalQ * CORRECT_MARKS);
+        const percentage = r.percentage != null
+          ? (typeof r.percentage === 'number' ? r.percentage : parseFloat(r.percentage))
+          : (totalMarks > 0 ? (score / totalMarks) * 100 : 0);
+        const pctDisplay = Math.max(0, Math.min(100, percentage)).toFixed(1);
+
+        // Format date
+        let dateStr = '—';
+        if (r.submittedAt?.toDate) {
+          const d = r.submittedAt.toDate();
+          dateStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+            + ' · ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        const card = document.createElement('div');
+        card.className = 'result-history-card';
+        card.innerHTML = `
+          <div class="result-card-header">
+            <div>
+              <div class="result-card-exam">${examName}</div>
+              ${testId ? `<div class="result-card-test-id">${testId}</div>` : ''}
+            </div>
+            <span class="result-card-badge">${subName || 'Test'}</span>
+          </div>
+
+          <div class="result-card-percentage">
+            <div class="percentage-bar-track">
+              <div class="percentage-bar-fill" style="width: ${pctDisplay}%"></div>
+            </div>
+            <span class="percentage-text">${pctDisplay}%</span>
+          </div>
+
+          <div class="result-card-stats">
+            <div class="result-stat-item stat-score">
+              <span class="stat-value">${score.toFixed(1)}</span>
+              <span class="stat-label">Score</span>
+            </div>
+            <div class="result-stat-item stat-correct">
+              <span class="stat-value">${correct}</span>
+              <span class="stat-label">Correct</span>
+            </div>
+            <div class="result-stat-item stat-wrong">
+              <span class="stat-value">${wrong}</span>
+              <span class="stat-label">Wrong</span>
+            </div>
+            <div class="result-stat-item">
+              <span class="stat-value">${attempted}/${totalQ}</span>
+              <span class="stat-label">Attempt</span>
+            </div>
+          </div>
+
+          <div class="result-card-footer">
+            <span class="result-card-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+              </svg>
+              ${dateStr}
+            </span>
+            <button class="result-card-action" data-exam="${r.exam || ''}" data-sub="${r.subCategory || ''}" data-test="${testId}">Retake Test</button>
+          </div>`;
+
+        // Wire up retake button
+        card.querySelector('.result-card-action').addEventListener('click', function() {
+          const exam = this.dataset.exam;
+          const sub = this.dataset.sub;
+          const test = this.dataset.test;
+          if (exam && sub && test) {
+            sessionStorage.setItem('is_reattempting', 'true');
+            hideAllScreens();
+            fetchQuestions(exam, sub, test, selectedMockTestLanguage);
+          }
+        });
+
+        myResultsList.appendChild(card);
+      });
+    }
+
+    window.hideMyResults = function() {
+      if (myResultsScreen) myResultsScreen.classList.add('hidden');
+      if (startScreen) startScreen.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     // ── Theme Toggle Event Listener ──────────────────────
     const themeToggleBtn = document.getElementById('theme-toggle');

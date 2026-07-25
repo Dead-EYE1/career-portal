@@ -169,7 +169,7 @@
           </svg>
           Home
         </a>
-        <a href="https://newjobupdates.in/mocktest.html" class="dropdown-item" id="dropdown-result">
+        <button class="dropdown-item" id="dropdown-result" type="button" onclick="showMyResults()">
           <svg viewBox="0 0 24 24">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <polyline points="14 2 14 8 20 8" />
@@ -177,8 +177,8 @@
             <line x1="16" y1="17" x2="8" y2="17" />
             <polyline points="10 9 9 9 8 9" />
           </svg>
-          Result
-        </a>
+          My Results
+        </button>
         <button class="dropdown-item logout-item" id="dropdown-logout" type="button">
           <svg viewBox="0 0 24 24">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -606,6 +606,45 @@
         Sign Out
       </button>
     </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!--  MY RESULTS SCREEN                             -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="card hidden" id="my-results-screen">
+    <!-- Back Header -->
+    <div class="sub-header">
+      <button class="back-btn" onclick="hideMyResults()" aria-label="Go back to home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back
+      </button>
+    </div>
+
+    <div class="my-results-header">
+      <div class="result-icon">📊</div>
+      <h2>My Results</h2>
+      <p>Your previous test performances</p>
+    </div>
+
+    <!-- Loading state -->
+    <div class="my-results-loading hidden" id="my-results-loading">
+      <div class="spinner"></div>
+      <p>Fetching your results...</p>
+    </div>
+
+    <!-- Empty state -->
+    <div class="my-results-empty hidden" id="my-results-empty">
+      <div class="empty-icon">📝</div>
+      <h3>No Results Yet</h3>
+      <p>You haven't taken any tests yet. Start a mock test to see your scores here!</p>
+    </div>
+
+    <!-- Results list -->
+    <div class="my-results-list" id="my-results-list"></div>
   </div>
 
   <footer class="footer">

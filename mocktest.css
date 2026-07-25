@@ -2317,3 +2317,265 @@ html.light-theme .theme-icon-moon { display: none; }
 #error-report-status.error {
   color: var(--red);
 }
+
+/* ── My Results Screen ────────────────────────── */
+#my-results-screen {
+  max-width: 640px;
+}
+.my-results-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.my-results-header .result-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+.my-results-header h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--accent-light), var(--green));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.my-results-header p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Loading spinner for results */
+.my-results-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 0;
+}
+.my-results-loading .spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--bg-spinner);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.my-results-loading p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Empty state */
+.my-results-empty {
+  text-align: center;
+  padding: 48px 16px;
+}
+.my-results-empty .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+.my-results-empty h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.my-results-empty p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  max-width: 320px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Results list container */
+.my-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Individual result card */
+.result-history-card {
+  background: var(--bg-option);
+  border: 1px solid var(--border-option);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  transition: all 0.25s ease;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.4s ease-out both;
+}
+.result-history-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.result-history-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px var(--accent-glow);
+  transform: translateY(-2px);
+}
+.result-history-card:hover::before {
+  opacity: 1;
+}
+
+/* Staggered animation for cards */
+.result-history-card:nth-child(1) { animation-delay: 0s; }
+.result-history-card:nth-child(2) { animation-delay: 0.06s; }
+.result-history-card:nth-child(3) { animation-delay: 0.12s; }
+.result-history-card:nth-child(4) { animation-delay: 0.18s; }
+.result-history-card:nth-child(5) { animation-delay: 0.24s; }
+.result-history-card:nth-child(n+6) { animation-delay: 0.3s; }
+
+/* Card header row */
+.result-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.result-card-exam {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.result-card-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: var(--accent-glow);
+  color: var(--accent-light);
+  white-space: nowrap;
+}
+.result-card-test-id {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* Stats grid inside card */
+.result-card-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.result-stat-item {
+  text-align: center;
+  padding: 10px 4px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+.result-stat-item .stat-value {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.result-stat-item .stat-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 3px;
+}
+.result-stat-item.stat-correct .stat-value { color: var(--green); }
+.result-stat-item.stat-wrong .stat-value { color: var(--red); }
+.result-stat-item.stat-score .stat-value {
+  background: linear-gradient(135deg, var(--accent-light), var(--green));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Card footer */
+.result-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.result-card-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.result-card-date svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+.result-card-action {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-light);
+  background: var(--accent-glow);
+  border: 1px solid rgba(127, 90, 240, 0.2);
+  border-radius: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.result-card-action:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* Score percentage ring (mini) */
+.result-card-percentage {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.percentage-bar-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 100px;
+  background: var(--bg-badge);
+  overflow: hidden;
+}
+.percentage-bar-fill {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  transition: width 0.6s ease;
+}
+.percentage-text {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-light);
+  min-width: 42px;
+  text-align: right;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .result-card-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
