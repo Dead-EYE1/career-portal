@@ -70,8 +70,8 @@
     // Pending result data to save after login
     let pendingResultData  = null;
 
-    // Fallback avatar SVG data URI
-    const FALLBACK_AVATAR = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%237f5af0"><circle cx="12" cy="8" r="4"/><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/></svg>';
+    // Fallback avatar SVG data URI — solid purple bg with white user icon
+    const FALLBACK_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%237f5af0'/%3E%3Cstop offset='100%25' stop-color='%236c3ce0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='38' r='14' fill='white'/%3E%3Cpath d='M24 82a26 26 0 0 1 52 0' fill='white'/%3E%3C/svg%3E";
 
     // ── Listen for Auth State Changes ────────────────────
     onAuthStateChanged(auth, (user) => {
