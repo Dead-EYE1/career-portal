@@ -1824,13 +1824,6 @@ ${formatExplanation(explanationLangText)}</div>
       }
     }
 
-    function hideAllScreens() {
-      if (startScreen) startScreen.classList.add('hidden');
-      if (subScreen) subScreen.classList.add('hidden');
-      if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
-      if (quizScreen) quizScreen.classList.add('hidden');
-      if (resultScreen) resultScreen.classList.add('hidden');
-    }
 
     // ── Check URL Params for Direct Exam Linking ─────────
     const initFromURL = (isPopState = false) => {
