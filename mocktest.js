@@ -352,6 +352,8 @@
           totalMarks: resultData.totalMarks,
           percentage: resultData.percentage,
           sectionBreakdown: resultData.sectionBreakdown || {},
+          quizState: resultData.quizState || {},
+          timeSpentPerQuestion: resultData.timeSpentPerQuestion || {},
           submittedAt: serverTimestamp()
         });
         statusContainer.innerHTML = '<div class="save-status success">✓ Score saved to your account</div>';
@@ -670,6 +672,13 @@
             if (scoreDocSnap.exists()) {
               const savedData = scoreDocSnap.data();
               hasSavedScore = true;
+              
+              if (savedData.quizState) {
+                quizState = savedData.quizState;
+              }
+              if (savedData.timeSpentPerQuestion) {
+                timeSpentPerQuestion = savedData.timeSpentPerQuestion;
+              }
               
               if (subScreen) subScreen.classList.add('hidden');
               if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
@@ -1202,7 +1211,8 @@
         totalMarks: totalPossible,
         percentage: percentage,
         sectionBreakdown: sectionBreakdown,
-        timeSpentPerQuestion: timeSpentPerQuestion
+        timeSpentPerQuestion: timeSpentPerQuestion,
+        quizState: quizState
       };
 
       // If logged in → save immediately. If not → show login modal.
@@ -2019,20 +2029,41 @@ ${formatExplanation(explanationLangText)}</div>
               </svg>
               ${dateStr}
             </span>
-            <button class="result-card-action" data-exam="${r.exam || ''}" data-sub="${r.subCategory || ''}" data-test="${testId}">Retake Test</button>
+            <div style="display: flex; gap: 8px;">
+              <button class="result-card-action review-test-btn" data-exam="${r.exam || ''}" data-sub="${r.subCategory || ''}" data-test="${testId}">Review</button>
+              <button class="result-card-action retake-test-btn" data-exam="${r.exam || ''}" data-sub="${r.subCategory || ''}" data-test="${testId}">Retake</button>
+            </div>
           </div>`;
 
-        // Wire up retake button
-        card.querySelector('.result-card-action').addEventListener('click', function() {
-          const exam = this.dataset.exam;
-          const sub = this.dataset.sub;
-          const test = this.dataset.test;
-          if (exam && sub && test) {
-            sessionStorage.setItem('is_reattempting', 'true');
-            hideAllScreens();
-            fetchQuestions(exam, sub, test, selectedMockTestLanguage);
-          }
-        });
+        // Wire up Review button
+        const reviewBtn = card.querySelector('.review-test-btn');
+        if (reviewBtn) {
+          reviewBtn.addEventListener('click', function() {
+            const exam = this.dataset.exam;
+            const sub = this.dataset.sub;
+            const test = this.dataset.test;
+            if (exam && sub && test) {
+              sessionStorage.setItem('is_reattempting', 'false');
+              hideAllScreens();
+              fetchQuestions(exam, sub, test, selectedMockTestLanguage);
+            }
+          });
+        }
+
+        // Wire up Retake button
+        const retakeBtn = card.querySelector('.retake-test-btn');
+        if (retakeBtn) {
+          retakeBtn.addEventListener('click', function() {
+            const exam = this.dataset.exam;
+            const sub = this.dataset.sub;
+            const test = this.dataset.test;
+            if (exam && sub && test) {
+              sessionStorage.setItem('is_reattempting', 'true');
+              hideAllScreens();
+              fetchQuestions(exam, sub, test, selectedMockTestLanguage);
+            }
+          });
+        }
 
         myResultsList.appendChild(card);
       });
