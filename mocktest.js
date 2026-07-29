@@ -460,24 +460,25 @@
     let TIME_PER_SECTION = 15 * 60; // 15 minutes default
 
     // ── State ────────────────────────────────────────────
-    let allQuestionsBySection = {}; // Organizes questions by subject
-    let activeSectionIndex = 0;     // Tracks active subject index (0 to 3)
-    let questions = [];             // Current active section's questions
-    let currentIndex = 0;
+    let allQuestions = [];          // Flat array of all questions
+    let filteredIndices = [];       // Maps local UI index to global allQuestions index
+    let activeSectionTab = 'all';   // 'all' or specific section key
+    let uniqueSections = [];        // Unique section keys extracted from test
+    let currentIndex = 0;           // Index within filteredIndices
     let score = 0;
     let correctCount = 0;
     let wrongCount = 0;
     let selectedOption = -1;
     let answered = false;
-    let sectionTimeLeft = TIME_PER_SECTION;
+    let testTimeLeft = TIME_PER_SECTION; // Global test time
     let timerInterval = null;
     let selectedCategory = '';
     let selectedSubCategory = '';
-    let selectedTestId = '';         // Tracks the active test ID
-    let quizState = [];             // Global state tracking array for tracking answers
-    let selectedMockTestLanguage = 'en'; // Tracks the selected default language for mocks
-    let questionStartTime = 0;      // Timestamp when current question was loaded
-    let timeSpentPerQuestion = {};  // { sectionKey: [seconds, ...] }
+    let selectedTestId = '';
+    let quizState = [];             // Flat array matching allQuestions length
+    let selectedMockTestLanguage = 'en';
+    let questionStartTime = 0;
+    let timeSpentPerQuestion = [];  // Flat array matching allQuestions length
 
     const categoryNames = {
       'ssc_gd': 'SSC GD',
@@ -513,6 +514,7 @@
     const questionsChip = document.getElementById('questions-chip');
     const subExamBadge  = document.getElementById('sub-exam-badge');
     const paletteGrid   = document.getElementById('palette-grid');
+    const sectionTabsContainer = document.getElementById('section-tabs-container');
 
     // Test selection screen DOM references
     const testSelectionScreen     = document.getElementById('test-selection-screen');
@@ -537,22 +539,7 @@
       showGlobalLoader('Preparing questions...', fetchQuestions, category, subCategory, testId, testLang);
       try {
         selectedMockTestLanguage = testLang;
-
-        // Dynamically update SECTION_ORDER before quiz begins
-        if (category === 'weekly_quiz') {
-          // Weekly quiz: single subject per test
-          let sec = (subCategory || 'gk').toLowerCase();
-          if (sec === 'math' || sec === 'mathematics' || sec === 'maths') sec = 'quant';
-          SECTION_ORDER = [sec];
-        } else if (selectedMockTestLanguage === 'hi') {
-          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'hindi'];
-        } else if (selectedMockTestLanguage === 'as') {
-          // Assamese track: same as English sections (no dedicated Assamese section)
-          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english'];
-        } else {
-          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english'];
-        }
-
+        
         const dbSubCategory = dbSubCategoryMap[subCategory] || subCategory;
         const q = query(
           collection(db, 'questions'),
@@ -570,15 +557,11 @@
           return;
         }
 
-        // Initialize empty arrays dynamically based on SECTION_ORDER
-        allQuestionsBySection = {};
-        SECTION_ORDER.forEach(sec => {
-          allQuestionsBySection[sec] = [];
-        });
+        allQuestions = [];
+        const sectionSet = new Set();
         
         snapshot.docs.forEach(doc => {
           const data = doc.data();
-          // For weekly_quiz, section = subCategory (they're the same subject)
           let rawSec;
           if (category === 'weekly_quiz') {
             rawSec = (subCategory || 'gk').toLowerCase();
@@ -586,6 +569,8 @@
             rawSec = (data.section || 'reasoning').toLowerCase();
           }
           if (rawSec === 'math' || rawSec === 'mathematics' || rawSec === 'maths') rawSec = 'quant';
+
+          sectionSet.add(rawSec);
 
           const questionObj = {
             id: doc.id,
@@ -616,50 +601,40 @@
             }
           };
 
-          if (allQuestionsBySection[questionObj.section]) {
-            allQuestionsBySection[questionObj.section].push(questionObj);
-          }
+          allQuestions.push(questionObj);
         });
 
-        // ── Filter: hide questions that have no text and no image across all languages ──
-        // For Assamese, fall back to English if no Assamese text exists (don't filter out)
-        SECTION_ORDER.forEach(sec => {
-          allQuestionsBySection[sec] = allQuestionsBySection[sec].filter(q => {
-            let applyLang = selectedMockTestLanguage;
-            if (q.section === 'hindi') applyLang = 'hi';
-            if (q.section === 'english') applyLang = 'en';
-
-            // Build fallback chain: selected lang → 'en' → 'hi'
-            const questionLangText = typeof q.question === 'object'
-              ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '')
-              : (q.question || '');
-            const hasText = questionLangText && questionLangText.trim().length > 0;
-            const hasImage = q.imageUrl && q.imageUrl.trim().length > 0;
-            return hasText || hasImage;
-          });
-
-          // ✨ THE MAGIC FRONTEND SORT ✨
-          // This forces JavaScript to treat the numbers in the IDs naturally (q1 -> q2 -> q10)
-          allQuestionsBySection[sec].sort((a, b) => {
-            return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
-          });
+        // ✨ THE MAGIC FRONTEND SORT ✨
+        allQuestions.sort((a, b) => {
+          return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
         });
 
+        // ── Filter empty questions ──
+        allQuestions = allQuestions.filter(q => {
+          let applyLang = selectedMockTestLanguage;
+          if (q.section === 'hindi') applyLang = 'hi';
+          if (q.section === 'english') applyLang = 'en';
 
+          const questionLangText = typeof q.question === 'object'
+            ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '')
+            : (q.question || '');
+          const hasText = questionLangText && questionLangText.trim().length > 0;
+          const hasImage = q.imageUrl && q.imageUrl.trim().length > 0;
+          return hasText || hasImage;
+        });
 
-        // Check if we have any questions across all arrays
-        const totalFetched = Object.values(allQuestionsBySection).reduce((a, b) => a + b.length, 0);
-        if (totalFetched === 0) {
+        if (allQuestions.length === 0) {
           hideGlobalLoader();
           if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
           alert(`No questions available in category "${categoryNames[category] || category}".`);
           return;
         }
 
+        uniqueSections = Array.from(sectionSet);
         selectedCategory = category;
         selectedSubCategory = subCategory;
         selectedTestId = testId || '';
-        activeSectionIndex = 0;
+        activeSectionTab = 'all';
         initializeQuizState();
 
         const isReattempting = sessionStorage.getItem('is_reattempting') === 'true';
@@ -673,18 +648,14 @@
               const savedData = scoreDocSnap.data();
               hasSavedScore = true;
               
-              if (savedData.quizState) {
-                quizState = savedData.quizState;
-              }
-              if (savedData.timeSpentPerQuestion) {
-                timeSpentPerQuestion = savedData.timeSpentPerQuestion;
-              }
+              if (savedData.quizState) quizState = savedData.quizState;
+              if (savedData.timeSpentPerQuestion) timeSpentPerQuestion = savedData.timeSpentPerQuestion;
               
               if (subScreen) subScreen.classList.add('hidden');
               if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
               quizScreen.classList.add('hidden');
               
-              const totalQ = savedData.totalQuestions || totalFetched;
+              const totalQ = savedData.totalQuestions || allQuestions.length;
               const att = savedData.attempted || 0;
               const right = savedData.correct || 0;
               const wrong = savedData.wrong || 0;
@@ -705,9 +676,7 @@
                 resultExamBadge.textContent = `${catName} - ${subName}`;
               }
               
-              if (resultLogoutBtn) {
-                resultLogoutBtn.classList.toggle('hidden', !currentUser);
-              }
+              if (resultLogoutBtn) resultLogoutBtn.classList.toggle('hidden', !currentUser);
               
               const statusContainer = document.getElementById('save-status-container');
               if (statusContainer) {
@@ -739,19 +708,17 @@
              liveToggle.title = "";
           }
 
-          // Show/hide Assamese option in the live toggle based on exam category
           const liveAsOpt = document.getElementById('live-assamese-option');
           if (liveAsOpt) {
             const asAllowed = ASSAMESE_ALLOWED_EXAMS.includes(category);
             liveAsOpt.style.display = asAllowed ? '' : 'none';
-            // If Assamese was somehow selected for a non-allowed exam, reset to English
             if (!asAllowed && selectedMockTestLanguage === 'as') {
               selectedMockTestLanguage = 'en';
               if (liveToggle) liveToggle.value = 'en';
             }
           }
           
-          startSectionQuiz();
+          startQuiz();
         }
       } catch (error) {
         console.error('Error fetching questions:', error);
@@ -771,120 +738,167 @@
         }
       }
 
-      quizState = {};
-      timeSpentPerQuestion = {};
-      SECTION_ORDER.forEach(secKey => {
-        if (parsedAnswers && parsedAnswers[secKey] && parsedAnswers[secKey].length === allQuestionsBySection[secKey].length) {
-          // Restore answers if they match the question count
-          quizState[secKey] = parsedAnswers[secKey];
-        } else {
-          quizState[secKey] = allQuestionsBySection[secKey].map(() => ({
-            status: 'not-visited',
-            selectedIdx: -1,
-            isCorrect: null,
-            isReviewed: false
-          }));
-        }
-        timeSpentPerQuestion[secKey] = allQuestionsBySection[secKey].map(() => 0);
-      });
+      if (parsedAnswers && parsedAnswers.length === allQuestions.length) {
+        quizState = parsedAnswers;
+      } else {
+        quizState = allQuestions.map(() => ({
+          status: 'not-visited',
+          selectedIdx: -1,
+          isCorrect: null,
+          isReviewed: false
+        }));
+      }
+
+      const savedTime = sessionStorage.getItem('current_time_spent');
+      let parsedTime = null;
+      if (savedTime) {
+        try {
+          parsedTime = JSON.parse(savedTime);
+        } catch(e) {}
+      }
+
+      if (parsedTime && parsedTime.length === allQuestions.length) {
+        timeSpentPerQuestion = parsedTime;
+      } else {
+        timeSpentPerQuestion = allQuestions.map(() => 0);
+      }
     }
 
-    // ── Start A Specific Section ─────────────────────────
-    function startSectionQuiz() {
+    // ── Section Names Mapping ──────────────────────────────
+    const sectionNamesMap = {
+      'reasoning': 'Reasoning',
+      'gk': 'General Awareness',
+      'quant': 'Quantitative Aptitude',
+      'english': 'English',
+      'hindi': 'Hindi'
+    };
+
+    // ── Start Quiz ──────────────────────────────
+    function startQuiz() {
       if (timerInterval) clearInterval(timerInterval);
-      
-      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
-      questions = allQuestionsBySection[currentSectionKey];
-      
-      // If a section is empty, automatically jump to next valid section
-      if (questions.length === 0 && activeSectionIndex < SECTION_ORDER.length - 1) {
-        activeSectionIndex++;
-        startSectionQuiz();
-        return;
-      } else if (questions.length === 0) {
+
+      if (allQuestions.length === 0) {
         showResult();
         return;
       }
 
-      currentIndex = 0;
-      sectionTimeLeft = TIME_PER_SECTION;
-      timerBadge.classList.remove('danger');
+      // Rebuild tabs
+      buildSectionTabs();
 
-      // Update Header with Active Section Banner Info
-      const titleSpan = document.getElementById('sidebar-subject-title');
-      if (titleSpan) {
-        titleSpan.textContent = `Subject: ${SECTION_NAMES[currentSectionKey]}`;
-      }
+      filterQuestionsByTab('all');
+
+      testTimeLeft = TIME_PER_SECTION * (uniqueSections.length > 0 ? uniqueSections.length : 1);
+      timerBadge.classList.remove('danger');
 
       const quizExamBadge = document.getElementById('quiz-exam-badge');
       if (quizExamBadge) {
-        quizExamBadge.textContent = SECTION_NAMES[currentSectionKey];
+        quizExamBadge.textContent = 'Mock Test';
       }
 
-      startSectionTimer();
-      loadQuestion();
-      renderPalette();
+      startTimer();
     }
 
-    // ── Sectional Countdown Logic ────────────────────────
-    function startSectionTimer() {
+    function buildSectionTabs() {
+      if (!sectionTabsContainer) return;
+      sectionTabsContainer.innerHTML = '';
+      if (uniqueSections.length <= 1) {
+        sectionTabsContainer.classList.add('hidden');
+        return;
+      }
+      sectionTabsContainer.classList.remove('hidden');
+
+      const allTab = document.createElement('div');
+      allTab.className = 'section-tab active';
+      allTab.textContent = 'All Sections';
+      allTab.addEventListener('click', () => filterQuestionsByTab('all', allTab));
+      sectionTabsContainer.appendChild(allTab);
+
+      uniqueSections.forEach(sec => {
+        const tab = document.createElement('div');
+        tab.className = 'section-tab';
+        const name = sectionNamesMap[sec] || (sec.charAt(0).toUpperCase() + sec.slice(1));
+        tab.textContent = name;
+        tab.addEventListener('click', () => filterQuestionsByTab(sec, tab));
+        sectionTabsContainer.appendChild(tab);
+      });
+    }
+
+    function filterQuestionsByTab(tabKey, tabEl) {
+      if (tabEl) {
+        const tabs = sectionTabsContainer.querySelectorAll('.section-tab');
+        tabs.forEach(t => t.classList.remove('active'));
+        tabEl.classList.add('active');
+      }
+
+      activeSectionTab = tabKey;
+      filteredIndices = [];
+      allQuestions.forEach((q, i) => {
+        if (tabKey === 'all' || q.section === tabKey) {
+          filteredIndices.push(i);
+        }
+      });
+
+      const titleSpan = document.getElementById('sidebar-subject-title');
+      if (titleSpan) {
+        titleSpan.textContent = `Subject: ${tabKey === 'all' ? 'All' : (sectionNamesMap[tabKey] || tabKey)}`;
+      }
+
+      currentIndex = 0;
+      if (filteredIndices.length > 0) {
+        loadQuestion();
+        renderPalette();
+      }
+    }
+
+    // ── Global Countdown Logic ────────────────────────
+    function startTimer() {
       updateTimerDisplay();
       timerInterval = setInterval(() => {
-        sectionTimeLeft--;
+        testTimeLeft--;
         updateTimerDisplay();
-        if (sectionTimeLeft <= 60) {
+        if (testTimeLeft <= 60) {
           timerBadge.classList.add('danger');
         }
-        if (sectionTimeLeft <= 0) {
+        if (testTimeLeft <= 0) {
           clearInterval(timerInterval);
-          alert(`Time is up for ${SECTION_NAMES[SECTION_ORDER[activeSectionIndex]]}! Moving to next subject.`);
-          const currentSectionKey = SECTION_ORDER[activeSectionIndex];
-          recordTimeSpent(currentSectionKey, currentIndex);
-          moveToNextSection();
+          alert(`Time is up! Submitting test.`);
+          if (filteredIndices.length > 0 && currentIndex < filteredIndices.length) {
+            recordTimeSpent(filteredIndices[currentIndex]);
+          }
+          showResult();
         }
       }, 1000);
     }
 
     function updateTimerDisplay() {
-      const mins = Math.floor(sectionTimeLeft / 60).toString().padStart(2, '0');
-      const secs = (sectionTimeLeft % 60).toString().padStart(2, '0');
-      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
-      timerDisplay.textContent = `[${SECTION_NAMES[currentSectionKey]}] ${mins}:${secs}`;
-    }
-
-    function moveToNextSection() {
-      if (activeSectionIndex < SECTION_ORDER.length - 1) {
-        activeSectionIndex++;
-        startSectionQuiz();
-      } else {
-        clearInterval(timerInterval);
-        showResult();
-      }
+      const mins = Math.floor(testTimeLeft / 60).toString().padStart(2, '0');
+      const secs = (testTimeLeft % 60).toString().padStart(2, '0');
+      timerDisplay.textContent = `[Time] ${mins}:${secs}`;
     }
 
     // ── Load Question ────────────────────────────────────
     function loadQuestion() {
-      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
-      const state = quizState[currentSectionKey][currentIndex];
+      if (filteredIndices.length === 0) return;
+      
+      const globalIndex = filteredIndices[currentIndex];
+      const state = quizState[globalIndex];
       
       answered = (state.status === 'answered');
       selectedOption = state.selectedIdx;
 
-      const q = questions[currentIndex];
-      progressText.textContent = `${currentIndex + 1} of ${questions.length}`;
-      progressFill.style.width = `${((currentIndex) / questions.length) * 100}%`;
+      const q = allQuestions[globalIndex];
+      progressText.textContent = `${currentIndex + 1} of ${filteredIndices.length}`;
+      progressFill.style.width = `${((currentIndex) / filteredIndices.length) * 100}%`;
 
       let applyLang = selectedMockTestLanguage;
       if (q.section === 'hindi') applyLang = 'hi';
       if (q.section === 'english') applyLang = 'en';
 
-      // Fallback chain: selected lang → English → Hindi (prevents blank questions)
       const questionLangText = typeof q.question === 'object'
         ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '')
         : (q.question || '');
-      questionText.textContent = `Q${currentIndex + 1}. ${questionLangText}`;
+      questionText.textContent = `Q${globalIndex + 1}. ${questionLangText}`;
 
-      // Show/hide question image
       if (questionImage) {
         if (q.imageUrl && q.imageUrl.trim() !== '') {
           questionImage.src = q.imageUrl;
@@ -898,8 +912,6 @@
       optionsList.innerHTML = '';
       const keys = ['A', 'B', 'C', 'D'];
       const optionKeys = ['a', 'b', 'c', 'd'];
-      const correctKey = (q.answer || '').toLowerCase();
-      const correctIndex = optionKeys.indexOf(correctKey);
 
       q.options.forEach((opt, i) => {
         const btn = document.createElement('button');
@@ -914,7 +926,6 @@
           if (q.section === 'hindi') applyLang = 'hi';
           if (q.section === 'english') applyLang = 'en';
           
-          // Fallback chain: selected lang → English → Hindi
           const optionLangText = typeof opt === 'object' ? (opt[applyLang] || opt['en'] || opt['hi'] || '') : (opt || '');
           btn.innerHTML = `<span class="key">${keys[i]}</span><span>${optionLangText}</span>`;
         }
@@ -944,7 +955,6 @@
       questionText.classList.add('slide-in');
       optionsList.classList.add('slide-in');
 
-      // Record start time for time-per-question tracking
       questionStartTime = Date.now();
 
       if (window.MathJax && window.MathJax.typesetPromise) {
@@ -954,15 +964,14 @@
 
     // ── Update Submit/Next Button Text ────────────────────
     function updateNextButtonText() {
-      const isLastQuestion = (currentIndex === questions.length - 1);
-      const isLastSection = (activeSectionIndex === SECTION_ORDER.length - 1);
+      const isLastQuestion = (currentIndex === filteredIndices.length - 1);
 
       if (answered) {
         if (!isLastQuestion) nextBtn.textContent = 'Save & Next →';
-        else nextBtn.textContent = isLastSection ? 'Submit Test →' : 'Submit Subject & Continue →';
+        else nextBtn.textContent = 'Submit Test →';
       } else {
         if (!isLastQuestion) nextBtn.textContent = 'Skip Question →';
-        else nextBtn.textContent = isLastSection ? 'Submit Test →' : 'Skip & Continue →';
+        else nextBtn.textContent = 'Submit Test →';
       }
     }
 
@@ -971,7 +980,8 @@
       answered = true;
       selectedOption = index;
 
-      const q = questions[currentIndex];
+      const globalIndex = filteredIndices[currentIndex];
+      const q = allQuestions[globalIndex];
       const allBtns = optionsList.querySelectorAll('.option-btn');
       
       allBtns.forEach(b => b.classList.remove('selected'));
@@ -982,17 +992,15 @@
       const correctKey = (q.answer || '').toLowerCase();
       const isCorrect = (selectedKey === correctKey);
 
-      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
-      const prevState = quizState[currentSectionKey][currentIndex];
+      const prevState = quizState[globalIndex];
       
-      quizState[currentSectionKey][currentIndex] = {
+      quizState[globalIndex] = {
         ...prevState,
         status: 'answered',
         selectedIdx: index,
         isCorrect: isCorrect
       };
 
-      // Save progress dynamically
       sessionStorage.setItem('current_answers', JSON.stringify(quizState));
 
       const clearBtn = document.getElementById('clear-btn');
@@ -1006,48 +1014,47 @@
 
     // ── Review Button Click ──────────────────────────────
     function handleReviewClick() {
-      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
-      const state = quizState[currentSectionKey][currentIndex];
+      const globalIndex = filteredIndices[currentIndex];
+      const state = quizState[globalIndex];
       
-      // Accumulate time spent on this question
-      recordTimeSpent(currentSectionKey, currentIndex);
+      recordTimeSpent(globalIndex);
 
-      quizState[currentSectionKey][currentIndex].isReviewed = true;
+      quizState[globalIndex].isReviewed = true;
       
       if (state.status === 'not-visited') {
-        quizState[currentSectionKey][currentIndex].status = 'skipped';
+        quizState[globalIndex].status = 'skipped';
       }
 
-      if (currentIndex < questions.length - 1) {
+      if (currentIndex < filteredIndices.length - 1) {
         currentIndex++;
         loadQuestion();
         renderPalette();
       } else {
-        moveToNextSection();
+        clearInterval(timerInterval);
+        showResult();
       }
     }
 
     // ── Skip or Next Click Trigger ────────────────────────
     function handleNextClick() {
-      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
-      const state = quizState[currentSectionKey][currentIndex];
+      const globalIndex = filteredIndices[currentIndex];
+      const state = quizState[globalIndex];
       
-      // Accumulate time spent on this question
-      recordTimeSpent(currentSectionKey, currentIndex);
+      recordTimeSpent(globalIndex);
 
-      quizState[currentSectionKey][currentIndex].isReviewed = false; // Clear review on normal next
+      quizState[globalIndex].isReviewed = false;
       
       if (state.status === 'not-visited') {
-        quizState[currentSectionKey][currentIndex].status = 'skipped';
+        quizState[globalIndex].status = 'skipped';
       }
 
-      if (currentIndex < questions.length - 1) {
+      if (currentIndex < filteredIndices.length - 1) {
         currentIndex++;
         loadQuestion();
         renderPalette();
       } else {
-        // Last question handling inside a sectional environment
-        moveToNextSection();
+        clearInterval(timerInterval);
+        showResult();
       }
     }
 
@@ -1056,13 +1063,11 @@
       if (!paletteGrid) return;
       paletteGrid.innerHTML = '';
       
-      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
-      const currentSectionState = quizState[currentSectionKey];
-      
-      currentSectionState.forEach((state, i) => {
+      filteredIndices.forEach((globalIndex, i) => {
+        const state = quizState[globalIndex];
         const btn = document.createElement('button');
         btn.className = 'palette-btn';
-        btn.textContent = i + 1;
+        btn.textContent = globalIndex + 1; // Show global question number
         
         if (i === currentIndex) {
           btn.classList.add('active');
@@ -1087,7 +1092,6 @@
 
     // ── Jump to Question Palette Navigation ──────────────
     function jumpToQuestion(index) {
-      // Auto-hide the quiz slider/sidebar on mobile when a question number is clicked
       const sidebar = document.querySelector('.quiz-sidebar');
       if (sidebar) {
         sidebar.classList.remove('show-mobile');
@@ -1095,14 +1099,12 @@
 
       if (index === currentIndex) return;
 
-      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+      const globalIndex = filteredIndices[currentIndex];
+      recordTimeSpent(globalIndex);
 
-      // Accumulate time spent on the question we're leaving
-      recordTimeSpent(currentSectionKey, currentIndex);
-
-      const currentState = quizState[currentSectionKey][currentIndex];
+      const currentState = quizState[globalIndex];
       if (currentState.status === 'not-visited') {
-        quizState[currentSectionKey][currentIndex].status = 'skipped';
+        quizState[globalIndex].status = 'skipped';
       }
 
       currentIndex = index;
@@ -1111,16 +1113,18 @@
     }
 
     // ── Record Time Spent on Current Question ────────────
-    function recordTimeSpent(sectionKey, qIndex) {
+    function recordTimeSpent(globalIndex) {
       if (questionStartTime > 0) {
         const elapsed = Math.round((Date.now() - questionStartTime) / 1000);
-        if (timeSpentPerQuestion[sectionKey] && timeSpentPerQuestion[sectionKey][qIndex] !== undefined) {
-          timeSpentPerQuestion[sectionKey][qIndex] += elapsed;
+        if (timeSpentPerQuestion[globalIndex] !== undefined) {
+          timeSpentPerQuestion[globalIndex] += elapsed;
         }
+        sessionStorage.setItem('current_time_spent', JSON.stringify(timeSpentPerQuestion));
         questionStartTime = 0;
       }
     }
 
+    // ── Show Final Score Breakdown ───────────────────────
     // ── Show Final Score Breakdown ───────────────────────
     function showResult() {
       clearInterval(timerInterval);
@@ -1128,10 +1132,12 @@
       // Clear saved progress on finish
       sessionStorage.removeItem('current_answers');
       sessionStorage.removeItem('is_reattempting');
+      sessionStorage.removeItem('current_time_spent');
 
       // Record time for the last question being viewed
-      const lastSectionKey = SECTION_ORDER[activeSectionIndex];
-      recordTimeSpent(lastSectionKey, currentIndex);
+      if (filteredIndices.length > 0 && currentIndex < filteredIndices.length) {
+        recordTimeSpent(filteredIndices[currentIndex]);
+      }
 
       quizScreen.classList.add('hidden');
       resetErrorReportUI();
@@ -1142,37 +1148,45 @@
       wrongCount = 0;
       let attemptedCount = 0;
       score = 0;
-      let totalQuestionsAcrossQuiz = 0;
+      let totalQuestionsAcrossQuiz = allQuestions.length;
       const sectionBreakdown = {};
 
-      SECTION_ORDER.forEach(secKey => {
-        const sectState = quizState[secKey] || [];
-        totalQuestionsAcrossQuiz += sectState.length;
-        let secCorrect = 0, secWrong = 0, secAttempted = 0;
-        
-        sectState.forEach(state => {
+      uniqueSections.forEach(secKey => {
+        sectionBreakdown[secKey] = {
+          total: 0,
+          attempted: 0,
+          correct: 0,
+          wrong: 0,
+          score: 0
+        };
+      });
+
+      allQuestions.forEach((q, i) => {
+        const secKey = q.section;
+        const state = quizState[i];
+        if (state) {
+          sectionBreakdown[secKey].total++;
           if (state.status === 'answered') {
             attemptedCount++;
-            secAttempted++;
+            sectionBreakdown[secKey].attempted++;
             if (state.isCorrect) {
               correctCount++;
-              secCorrect++;
+              sectionBreakdown[secKey].correct++;
               score += CORRECT_MARKS;
+              sectionBreakdown[secKey].score += CORRECT_MARKS;
             } else {
               wrongCount++;
-              secWrong++;
+              sectionBreakdown[secKey].wrong++;
               score -= WRONG_PENALTY;
+              sectionBreakdown[secKey].score -= WRONG_PENALTY;
             }
           }
-        });
+        }
+      });
 
-        sectionBreakdown[secKey] = {
-          total: sectState.length,
-          attempted: secAttempted,
-          correct: secCorrect,
-          wrong: secWrong,
-          score: parseFloat((secCorrect * CORRECT_MARKS - secWrong * WRONG_PENALTY).toFixed(2))
-        };
+      // format sectionBreakdown score
+      Object.keys(sectionBreakdown).forEach(secKey => {
+        sectionBreakdown[secKey].score = parseFloat(sectionBreakdown[secKey].score.toFixed(2));
       });
 
       const unanswered = totalQuestionsAcrossQuiz - attemptedCount;
@@ -1239,14 +1253,14 @@
       const grid = document.createElement('div');
       grid.className = 'section-breakdown-grid';
 
-      SECTION_ORDER.forEach(secKey => {
+      uniqueSections.forEach(secKey => {
         const data = breakdown[secKey];
         if (!data || data.total === 0) return;
 
         const item = document.createElement('div');
         item.className = 'section-break-item';
         item.innerHTML = `
-          <div class="sb-name">${SECTION_NAMES[secKey] || secKey}</div>
+          <div class="sb-name">${sectionNamesMap[secKey] || secKey}</div>
           <div class="sb-score">${data.score}</div>
           <div class="sb-correct">(${data.correct} Correct)</div>
         `;
@@ -1296,14 +1310,14 @@
       let globalQuestionNumber = 1;
       let firstTab = true;
       
-      SECTION_ORDER.forEach(secKey => {
-        const questionsArr = allQuestionsBySection[secKey] || [];
-        const stateArr = quizState[secKey] || [];
+      uniqueSections.forEach(secKey => {
+        const secIndices = [];
+        allQuestions.forEach((q, i) => { if(q.section === secKey) secIndices.push(i); });
         
-        if (questionsArr.length > 0) {
+        if (secIndices.length > 0) {
           const tabBtn = document.createElement('button');
           tabBtn.className = `review-tab-btn ${firstTab ? 'active' : ''}`;
-          tabBtn.textContent = SECTION_NAMES[secKey] || secKey;
+          tabBtn.textContent = sectionNamesMap[secKey] || secKey;
           tabBtn.onclick = () => {
             document.querySelectorAll('.review-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.review-tab-content').forEach(content => content.classList.remove('active'));
@@ -1316,8 +1330,9 @@
           tabContent.className = `review-tab-content ${firstTab ? 'active' : ''}`;
           tabContent.id = `review-content-${secKey}`;
           
-          questionsArr.forEach((q, idx) => {
-            const state = stateArr[idx];
+          secIndices.forEach(idx => {
+            const q = allQuestions[idx];
+            const state = quizState[idx];
             const isAnswered = state && state.status === 'answered';
             const userSelectedIdx = state ? state.selectedIdx : -1;
             
@@ -1340,7 +1355,6 @@
             if (q.section === 'hindi') applyLang = 'hi';
             if (q.section === 'english') applyLang = 'en';
             
-            // Fallback chain: selected lang → English → Hindi
             const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '') : q.question;
             const explanationLangText = typeof q.explanation === 'object' ? (q.explanation[applyLang] || q.explanation['en'] || q.explanation['hi'] || '') : q.explanation;
             
@@ -1361,7 +1375,6 @@
               if (q.section === 'hindi') applyLangOpt = 'hi';
               if (q.section === 'english') applyLangOpt = 'en';
               
-              // Fallback chain: selected lang → English → Hindi
               const optionLangText = typeof opt === 'object' ? (opt[applyLangOpt] || opt['en'] || opt['hi'] || '') : opt;
               
               optionsHtml += `
@@ -1370,7 +1383,7 @@
                   <span>${optionLangText}</span>
                 </div>
               `;
-              // Insert explanation toggle button + hidden content after the correct option
+              
               if (optIdx === correctIdx && explanationLangText) {
                 const explId = `expl-${secKey}-${idx}`;
                 optionsHtml += `
@@ -1384,9 +1397,7 @@ ${formatExplanation(explanationLangText)}</div>
               }
             });
             
-            // Get time spent for this question
-            const qTime = (timeSpentPerQuestion[secKey] && timeSpentPerQuestion[secKey][idx] !== undefined)
-              ? timeSpentPerQuestion[secKey][idx] : 0;
+            const qTime = timeSpentPerQuestion[idx] || 0;
             const timeHtml = qTime > 0
               ? `<span class="time-spent-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>${qTime}s</span>`
               : '';
