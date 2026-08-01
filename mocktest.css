@@ -921,6 +921,12 @@ body {
   letter-spacing: -0.01em;
 }
 
+@media (min-width: 381px) {
+  .category-card.span-2 {
+    grid-column: span 2;
+  }
+}
+
 /* ── Category Group Layout ─────────────────────── */
 .category-group {
   background: var(--bg-option);
