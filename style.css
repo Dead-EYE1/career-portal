@@ -823,7 +823,7 @@ html.light-theme .theme-icon-moon {
 }
 
 .main-layout.sidebar-left {
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 240px 1fr;
 }
 
 /* =============================================
@@ -2397,7 +2397,7 @@ html.light-theme .theme-icon-moon {
   }
 
   .main-layout.sidebar-left {
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 220px 1fr;
   }
 
   .footer-grid {
