@@ -2427,9 +2427,8 @@ html.light-theme .theme-icon-moon {
     position: static;
   }
 
-  .main-layout.sidebar-left .content-area,
   .main-layout.sidebar-left .sidebar {
-    order: 0;
+    order: -1;
   }
 
   .footer-grid {
