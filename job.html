@@ -190,22 +190,24 @@
               <h3 class="job-section-title">A. Key Highlights & Overview</h3>
               <table class="job-details-table">
                 ${job.organization ? `<tr><th>Organization</th><td>${job.organization}</td></tr>` : ''}
-                <tr><th>Post Name</th><td>${job.title}</td></tr>
+                <tr><th>Post Names / Designation</th><td>${job.title}</td></tr>
                 ${job.posts ? `<tr><th>Total Vacancies</th><td>${job.posts}</td></tr>` : ''}
-                ${job.salary ? `<tr><th>Pay Scale</th><td>${job.salary}</td></tr>` : ''}
+                ${job.salary ? `<tr><th>Pay Scale / Salary</th><td>${job.salary}</td></tr>` : ''}
                 ${job.location ? `<tr><th>Job Location</th><td>${job.location}</td></tr>` : ''}
               </table>
             </div>
 
-            ${(job.education || job.other_details) ? `
+            ${(job.education || job.age_limit || job.domicile || job.other_details) ? `
             <div class="job-section">
               <h3 class="job-section-title">B. Eligibility Criteria</h3>
-              ${job.education ? `
+              ${(job.education || job.age_limit || job.domicile) ? `
               <table class="job-details-table">
-                <tr><th>Education</th><td>${job.education}</td></tr>
+                ${job.education ? `<tr><th>Educational Qualification</th><td>${job.education}</td></tr>` : ''}
+                ${job.age_limit ? `<tr><th>Age Limit</th><td>${job.age_limit}</td></tr>` : ''}
+                ${job.domicile ? `<tr><th>Domicile / Residence</th><td>${job.domicile}</td></tr>` : ''}
               </table>
               ` : ''}
-              ${job.other_details ? `<div class="job-other-details">${safeDetails}</div>` : ''}
+              ${job.other_details ? `<div class="job-other-details" style="${(job.education || job.age_limit || job.domicile) ? 'margin-top: 15px;' : ''}">${safeDetails}</div>` : ''}
             </div>
             ` : ''}
 
@@ -213,32 +215,44 @@
               <h3 class="job-section-title">C. Important Dates</h3>
               <table class="job-details-table">
                 ${job.date ? `<tr><th>Notification Date</th><td>${job.date}</td></tr>` : ''}
-                ${job.apply_date ? `<tr><th>Application Start</th><td>${job.apply_date}</td></tr>` : ''}
-                ${job.last_date ? `<tr><th>Application End</th><td><strong style="color:var(--primary);">${job.last_date}</strong></td></tr>` : ''}
+                ${job.apply_date ? `<tr><th>Online Application Start</th><td>${job.apply_date}</td></tr>` : ''}
+                ${job.last_date ? `<tr><th>Online Application End</th><td><strong style="color:var(--primary);">${job.last_date}</strong></td></tr>` : ''}
+                ${job.admit_card_date ? `<tr><th>Admit Card Release Date</th><td>${job.admit_card_date}</td></tr>` : ''}
+                ${job.exam_date ? `<tr><th>Exam / Selection Date</th><td>${job.exam_date}</td></tr>` : ''}
               </table>
             </div>
 
-            ${job.application_fee ? `
+            ${(job.application_fee || job.fee_details || job.payment_mode) ? `
             <div class="job-section">
               <h3 class="job-section-title">D. Application Fee & Payment</h3>
-              <div class="job-fee-box">${job.application_fee}</div>
+              ${(job.fee_details || job.payment_mode || job.application_fee) ? `
+              <table class="job-details-table">
+                ${(job.fee_details || job.application_fee) ? `<tr><th>Fee Breakdown</th><td>${job.fee_details || job.application_fee}</td></tr>` : ''}
+                ${job.payment_mode ? `<tr><th>Mode of Payment</th><td>${job.payment_mode}</td></tr>` : ''}
+              </table>
+              ` : ''}
             </div>
             ` : ''}
 
-            ${safeMainDetails ? `
+            ${(job.selection_process || safeMainDetails) ? `
             <div class="job-section">
-              <h3 class="job-section-title">E. Selection Process & Further Details</h3>
-              <div class="extended-details-content">${safeMainDetails}</div>
+              <h3 class="job-section-title">E. Selection Process</h3>
+              ${job.selection_process ? `
+              <table class="job-details-table">
+                <tr><th>Phases Involved</th><td>${job.selection_process}</td></tr>
+              </table>
+              ` : ''}
+              ${safeMainDetails ? `<div class="extended-details-content" style="${job.selection_process ? 'margin-top: 15px;' : ''}">${safeMainDetails}</div>` : ''}
             </div>
             ` : ''}
 
             <div class="job-section action-section">
               <h3 class="job-section-title">F. Important Links</h3>
               <div class="job-links-grid">
-                <a href="${job.apply_link || '#'}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Online Now</a>
-                ${job.notification_link ? `<a href="${job.notification_link}" class="apply-btn secondary" target="_blank">Official Notification PDF</a>` : ''}
-                ${job.syllabus_link ? `<a href="${job.syllabus_link}" class="apply-btn secondary" target="_blank">Official Syllabus</a>` : ''}
-                ${job.website_link ? `<a href="${job.website_link}" class="apply-btn secondary" target="_blank">Official Website</a>` : ''}
+                ${job.apply_link ? `<a href="${job.apply_link}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Online Direct Link</a>` : '<a href="#" class="apply-btn" style="opacity: 0.6; cursor: not-allowed;" onclick="event.preventDefault();">Link Not Available</a>'}
+                ${job.notification_link ? `<a href="${job.notification_link}" class="apply-btn secondary" target="_blank">Official Notification PDF Link</a>` : ''}
+                ${job.syllabus_link ? `<a href="${job.syllabus_link}" class="apply-btn secondary" target="_blank">Official Syllabus / Exam Pattern Link</a>` : ''}
+                ${job.website_link ? `<a href="${job.website_link}" class="apply-btn secondary" target="_blank">Official Portal Website Link</a>` : ''}
               </div>
               
               <div class="share-buttons-row" style="margin-top:20px; justify-content:flex-end; border-top: 1px solid var(--border-light); padding-top: 20px;">
