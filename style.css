@@ -826,6 +826,14 @@ html.light-theme .theme-icon-moon {
   grid-template-columns: 240px 1fr;
 }
 
+.main-layout.sidebar-left .content-area {
+  order: 2;
+}
+
+.main-layout.sidebar-left .sidebar {
+  order: 1;
+}
+
 /* =============================================
    JOB TABS SWITCHER
    ============================================= */
@@ -2417,6 +2425,11 @@ html.light-theme .theme-icon-moon {
 
   .sidebar {
     position: static;
+  }
+
+  .main-layout.sidebar-left .content-area,
+  .main-layout.sidebar-left .sidebar {
+    order: 0;
   }
 
   .footer-grid {
