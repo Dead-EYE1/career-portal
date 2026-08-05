@@ -2427,6 +2427,10 @@ html.light-theme .theme-icon-moon {
     position: static;
   }
 
+  .main-layout.sidebar-left {
+    grid-template-columns: 1fr;
+  }
+
   .main-layout.sidebar-left .sidebar {
     display: none;
   }
