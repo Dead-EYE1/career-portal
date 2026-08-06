@@ -744,7 +744,8 @@
               const right = savedData.correct || 0;
               const wrong = savedData.wrong || 0;
               const finalS = savedData.score || 0;
-              const totalM = savedData.totalMarks || (totalQ * CORRECT_MARKS);
+              const marksPerQ = category === 'assam_police' ? 0.5 : CORRECT_MARKS;
+              const totalM = savedData.totalMarks || (totalQ * marksPerQ);
               
               document.getElementById('res-total').textContent = totalQ;
               document.getElementById('res-attempted').textContent = att;
@@ -864,7 +865,11 @@
       // Handle timer logic based on mode
       if (timingMode === 'overall') {
         if (!timerInterval) {
-          sectionTimeLeft = 60 * 60; // 60 minutes
+          if (selectedCategory === 'assam_police') {
+            sectionTimeLeft = 120 * 60; // 120 minutes (2 hours)
+          } else {
+            sectionTimeLeft = 60 * 60; // 60 minutes default
+          }
           timerBadge.classList.remove('danger');
           startSectionTimer();
         }
@@ -1223,6 +1228,13 @@
       let totalQuestionsAcrossQuiz = 0;
       const sectionBreakdown = {};
 
+      let marksToAdd = CORRECT_MARKS;
+      let marksToDeduct = WRONG_PENALTY;
+      if (selectedCategory === 'assam_police') {
+        marksToAdd = 0.5;
+        marksToDeduct = 0;
+      }
+
       SECTION_ORDER.forEach(secKey => {
         const sectState = quizState[secKey] || [];
         totalQuestionsAcrossQuiz += sectState.length;
@@ -1235,11 +1247,11 @@
             if (state.isCorrect) {
               correctCount++;
               secCorrect++;
-              score += CORRECT_MARKS;
+              score += marksToAdd;
             } else {
               wrongCount++;
               secWrong++;
-              score -= WRONG_PENALTY;
+              score -= marksToDeduct;
             }
           }
         });
@@ -1249,12 +1261,12 @@
           attempted: secAttempted,
           correct: secCorrect,
           wrong: secWrong,
-          score: parseFloat((secCorrect * CORRECT_MARKS - secWrong * WRONG_PENALTY).toFixed(2))
+          score: parseFloat((secCorrect * marksToAdd - secWrong * marksToDeduct).toFixed(2))
         };
       });
 
       const unanswered = totalQuestionsAcrossQuiz - attemptedCount;
-      const totalPossible = totalQuestionsAcrossQuiz * CORRECT_MARKS;
+      const totalPossible = totalQuestionsAcrossQuiz * marksToAdd;
 
       document.getElementById('res-total').textContent = totalQuestionsAcrossQuiz;
       document.getElementById('res-attempted').textContent = attemptedCount;
@@ -1493,8 +1505,8 @@ ${formatExplanation(explanationLangText)}</div>
       });
     }
 
-    // ── Exams that support Assamese language ─────────────
-    const ASSAMESE_ALLOWED_EXAMS = ['ssc_gd', 'assam_police', 'weekly_quiz', 'adre', 'apsc_cce', 'assam_tet'];
+    // ── Exams that support Regional languages ─────────────
+    const REGIONAL_LANG_ALLOWED_EXAMS = ['ssc_gd', 'assam_police', 'weekly_quiz', 'adre', 'apsc_cce', 'assam_tet'];
 
     // ── Category Select Handler ──────────────────────────
     function selectCategory(category, btn) {
@@ -1511,14 +1523,26 @@ ${formatExplanation(explanationLangText)}</div>
 
       selectedCategory = category;
 
-      // Show/hide Assamese option in test-selection dropdown based on exam category
+      // Toggle language options in test-selection dropdown based on exam category
       const assameseOpt = document.getElementById('assamese-option');
-      if (assameseOpt) {
-        const showAssamese = ASSAMESE_ALLOWED_EXAMS.includes(category);
-        assameseOpt.style.display = showAssamese ? '' : 'none';
-        // Reset dropdown to English if Assamese was previously selected but is now hidden
-        const langSelect = document.getElementById('mock-lang-select');
-        if (!showAssamese && langSelect && langSelect.value === 'as') {
+      const bengaliOpt = document.getElementById('bengali-option');
+      const bodoOpt = document.getElementById('bodo-option');
+      const hindiOpt = document.getElementById('hindi-option');
+
+      const showRegional = REGIONAL_LANG_ALLOWED_EXAMS.includes(category);
+      const hideHindi = (category === 'assam_police');
+
+      if (assameseOpt) assameseOpt.style.display = showRegional ? '' : 'none';
+      if (bengaliOpt) bengaliOpt.style.display = showRegional ? '' : 'none';
+      if (bodoOpt) bodoOpt.style.display = showRegional ? '' : 'none';
+      if (hindiOpt) hindiOpt.style.display = hideHindi ? 'none' : '';
+
+      const langSelect = document.getElementById('mock-lang-select');
+      if (langSelect) {
+        if (!showRegional && ['as', 'bn', 'brx'].includes(langSelect.value)) {
+          langSelect.value = 'en';
+        }
+        if (hideHindi && langSelect.value === 'hi') {
           langSelect.value = 'en';
         }
       }
@@ -1627,14 +1651,27 @@ ${formatExplanation(explanationLangText)}</div>
         }
       }
 
-      // Ensure Assamese visibility stays in sync when navigating back to test selection
-      const assameseOpt = document.getElementById('assamese-option');
-      if (assameseOpt) {
-        const showAssamese = ASSAMESE_ALLOWED_EXAMS.includes(category);
-        assameseOpt.style.display = showAssamese ? '' : 'none';
-        const langSelect = document.getElementById('mock-lang-select');
-        if (!showAssamese && langSelect && langSelect.value === 'as') {
-          langSelect.value = 'en';
+      // Ensure language visibility stays in sync when navigating back to test selection
+      const assameseOptSync = document.getElementById('assamese-option');
+      const bengaliOptSync = document.getElementById('bengali-option');
+      const bodoOptSync = document.getElementById('bodo-option');
+      const hindiOptSync = document.getElementById('hindi-option');
+
+      const showRegionalSync = REGIONAL_LANG_ALLOWED_EXAMS.includes(category);
+      const hideHindiSync = (category === 'assam_police');
+
+      if (assameseOptSync) assameseOptSync.style.display = showRegionalSync ? '' : 'none';
+      if (bengaliOptSync) bengaliOptSync.style.display = showRegionalSync ? '' : 'none';
+      if (bodoOptSync) bodoOptSync.style.display = showRegionalSync ? '' : 'none';
+      if (hindiOptSync) hindiOptSync.style.display = hideHindiSync ? 'none' : '';
+
+      const langSelectSync = document.getElementById('mock-lang-select');
+      if (langSelectSync) {
+        if (!showRegionalSync && ['as', 'bn', 'brx'].includes(langSelectSync.value)) {
+          langSelectSync.value = 'en';
+        }
+        if (hideHindiSync && langSelectSync.value === 'hi') {
+          langSelectSync.value = 'en';
         }
       }
 
@@ -1747,9 +1784,16 @@ ${formatExplanation(explanationLangText)}</div>
                     testLang = 'hi';
                   } else if (testNameLower.includes('assamese') || subjectLower.includes('assamese')) {
                     testLang = 'as';
+                  } else if (testNameLower.includes('bengali') || subjectLower.includes('bengali')) {
+                    testLang = 'bn';
+                  } else if (testNameLower.includes('bodo') || subjectLower.includes('bodo')) {
+                    testLang = 'brx';
                   }
                 }
-                if (category.startsWith('ssc_') && (subCategory === 'full_mock' || subCategory === 'previous_year')) {
+                if (category === 'assam_police' && (subCategory === 'full_mock' || subCategory === 'previous_year')) {
+                  timingMode = 'overall';
+                  fetchQuestions(category, subCategory, testData.testId, testLang);
+                } else if (category.startsWith('ssc_') && (subCategory === 'full_mock' || subCategory === 'previous_year')) {
                   showTimerModal(() => {
                     fetchQuestions(category, subCategory, testData.testId, testLang);
                   });
