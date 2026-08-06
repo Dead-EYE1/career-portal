@@ -649,13 +649,15 @@
             question: {
               en: data.questionText_en || '',
               hi: data.questionText_hi || data.questionText || '',
-              as: data.questionText_as || ''
+              as: data.questionText_as || '',
+              bn: data.questionText_bn || '',
+              brx: data.questionText_brx || ''
             },
             options: [
-              { en: data.a_en || '', hi: data.a_hi || data.a || '', as: data.a_as || '' },
-              { en: data.b_en || '', hi: data.b_hi || data.b || '', as: data.b_as || '' },
-              { en: data.c_en || '', hi: data.c_hi || data.c || '', as: data.c_as || '' },
-              { en: data.d_en || '', hi: data.d_hi || data.d || '', as: data.d_as || '' }
+              { en: data.a_en || '', hi: data.a_hi || data.a || '', as: data.a_as || '', bn: data.a_bn || '', brx: data.a_brx || '' },
+              { en: data.b_en || '', hi: data.b_hi || data.b || '', as: data.b_as || '', bn: data.b_bn || '', brx: data.b_brx || '' },
+              { en: data.c_en || '', hi: data.c_hi || data.c || '', as: data.c_as || '', bn: data.c_bn || '', brx: data.c_brx || '' },
+              { en: data.d_en || '', hi: data.d_hi || data.d || '', as: data.d_as || '', bn: data.d_bn || '', brx: data.d_brx || '' }
             ],
             optionImages: [
               data.a_imageUrl || '',
@@ -667,7 +669,9 @@
             explanation: {
               en: data.explanation_en || '',
               hi: data.explanation_hi || data.explanation || '',
-              as: data.explanation_as || ''
+              as: data.explanation_as || '',
+              bn: data.explanation_bn || '',
+              brx: data.explanation_brx || ''
             }
           };
 
@@ -795,16 +799,40 @@
              liveToggle.title = "";
           }
 
-          // Show/hide Assamese option in the live toggle based on exam category
+          // Determine available languages in the fetched questions
+          const availableLangs = new Set(['en']); // English is always assumed available
+          Object.values(allQuestionsBySection).forEach(questionsArr => {
+            questionsArr.forEach(q => {
+              if (typeof q.question === 'object') {
+                if (q.question['hi'] && q.question['hi'].trim() !== '') availableLangs.add('hi');
+                if (q.question['as'] && q.question['as'].trim() !== '') availableLangs.add('as');
+                if (q.question['bn'] && q.question['bn'].trim() !== '') availableLangs.add('bn');
+                if (q.question['brx'] && q.question['brx'].trim() !== '') availableLangs.add('brx');
+              }
+            });
+          });
+
+          // Show/hide language options in the live toggle based on exam category AND availability in the database
           const liveAsOpt = document.getElementById('live-assamese-option');
-          if (liveAsOpt) {
-            const asAllowed = ASSAMESE_ALLOWED_EXAMS.includes(category);
-            liveAsOpt.style.display = asAllowed ? '' : 'none';
-            // If Assamese was somehow selected for a non-allowed exam, reset to English
-            if (!asAllowed && selectedMockTestLanguage === 'as') {
-              selectedMockTestLanguage = 'en';
-              if (liveToggle) liveToggle.value = 'en';
-            }
+          const liveBnOpt = document.getElementById('live-bengali-option');
+          const liveBrxOpt = document.getElementById('live-bodo-option');
+          const liveHiOpt = document.getElementById('live-hindi-option');
+
+          const showRegionalLive = REGIONAL_LANG_ALLOWED_EXAMS.includes(category);
+          const hideHindiLive = (category === 'assam_police');
+
+          if (liveAsOpt) liveAsOpt.style.display = (showRegionalLive && availableLangs.has('as')) ? '' : 'none';
+          if (liveBnOpt) liveBnOpt.style.display = (showRegionalLive && availableLangs.has('bn')) ? '' : 'none';
+          if (liveBrxOpt) liveBrxOpt.style.display = (showRegionalLive && availableLangs.has('brx')) ? '' : 'none';
+          if (liveHiOpt) liveHiOpt.style.display = (!hideHindiLive && availableLangs.has('hi')) ? '' : 'none';
+
+          // If a hidden language was somehow selected, reset to English
+          if (liveToggle) {
+             const selectedOpt = liveToggle.querySelector(`option[value="${selectedMockTestLanguage}"]`);
+             if (!selectedOpt || selectedOpt.style.display === 'none') {
+               selectedMockTestLanguage = 'en';
+               liveToggle.value = 'en';
+             }
           }
           
           currentIndex = 0;
@@ -959,9 +987,9 @@
       if (q.section === 'hindi') applyLang = 'hi';
       if (q.section === 'english') applyLang = 'en';
 
-      // Fallback chain: selected lang → English → Hindi (prevents blank questions)
+      // Fallback chain: selected lang → English → Hindi → others (prevents blank questions)
       const questionLangText = typeof q.question === 'object'
-        ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '')
+        ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || q.question['as'] || q.question['bn'] || q.question['brx'] || '')
         : (q.question || '');
       questionText.textContent = `Q${currentIndex + 1}. ${questionLangText}`;
 
@@ -995,8 +1023,8 @@
           if (q.section === 'hindi') applyLang = 'hi';
           if (q.section === 'english') applyLang = 'en';
           
-          // Fallback chain: selected lang → English → Hindi
-          const optionLangText = typeof opt === 'object' ? (opt[applyLang] || opt['en'] || opt['hi'] || '') : (opt || '');
+          // Fallback chain: selected lang → English → Hindi → others
+          const optionLangText = typeof opt === 'object' ? (opt[applyLang] || opt['en'] || opt['hi'] || opt['as'] || opt['bn'] || opt['brx'] || '') : (opt || '');
           btn.innerHTML = `<span class="key">${keys[i]}</span><span>${optionLangText}</span>`;
         }
         
@@ -1430,9 +1458,9 @@
             if (q.section === 'hindi') applyLang = 'hi';
             if (q.section === 'english') applyLang = 'en';
             
-            // Fallback chain: selected lang → English → Hindi
-            const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '') : q.question;
-            const explanationLangText = typeof q.explanation === 'object' ? (q.explanation[applyLang] || q.explanation['en'] || q.explanation['hi'] || '') : q.explanation;
+            // Fallback chain: selected lang → English → Hindi → others
+            const questionLangText = typeof q.question === 'object' ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || q.question['as'] || q.question['bn'] || q.question['brx'] || '') : q.question;
+            const explanationLangText = typeof q.explanation === 'object' ? (q.explanation[applyLang] || q.explanation['en'] || q.explanation['hi'] || q.explanation['as'] || q.explanation['bn'] || q.explanation['brx'] || '') : q.explanation;
             
             let optionsHtml = '';
             q.options.forEach((opt, optIdx) => {
@@ -1451,8 +1479,8 @@
               if (q.section === 'hindi') applyLangOpt = 'hi';
               if (q.section === 'english') applyLangOpt = 'en';
               
-              // Fallback chain: selected lang → English → Hindi
-              const optionLangText = typeof opt === 'object' ? (opt[applyLangOpt] || opt['en'] || opt['hi'] || '') : opt;
+              // Fallback chain: selected lang → English → Hindi → others
+              const optionLangText = typeof opt === 'object' ? (opt[applyLangOpt] || opt['en'] || opt['hi'] || opt['as'] || opt['bn'] || opt['brx'] || '') : opt;
               
               optionsHtml += `
                 <div class="${optClass}">
@@ -1985,12 +2013,21 @@ ${formatExplanation(explanationLangText)}</div>
     // Only changes the display language for the current quiz session.
     function toggleLanguage(lang) {
       if (selectedSubCategory !== 'full_mock' && selectedSubCategory !== 'previous_year' && selectedCategory !== 'weekly_quiz') return;
-      // Prevent switching to Assamese for exams that don't support it
-      if (lang === 'as' && !ASSAMESE_ALLOWED_EXAMS.includes(selectedCategory)) {
+      
+      // Prevent switching to regional languages for exams that don't support them
+      if (['as', 'bn', 'brx'].includes(lang) && !REGIONAL_LANG_ALLOWED_EXAMS.includes(selectedCategory)) {
         const liveToggle = document.getElementById('live-lang-toggle');
         if (liveToggle) liveToggle.value = selectedMockTestLanguage;
         return;
       }
+      
+      // Prevent switching to Hindi for Assam Police
+      if (lang === 'hi' && selectedCategory === 'assam_police') {
+        const liveToggle = document.getElementById('live-lang-toggle');
+        if (liveToggle) liveToggle.value = selectedMockTestLanguage;
+        return;
+      }
+
       selectedMockTestLanguage = lang;
       
       // Re-render based on which screen is active
