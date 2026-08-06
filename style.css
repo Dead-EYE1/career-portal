@@ -3950,13 +3950,23 @@ html.light-theme .theme-icon-moon {
 }
 
 /* ── NJU Brand Specific ──────────────────────── */
+.logo-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.logo-main {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #334155;
+  letter-spacing: 0.5px;
+}
 .logo-accent {
-  color: var(--primary);
+  color: #334155;
   font-weight: 800;
 }
 .logo-light {
   font-weight: 500;
-  opacity: 0.95;
+  color: #475569; /* Slightly lighter slate grey for contrast */
 }
 @media (max-width: 480px) {
   .hide-on-mobile {
