@@ -32,11 +32,26 @@ async function fetchSectionData(url) {
     const res = await fetch(url);
     if (!res.ok) throw new Error("Network response was not ok");
     const json = await res.json();
-    return json.items || [];
+    const items = json.items || [];
+    // Cache with timestamp
+    try {
+      localStorage.setItem('cache_' + url, JSON.stringify({ ts: Date.now(), items }));
+    } catch(e) { /* localStorage full or unavailable */ }
+    return items;
   } catch (err) {
     console.error("Error fetching " + url, err);
     return [];
   }
+}
+
+function getCachedData(url, maxAgeMs) {
+  try {
+    const raw = localStorage.getItem('cache_' + url);
+    if (!raw) return null;
+    const { ts, items } = JSON.parse(raw);
+    if (Date.now() - ts > maxAgeMs) return null;
+    return items;
+  } catch(e) { return null; }
 }
 
 // ---- UTILS ----
@@ -208,7 +223,7 @@ window.shareGeneral = function (uid) {
       url: url
     }).catch(console.error);
   } else {
-    alert("Sharing is not supported on this browser.");
+    showToast("Sharing is not supported on this browser.", "warning");
   }
 };
 
@@ -465,6 +480,28 @@ function initNavLinks() {
       // Close mobile menu
       const menu = document.getElementById("nav-menu");
       if (menu) menu.classList.remove("open");
+
+      // Handle smooth scrolling and tab activation for hash links
+      const href = link.getAttribute('href') || '';
+      if (href.includes('#')) {
+        const hash = href.substring(href.indexOf('#'));
+        const targetElement = document.querySelector(hash);
+        if (targetElement) {
+          e.preventDefault();
+          
+          // Check if this section is inside a tab and activate it
+          const tabContent = targetElement.closest('.job-tab-content');
+          if (tabContent) {
+            const tabBtn = document.querySelector(`.job-tab[data-target="${tabContent.id}"]`);
+            if (tabBtn) tabBtn.click();
+          }
+          
+          // Scroll with a small delay to allow tab render
+          setTimeout(() => {
+            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 50);
+        }
+      }
     });
   });
 }
@@ -737,63 +774,94 @@ document.addEventListener("DOMContentLoaded", async () => {
     yearSpan.textContent = new Date().getFullYear();
   }
 
-  // Fetch JSON data dynamically
-  const [rawJobs, rawScholarship] = await Promise.all([
-    fetchSectionData('/data/jobs.json'),
-    fetchSectionData('/data/scholarship.json')
-  ]);
+  // ---- Process raw data into rendered UI ----
+  const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
-  const jobsData = normaliseDate(rawJobs).map(j => ({ ...j, section: "Govt Job", uid: `job-${j.id}` })).sort((a, b) => {
-    if (a.featured && !b.featured) return -1;
-    if (!a.featured && b.featured) return 1;
+  function processAndRender(rawJobs, rawScholarship) {
+    const jobsData = normaliseDate(rawJobs).map(j => ({ ...j, section: "Govt Job", uid: `job-${j.id}` })).sort((a, b) => {
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
 
-    const getTime = (dateStr) => {
-      if (!dateStr || dateStr === 'TBA') return 0;
-      const d = new Date(dateStr);
-      return isNaN(d.getTime()) ? 0 : d.getTime();
-    };
+      const getTime = (dateStr) => {
+        if (!dateStr || dateStr === 'TBA') return 0;
+        const d = new Date(dateStr);
+        return isNaN(d.getTime()) ? 0 : d.getTime();
+      };
 
-    const dateA = getTime(a.raw_apply_date);
-    const dateB = getTime(b.raw_apply_date);
-    if (dateA !== dateB) {
-      return dateB - dateA;
+      const dateA = getTime(a.raw_apply_date);
+      const dateB = getTime(b.raw_apply_date);
+      if (dateA !== dateB) {
+        return dateB - dateA;
+      }
+      const postA = getTime(a.raw_date);
+      const postB = getTime(b.raw_date);
+      if (postA !== postB) {
+        return postB - postA;
+      }
+      return b.id - a.id;
+    });
+    const scholarshipData = normaliseDate(rawScholarship).map(s => ({ ...s, section: "Scholarship", uid: `scholar-${s.id}` }));
+
+    allData = [
+      ...jobsData,
+      ...scholarshipData
+    ];
+
+    const assamJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && (j.group === 'Assam' || j.tag === 'Assam' || j.tag === 'APSC'));
+    const centralJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && (j.group === 'Central' || (j.tag !== 'Assam' && j.tag !== 'APSC' && j.group !== 'Assam')));
+    const upcomingJobs = jobsData.filter(j => j.status === 'upcoming');
+
+    const activeScholarship = scholarshipData.filter(s => s.status !== 'upcoming');
+
+    renderPosts("assam-posts-list", assamJobs);
+    renderPosts("central-posts-list", centralJobs);
+
+    if (upcomingJobs.length > 0) {
+      renderPosts("upcoming-posts-list", upcomingJobs);
     }
-    const postA = getTime(a.raw_date);
-    const postB = getTime(b.raw_date);
-    if (postA !== postB) {
-      return postB - postA;
+
+    // Expired jobs only on archived-jobs.html
+    const expiredList = document.getElementById("expired-posts-list");
+    if (expiredList) {
+      expiredList.innerHTML = '';
     }
-    return b.id - a.id;
-  });
-  const scholarshipData = normaliseDate(rawScholarship).map(s => ({ ...s, section: "Scholarship", uid: `scholar-${s.id}` }));
 
-  allData = [
-    ...jobsData,
-    ...scholarshipData
-  ];
+    renderScholarships("scholarship-list", activeScholarship);
 
-  const assamJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && (j.group === 'Assam' || j.tag === 'Assam' || j.tag === 'APSC'));
-  const centralJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && (j.group === 'Central' || (j.tag !== 'Assam' && j.tag !== 'APSC' && j.group !== 'Assam')));
-  const expiredJobs = jobsData.filter(j => j.status !== 'upcoming' && j.raw_last_date && isExpired(j.raw_last_date)).slice(0, 5);
-  const upcomingJobs = jobsData.filter(j => j.status === 'upcoming');
-
-  const activeScholarship = scholarshipData.filter(s => s.status !== 'upcoming');
-
-  renderPosts("assam-posts-list", assamJobs);
-  renderPosts("central-posts-list", centralJobs);
-
-  if (upcomingJobs.length > 0) {
-    renderPosts("upcoming-posts-list", upcomingJobs);
+    return jobsData;
   }
 
-  // We are completely removing expired jobs from the homepage logic.
-  // Expired jobs will ONLY be fetched on archived-jobs.html.
-  const expiredList = document.getElementById("expired-posts-list");
-  if (expiredList) {
-    expiredList.innerHTML = '';
-  }
+  // Try cache-first render for instant display
+  const cachedJobs = getCachedData('/data/jobs.json', CACHE_TTL);
+  const cachedScholarship = getCachedData('/data/scholarship.json', CACHE_TTL);
+  let jobsDataForSchema;
 
-  renderScholarships("scholarship-list", activeScholarship);
+  if (cachedJobs && cachedScholarship) {
+    // Render from cache instantly
+    jobsDataForSchema = processAndRender(cachedJobs, cachedScholarship);
+
+    // Refresh in background (non-blocking)
+    Promise.all([
+      fetchSectionData('/data/jobs.json'),
+      fetchSectionData('/data/scholarship.json')
+    ]).then(([freshJobs, freshScholarship]) => {
+      if (freshJobs.length > 0 || freshScholarship.length > 0) {
+        jobsDataForSchema = processAndRender(
+          freshJobs.length > 0 ? freshJobs : cachedJobs,
+          freshScholarship.length > 0 ? freshScholarship : cachedScholarship
+        );
+        generateJobSchema(jobsDataForSchema);
+        setTimeout(initAnimations, 100);
+      }
+    });
+  } else {
+    // No cache — fetch and wait
+    const [rawJobs, rawScholarship] = await Promise.all([
+      fetchSectionData('/data/jobs.json'),
+      fetchSectionData('/data/scholarship.json')
+    ]);
+    jobsDataForSchema = processAndRender(rawJobs, rawScholarship);
+  }
 
 
   initTicker();
@@ -811,7 +879,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setTimeout(initAnimations, 100);
 
   // Generate SEO schema for loaded jobs
-  generateJobSchema(jobsData);
+  generateJobSchema(jobsDataForSchema);
 
   // SPA Routing: auto-open job from URL
   const pathParts = window.location.pathname.split('/');
@@ -1063,4 +1131,88 @@ window.closeInfoModal = function() {
     modal.classList.add('hidden');
     document.body.style.overflow = '';
   }
+};
+
+window.showToast = function(message, type = 'info') {
+  let style = document.getElementById('toast-styles');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'toast-styles';
+    style.textContent = `
+      .custom-toast-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        pointer-events: none;
+      }
+      .custom-toast {
+        min-width: 250px;
+        max-width: 350px;
+        background: rgba(30, 30, 30, 0.95);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        color: #fff;
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        animation: toastSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        pointer-events: auto;
+      }
+      .custom-toast.toast-error { border-bottom: 4px solid #ef4444; }
+      .custom-toast.toast-warning { border-bottom: 4px solid #f59e0b; }
+      .custom-toast.toast-success { border-bottom: 4px solid #10b981; }
+      .custom-toast.toast-info { border-bottom: 4px solid #3b82f6; }
+      
+      .custom-toast.fade-out {
+        animation: toastFadeOut 0.3s ease-in forwards;
+      }
+      
+      @keyframes toastSlideIn {
+        from { transform: translateX(120%) scale(0.9); opacity: 0; }
+        to { transform: translateX(0) scale(1); opacity: 1; }
+      }
+      @keyframes toastFadeOut {
+        from { transform: translateX(0) scale(1); opacity: 1; }
+        to { transform: translateX(120%) scale(0.9); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'custom-toast-container';
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = 'custom-toast toast-' + type;
+  
+  let icon = 'ℹ️';
+  if (type === 'error') icon = '❌';
+  else if (type === 'warning') icon = '⚠️';
+  else if (type === 'success') icon = '✅';
+
+  toast.innerHTML = `<span style="font-size: 1.3rem;">${icon}</span> <span>${message}</span>`;
+  
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('fade-out');
+    toast.addEventListener('animationend', () => {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    });
+  }, 4000);
 };

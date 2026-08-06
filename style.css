@@ -27,7 +27,7 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
   --font-main: 'Inter', 'Segoe UI', Arial, sans-serif;
-  --font-heading: 'Poppins', 'Inter', Arial, sans-serif;
+  --font-heading: 'Inter', 'Segoe UI', Arial, sans-serif;
   --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -3904,4 +3904,35 @@ html.light-theme .theme-icon-moon {
   .mocktest-cta-arrow {
     font-size: 1.4rem;
   }
+}
+
+/* ── Skeleton Loading Cards ────────────────────── */
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.skeleton-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  background: var(--border);
+  animation: skeletonPulse 1.2s ease-in-out infinite;
+}
+.skeleton-line.w80 { width: 80%; }
+.skeleton-line.w60 { width: 60%; }
+.skeleton-line.w40 { width: 40%; }
+.light-theme .skeleton-card {
+  background: #fff;
+  border-color: #e2e8f0;
+}
+.light-theme .skeleton-line {
+  background: #e2e8f0;
 }

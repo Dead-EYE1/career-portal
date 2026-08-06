@@ -41,9 +41,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet">
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript>
   <link rel="stylesheet" href="/style.css">
   <script>
     (function () {
@@ -119,11 +120,11 @@
   <nav class="main-nav" id="main-nav">
     <div class="container nav-inner">
       <ul class="nav-menu" id="nav-menu">
-        <li><a href="https://newjobupdates.in/" class="nav-link active" id="nav-home">🏠 Home</a></li>
-        <li><a href="https://newjobupdates.in/#assam-jobs-section" class="nav-link" id="nav-govt">Govt Jobs</a></li>
-        <li><a href="https://newjobupdates.in/#scholarship-section" class="nav-link"
+        <li><a href="/" class="nav-link active" id="nav-home">🏠 Home</a></li>
+        <li><a href="/#assam-jobs-section" class="nav-link" id="nav-govt">Govt Jobs</a></li>
+        <li><a href="/#scholarship-section" class="nav-link"
             id="nav-scholarship">Scholarship</a></li>
-        <li><a href="https://newjobupdates.in/mocktest.html" class="nav-link" id="nav-mocktest">📝 Mock Test</a></li>
+        <li><a href="/mocktest.html" class="nav-link" id="nav-mocktest">📝 Mock Test</a></li>
         <li><a href="#" class="nav-link" id="nav-contact" onclick="openContactModal(event)">Contact</a></li>
       </ul>
     </div>
@@ -146,7 +147,7 @@
             negative marking (-0.25).</p>
           <div class="trending-helper-note">📂 Includes Previous Year Shift Papers (2023-2025)</div>
         </div>
-        <a href="https://newjobupdates.in/mocktest.html" class="trending-exam-btn" id="start-cgl-test-btn">
+        <a href="/mocktest.html" class="trending-exam-btn" id="start-cgl-test-btn">
           Start Free Test Now →
         </a>
       </div>
@@ -183,6 +184,9 @@
               <a href="/archived-jobs.html" class="view-all-link">Expired Jobs →</a>
             </div>
             <div class="posts-list" id="assam-posts-list">
+              <div class="skeleton-card"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
+              <div class="skeleton-card"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
+              <div class="skeleton-card"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
             </div>
           </div>
         </div>
@@ -194,6 +198,9 @@
               <a href="/archived-jobs.html" class="view-all-link">Expired Jobs →</a>
             </div>
             <div class="posts-list" id="central-posts-list">
+              <div class="skeleton-card"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
+              <div class="skeleton-card"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
+              <div class="skeleton-card"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
             </div>
           </div>
         </div>
@@ -221,6 +228,8 @@
           <h2 class="section-title">🏆 Scholarships</h2>
         </div>
         <div class="posts-list scholarship-grid" id="scholarship-list">
+          <div class="skeleton-card"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
+          <div class="skeleton-card"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div>
         </div>
       </div>
 
@@ -396,7 +405,7 @@
     </div>
   </div>
 
-  <script src="/script.js"></script>
+  <script src="/script.js" defer></script>
 </body>
 
 </html>

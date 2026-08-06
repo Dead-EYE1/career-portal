@@ -51,6 +51,31 @@
       }
     };
 
+    // ── Lazy MathJax Loader ──────────────────────────────
+    let _mathJaxPromise = null;
+    function ensureMathJax() {
+      if (_mathJaxPromise) return _mathJaxPromise;
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        _mathJaxPromise = Promise.resolve();
+        return _mathJaxPromise;
+      }
+      _mathJaxPromise = new Promise((resolve) => {
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          startup: { ready: () => { window.MathJax.startup.defaultReady(); resolve(); } }
+        };
+        const s = document.createElement('script');
+        s.id = 'MathJax-script';
+        s.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+        s.async = true;
+        document.head.appendChild(s);
+      });
+      return _mathJaxPromise;
+    }
+
     // ── Auth State ───────────────────────────────────────
     let currentUser = null; // { uid, displayName, email, photoURL }
 
@@ -141,7 +166,7 @@
       } catch (error) {
         console.error('Google sign-in error:', error);
         if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
-          alert('Sign-in failed. Please try again.');
+          showToast('Sign-in failed. Please try again.', 'error');
         }
       }
     }
@@ -157,6 +182,34 @@
         console.error('Sign-out error:', error);
       }
     }
+
+    // ── Timer Modal Controls ─────────────────────────────
+    function showTimerModal(callback) {
+      timerModalCallback = callback;
+      const timerModal = document.getElementById('timer-modal');
+      if (timerModal) timerModal.classList.remove('hidden');
+    }
+
+    function selectTimerMode(mode) {
+      timingMode = mode;
+      const timerModal = document.getElementById('timer-modal');
+      if (timerModal) timerModal.classList.add('hidden');
+      if (timerModalCallback) {
+        timerModalCallback();
+        timerModalCallback = null;
+      }
+    }
+
+    function closeTimerModal() {
+      const timerModal = document.getElementById('timer-modal');
+      if (timerModal) timerModal.classList.add('hidden');
+      timerModalCallback = null;
+    }
+    
+    // Make them globally available
+    window.showTimerModal = showTimerModal;
+    window.selectTimerMode = selectTimerMode;
+    window.closeTimerModal = closeTimerModal;
 
     // ── Login Modal Controls ─────────────────────────────
     function showLoginModal(resultData) {
@@ -478,6 +531,8 @@
     let selectedMockTestLanguage = 'en'; // Tracks the selected default language for mocks
     let questionStartTime = 0;      // Timestamp when current question was loaded
     let timeSpentPerQuestion = {};  // { sectionKey: [seconds, ...] }
+    let timingMode = 'sectional';   // 'sectional' or 'overall'
+    let timerModalCallback = null;  // Callback for when timer mode is selected
 
     const categoryNames = {
       'ssc_gd': 'SSC GD',
@@ -566,7 +621,7 @@
         if (snapshot.empty) {
           hideGlobalLoader();
           if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
-          alert(`No questions available in category "${categoryNames[category] || category}" for ${subCategory.replace('_', ' ')} (${testId}).`);
+          showToast(`No questions available in category "${categoryNames[category] || category}" for ${subCategory.replace('_', ' ')} (${testId}).`, 'warning');
           return;
         }
 
@@ -652,7 +707,7 @@
         if (totalFetched === 0) {
           hideGlobalLoader();
           if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
-          alert(`No questions available in category "${categoryNames[category] || category}".`);
+          showToast(`No questions available in category "${categoryNames[category] || category}".`, 'warning');
           return;
         }
 
@@ -751,6 +806,7 @@
             }
           }
           
+          currentIndex = 0;
           startSectionQuiz();
         }
       } catch (error) {
@@ -791,14 +847,13 @@
 
     // ── Start A Specific Section ─────────────────────────
     function startSectionQuiz() {
-      if (timerInterval) clearInterval(timerInterval);
-      
       const currentSectionKey = SECTION_ORDER[activeSectionIndex];
       questions = allQuestionsBySection[currentSectionKey];
       
       // If a section is empty, automatically jump to next valid section
       if (questions.length === 0 && activeSectionIndex < SECTION_ORDER.length - 1) {
         activeSectionIndex++;
+        currentIndex = 0;
         startSectionQuiz();
         return;
       } else if (questions.length === 0) {
@@ -806,9 +861,19 @@
         return;
       }
 
-      currentIndex = 0;
-      sectionTimeLeft = TIME_PER_SECTION;
-      timerBadge.classList.remove('danger');
+      // Handle timer logic based on mode
+      if (timingMode === 'overall') {
+        if (!timerInterval) {
+          sectionTimeLeft = 60 * 60; // 60 minutes
+          timerBadge.classList.remove('danger');
+          startSectionTimer();
+        }
+      } else {
+        if (timerInterval) clearInterval(timerInterval);
+        sectionTimeLeft = TIME_PER_SECTION;
+        timerBadge.classList.remove('danger');
+        startSectionTimer();
+      }
 
       // Update Header with Active Section Banner Info
       const titleSpan = document.getElementById('sidebar-subject-title');
@@ -837,10 +902,16 @@
         }
         if (sectionTimeLeft <= 0) {
           clearInterval(timerInterval);
-          alert(`Time is up for ${SECTION_NAMES[SECTION_ORDER[activeSectionIndex]]}! Moving to next subject.`);
           const currentSectionKey = SECTION_ORDER[activeSectionIndex];
           recordTimeSpent(currentSectionKey, currentIndex);
-          moveToNextSection();
+          
+          if (timingMode === 'overall') {
+            showToast('Time is up for the entire exam!', 'info');
+            showResult();
+          } else {
+            showToast(`Time is up for ${SECTION_NAMES[currentSectionKey]}! Moving to next subject.`, 'info');
+            moveToNextSection();
+          }
         }
       }, 1000);
     }
@@ -849,12 +920,17 @@
       const mins = Math.floor(sectionTimeLeft / 60).toString().padStart(2, '0');
       const secs = (sectionTimeLeft % 60).toString().padStart(2, '0');
       const currentSectionKey = SECTION_ORDER[activeSectionIndex];
-      timerDisplay.textContent = `[${SECTION_NAMES[currentSectionKey]}] ${mins}:${secs}`;
+      if (timingMode === 'overall') {
+        timerDisplay.textContent = `[Overall] ${mins}:${secs}`;
+      } else {
+        timerDisplay.textContent = `[${SECTION_NAMES[currentSectionKey]}] ${mins}:${secs}`;
+      }
     }
 
     function moveToNextSection() {
       if (activeSectionIndex < SECTION_ORDER.length - 1) {
         activeSectionIndex++;
+        currentIndex = 0;
         startSectionQuiz();
       } else {
         clearInterval(timerInterval);
@@ -947,9 +1023,11 @@
       // Record start time for time-per-question tracking
       questionStartTime = Date.now();
 
-      if (window.MathJax && window.MathJax.typesetPromise) {
-        window.MathJax.typesetPromise().catch(err => console.warn('MathJax typeset failed:', err));
-      }
+      ensureMathJax().then(() => {
+        if (window.MathJax && window.MathJax.typesetPromise) {
+          window.MathJax.typesetPromise().catch(err => console.warn('MathJax typeset failed:', err));
+        }
+      });
     }
 
     // ── Update Submit/Next Button Text ────────────────────
@@ -1408,9 +1486,11 @@ ${formatExplanation(explanationLangText)}</div>
         }
       });
 
-      if (window.MathJax && window.MathJax.typesetPromise) {
-        window.MathJax.typesetPromise().catch(err => console.warn('MathJax typeset failed:', err));
-      }
+      ensureMathJax().then(() => {
+        if (window.MathJax && window.MathJax.typesetPromise) {
+          window.MathJax.typesetPromise().catch(err => console.warn('MathJax typeset failed:', err));
+        }
+      });
     }
 
     // ── Exams that support Assamese language ─────────────
@@ -1669,7 +1749,14 @@ ${formatExplanation(explanationLangText)}</div>
                     testLang = 'as';
                   }
                 }
-                fetchQuestions(category, subCategory, testData.testId, testLang);
+                if (category.startsWith('ssc_') && (subCategory === 'full_mock' || subCategory === 'previous_year')) {
+                  showTimerModal(() => {
+                    fetchQuestions(category, subCategory, testData.testId, testLang);
+                  });
+                } else {
+                  timingMode = 'sectional'; // Default for non-SSC or other subCategories
+                  fetchQuestions(category, subCategory, testData.testId, testLang);
+                }
               };
               listContainer.appendChild(btn);
             });
@@ -1785,12 +1872,18 @@ ${formatExplanation(explanationLangText)}</div>
         currentIndex--;
         loadQuestion();
         renderPalette();
+      } else if (timingMode === 'overall' && activeSectionIndex > 0) {
+        activeSectionIndex--;
+        const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+        const sectionQuestions = allQuestionsBySection[currentSectionKey];
+        currentIndex = sectionQuestions.length > 0 ? sectionQuestions.length - 1 : 0;
+        startSectionQuiz();
       }
     }
 
     // ── Exit Test Back Action ────────────────────────────
     function confirmExitQuiz() {
-      if (confirm("Are you sure you want to exit the test? Your progress will be lost.")) {
+      showCustomConfirm("Are you sure you want to exit the test? Your progress will be lost.", () => {
         sessionStorage.removeItem('current_answers');
         sessionStorage.removeItem('is_reattempting');
         if (timerInterval) clearInterval(timerInterval);
@@ -1799,7 +1892,7 @@ ${formatExplanation(explanationLangText)}</div>
         
         activeSectionIndex = 0;
         currentIndex = 0;
-      }
+      });
     }
 
     // ── Toggle Explanation Visibility ─────────────────────
@@ -2166,3 +2259,121 @@ ${formatExplanation(explanationLangText)}</div>
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
       });
     }
+
+    // ── Toast Notification System ──────────────────────
+    window.showToast = function(message, type = 'info') {
+      let style = document.getElementById('toast-styles');
+      if (!style) {
+        style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.textContent = `
+          .custom-toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+          }
+          .custom-toast {
+            min-width: 250px;
+            max-width: 350px;
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #fff;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            animation: toastSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: auto;
+          }
+          .custom-toast.toast-error { border-bottom: 4px solid #ef4444; }
+          .custom-toast.toast-warning { border-bottom: 4px solid #f59e0b; }
+          .custom-toast.toast-success { border-bottom: 4px solid #10b981; }
+          .custom-toast.toast-info { border-bottom: 4px solid #3b82f6; }
+          
+          .custom-toast.fade-out {
+            animation: toastFadeOut 0.3s ease-in forwards;
+          }
+          
+          @keyframes toastSlideIn {
+            from { transform: translateX(120%) scale(0.9); opacity: 0; }
+            to { transform: translateX(0) scale(1); opacity: 1; }
+          }
+          @keyframes toastFadeOut {
+            from { transform: translateX(0) scale(1); opacity: 1; }
+            to { transform: translateX(120%) scale(0.9); opacity: 0; }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      let container = document.getElementById('toast-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'custom-toast-container';
+        document.body.appendChild(container);
+      }
+
+      const toast = document.createElement('div');
+      toast.className = 'custom-toast toast-' + type;
+      
+      let icon = 'ℹ️';
+      if (type === 'error') icon = '❌';
+      else if (type === 'warning') icon = '⚠️';
+      else if (type === 'success') icon = '✅';
+
+      toast.innerHTML = `<span style="font-size: 1.3rem;">${icon}</span> <span>${message}</span>`;
+      
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('fade-out');
+        toast.addEventListener('animationend', () => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        });
+      }, 4000);
+    };
+
+    // ── Custom Confirm Modal ────────────────────────────
+    window.showCustomConfirm = function(message, onConfirm) {
+      const overlay = document.createElement('div');
+      overlay.className = 'login-modal-overlay';
+      overlay.style.zIndex = '999999';
+      
+      const modal = document.createElement('div');
+      modal.className = 'login-modal';
+      modal.style.textAlign = 'center';
+      
+      modal.innerHTML = `
+        <div class="modal-icon" style="font-size: 2.5rem; margin-bottom: 12px;">⚠️</div>
+        <h3 style="margin-bottom: 16px;">Are you sure?</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 24px;">${message}</p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button class="otp-btn" id="confirm-yes-btn" style="flex: 1; background: #ef4444; color: #fff; border: none;">Yes, Exit</button>
+          <button class="otp-btn" id="confirm-no-btn" style="flex: 1; background: var(--surface); color: var(--text-primary); border: 1px solid var(--border);">Cancel</button>
+        </div>
+      `;
+      
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+      
+      document.getElementById('confirm-yes-btn').addEventListener('click', () => {
+        document.body.removeChild(overlay);
+        if (onConfirm) onConfirm();
+      });
+      
+      document.getElementById('confirm-no-btn').addEventListener('click', () => {
+        document.body.removeChild(overlay);
+      });
+    };

@@ -9,16 +9,10 @@
     content="Take a free mock test on newjobupdates.in. Practice General Knowledge questions with instant scoring and negative marking." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-      }
-    };
-  </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript>
   <link rel="stylesheet" href="mocktest.css" />
   <script>
     (function () {
@@ -100,6 +94,24 @@
 
       <button class="modal-close-btn" id="modal-close-btn" type="button" style="margin-top: 16px;">Skip — view results
         without saving</button>
+    </div>
+  </div>
+
+  <!-- Timer Selection Modal (hidden by default) -->
+  <div class="login-modal-overlay hidden" id="timer-modal">
+    <div class="login-modal" style="text-align: center;">
+      <div class="modal-icon" style="font-size: 2.5rem; margin-bottom: 12px;">⏱️</div>
+      <h3 style="margin-bottom: 8px;">Select Timer Mode</h3>
+      <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 24px;">How would you like to time your SSC mock test?</p>
+      
+      <button class="otp-btn" style="margin-bottom: 12px;" onclick="selectTimerMode('sectional')" type="button">
+        15 Minutes Per Section
+      </button>
+      <button class="otp-btn" style="margin-bottom: 12px; background: var(--surface); color: var(--text-primary); border: 1px solid var(--border);" onclick="selectTimerMode('overall')" type="button">
+        60 Minutes For All Sections
+      </button>
+
+      <button class="modal-close-btn" onclick="closeTimerModal()" type="button" style="margin-top: 8px;">Cancel</button>
     </div>
   </div>
 
