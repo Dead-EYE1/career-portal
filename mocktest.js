@@ -508,7 +508,8 @@
       'gk': 'General Awareness',
       'quant': 'Quantitative Aptitude',
       'english': 'English',
-      'hindi': 'Hindi'
+      'hindi': 'Hindi',
+      'general': 'General'
     };
     let TIME_PER_SECTION = 15 * 60; // 15 minutes default
 
@@ -599,6 +600,8 @@
           let sec = (subCategory || 'gk').toLowerCase();
           if (sec === 'math' || sec === 'mathematics' || sec === 'maths') sec = 'quant';
           SECTION_ORDER = [sec];
+        } else if (category === 'assam_police' && (subCategory === 'full_mock' || subCategory === 'previous_year')) {
+          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english', 'general'];
         } else if (selectedMockTestLanguage === 'hi') {
           SECTION_ORDER = ['reasoning', 'gk', 'quant', 'hindi'];
         } else if (selectedMockTestLanguage === 'as') {
