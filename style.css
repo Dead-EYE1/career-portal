@@ -419,17 +419,29 @@ ul {
 .logo-icon {
   width: 46px;
   height: 46px;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--primary), var(--purple));
   color: #fff;
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 1.2rem;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  letter-spacing: -1px;
-  box-shadow: 0 4px 12px rgba(0, 53, 128, 0.25);
+  box-shadow: 0 4px 15px rgba(109, 40, 217, 0.35);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  flex-shrink: 0;
+}
+.logo-icon:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(109, 40, 217, 0.45);
+}
+.logo-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: #ffffff;
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .logo-text {
