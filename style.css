@@ -3936,3 +3936,18 @@ html.light-theme .theme-icon-moon {
 .light-theme .skeleton-line {
   background: #e2e8f0;
 }
+
+/* ── NJU Brand Specific ──────────────────────── */
+.logo-accent {
+  color: var(--primary);
+  font-weight: 800;
+}
+.logo-light {
+  font-weight: 500;
+  opacity: 0.95;
+}
+@media (max-width: 480px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}

@@ -509,7 +509,10 @@
       'quant': 'Quantitative Aptitude',
       'english': 'English',
       'hindi': 'Hindi',
-      'general': 'General'
+      'general': 'General',
+      'assamese': 'Assamese',
+      'bengali': 'Bengali',
+      'bodo': 'Bodo'
     };
     let TIME_PER_SECTION = 15 * 60; // 15 minutes default
 
@@ -601,7 +604,7 @@
           if (sec === 'math' || sec === 'mathematics' || sec === 'maths') sec = 'quant';
           SECTION_ORDER = [sec];
         } else if (category === 'assam_police' && (subCategory === 'full_mock' || subCategory === 'previous_year')) {
-          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english', 'general'];
+          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english', 'general', 'assamese', 'bengali', 'bodo'];
         } else if (selectedMockTestLanguage === 'hi') {
           SECTION_ORDER = ['reasoning', 'gk', 'quant', 'hindi'];
         } else if (selectedMockTestLanguage === 'as') {
@@ -644,6 +647,7 @@
             rawSec = (data.section || 'reasoning').toLowerCase();
           }
           if (rawSec === 'math' || rawSec === 'mathematics' || rawSec === 'maths') rawSec = 'quant';
+          if (rawSec === 'general knowledge' || rawSec === 'general_knowledge' || rawSec === 'general awareness' || rawSec === 'general_awareness') rawSec = 'gk';
 
           const questionObj = {
             id: doc.id,
@@ -822,11 +826,12 @@
           const liveHiOpt = document.getElementById('live-hindi-option');
 
           const showRegionalLive = REGIONAL_LANG_ALLOWED_EXAMS.includes(category);
+          const showBodoLive = BODO_ALLOWED_EXAMS.includes(category);
           const hideHindiLive = (category === 'assam_police');
 
           if (liveAsOpt) liveAsOpt.style.display = (showRegionalLive && availableLangs.has('as')) ? '' : 'none';
           if (liveBnOpt) liveBnOpt.style.display = (showRegionalLive && availableLangs.has('bn')) ? '' : 'none';
-          if (liveBrxOpt) liveBrxOpt.style.display = (showRegionalLive && availableLangs.has('brx')) ? '' : 'none';
+          if (liveBrxOpt) liveBrxOpt.style.display = (showBodoLive && availableLangs.has('brx')) ? '' : 'none';
           if (liveHiOpt) liveHiOpt.style.display = (!hideHindiLive && availableLangs.has('hi')) ? '' : 'none';
 
           // If a hidden language was somehow selected, reset to English
@@ -877,6 +882,41 @@
       });
     }
 
+    // ── Section Tabs Navigation (Overall Mode) ───────────
+    function renderSectionTabs() {
+      const container = document.getElementById('section-tabs-container');
+      if (!container) return;
+
+      if (timingMode === 'overall') {
+        container.classList.remove('hidden');
+        container.innerHTML = '';
+        SECTION_ORDER.forEach((secKey, index) => {
+          const btn = document.createElement('button');
+          btn.className = 'section-tab-btn';
+          if (index === activeSectionIndex) {
+            btn.classList.add('active');
+          }
+          btn.textContent = SECTION_NAMES[secKey] || secKey;
+          btn.onclick = () => switchSection(index);
+          container.appendChild(btn);
+        });
+      } else {
+        container.classList.add('hidden');
+      }
+    }
+
+    function switchSection(index) {
+      if (index === activeSectionIndex) return;
+      
+      const currentSectionKey = SECTION_ORDER[activeSectionIndex];
+      recordTimeSpent(currentSectionKey, currentIndex);
+
+      activeSectionIndex = index;
+      currentIndex = 0; // Default to the first question of the newly selected section
+      
+      startSectionQuiz();
+    }
+
     // ── Start A Specific Section ─────────────────────────
     function startSectionQuiz() {
       const currentSectionKey = SECTION_ORDER[activeSectionIndex];
@@ -905,7 +945,10 @@
           startSectionTimer();
         }
       } else {
-        if (timerInterval) clearInterval(timerInterval);
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
         sectionTimeLeft = TIME_PER_SECTION;
         timerBadge.classList.remove('danger');
         startSectionTimer();
@@ -922,7 +965,7 @@
         quizExamBadge.textContent = SECTION_NAMES[currentSectionKey];
       }
 
-      startSectionTimer();
+      renderSectionTabs();
       loadQuestion();
       renderPalette();
     }
@@ -938,6 +981,7 @@
         }
         if (sectionTimeLeft <= 0) {
           clearInterval(timerInterval);
+          timerInterval = null;
           const currentSectionKey = SECTION_ORDER[activeSectionIndex];
           recordTimeSpent(currentSectionKey, currentIndex);
           
@@ -970,6 +1014,7 @@
         startSectionQuiz();
       } else {
         clearInterval(timerInterval);
+        timerInterval = null;
         showResult();
       }
     }
@@ -1073,10 +1118,10 @@
 
       if (answered) {
         if (!isLastQuestion) nextBtn.textContent = 'Save & Next →';
-        else nextBtn.textContent = isLastSection ? 'Submit Test →' : 'Submit Subject & Continue →';
+        else nextBtn.textContent = isLastSection ? 'Submit Test →' : (timingMode === 'overall' ? 'Next Section →' : 'Submit Subject & Continue →');
       } else {
         if (!isLastQuestion) nextBtn.textContent = 'Skip Question →';
-        else nextBtn.textContent = isLastSection ? 'Submit Test →' : 'Skip & Continue →';
+        else nextBtn.textContent = isLastSection ? 'Submit Test →' : (timingMode === 'overall' ? 'Next Section →' : 'Skip & Continue →');
       }
     }
 
@@ -1237,7 +1282,10 @@
 
     // ── Show Final Score Breakdown ───────────────────────
     function showResult() {
-      clearInterval(timerInterval);
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
       
       // Clear saved progress on finish
       sessionStorage.removeItem('current_answers');
@@ -1538,6 +1586,7 @@ ${formatExplanation(explanationLangText)}</div>
 
     // ── Exams that support Regional languages ─────────────
     const REGIONAL_LANG_ALLOWED_EXAMS = ['ssc_gd', 'assam_police', 'weekly_quiz', 'adre', 'apsc_cce', 'assam_tet'];
+    const BODO_ALLOWED_EXAMS = ['assam_police', 'adre', 'apsc_cce', 'assam_tet'];
 
     // ── Category Select Handler ──────────────────────────
     function selectCategory(category, btn) {
@@ -1561,16 +1610,20 @@ ${formatExplanation(explanationLangText)}</div>
       const hindiOpt = document.getElementById('hindi-option');
 
       const showRegional = REGIONAL_LANG_ALLOWED_EXAMS.includes(category);
+      const showBodo = BODO_ALLOWED_EXAMS.includes(category);
       const hideHindi = (category === 'assam_police');
 
       if (assameseOpt) assameseOpt.style.display = showRegional ? '' : 'none';
       if (bengaliOpt) bengaliOpt.style.display = showRegional ? '' : 'none';
-      if (bodoOpt) bodoOpt.style.display = showRegional ? '' : 'none';
+      if (bodoOpt) bodoOpt.style.display = showBodo ? '' : 'none';
       if (hindiOpt) hindiOpt.style.display = hideHindi ? 'none' : '';
 
       const langSelect = document.getElementById('mock-lang-select');
       if (langSelect) {
-        if (!showRegional && ['as', 'bn', 'brx'].includes(langSelect.value)) {
+        if (!showRegional && ['as', 'bn'].includes(langSelect.value)) {
+          langSelect.value = 'en';
+        }
+        if (!showBodo && langSelect.value === 'brx') {
           langSelect.value = 'en';
         }
         if (hideHindi && langSelect.value === 'hi') {
@@ -1689,16 +1742,20 @@ ${formatExplanation(explanationLangText)}</div>
       const hindiOptSync = document.getElementById('hindi-option');
 
       const showRegionalSync = REGIONAL_LANG_ALLOWED_EXAMS.includes(category);
+      const showBodoSync = BODO_ALLOWED_EXAMS.includes(category);
       const hideHindiSync = (category === 'assam_police');
 
       if (assameseOptSync) assameseOptSync.style.display = showRegionalSync ? '' : 'none';
       if (bengaliOptSync) bengaliOptSync.style.display = showRegionalSync ? '' : 'none';
-      if (bodoOptSync) bodoOptSync.style.display = showRegionalSync ? '' : 'none';
+      if (bodoOptSync) bodoOptSync.style.display = showBodoSync ? '' : 'none';
       if (hindiOptSync) hindiOptSync.style.display = hideHindiSync ? 'none' : '';
 
       const langSelectSync = document.getElementById('mock-lang-select');
       if (langSelectSync) {
-        if (!showRegionalSync && ['as', 'bn', 'brx'].includes(langSelectSync.value)) {
+        if (!showRegionalSync && ['as', 'bn'].includes(langSelectSync.value)) {
+          langSelectSync.value = 'en';
+        }
+        if (!showBodoSync && langSelectSync.value === 'brx') {
           langSelectSync.value = 'en';
         }
         if (hideHindiSync && langSelectSync.value === 'hi') {
@@ -1888,7 +1945,10 @@ ${formatExplanation(explanationLangText)}</div>
 
     // ── Restart (go back to start screen) ────────────────
     function restartQuiz() {
-      if (timerInterval) clearInterval(timerInterval);
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
       timerBadge.classList.remove('danger');
       resultScreen.classList.add('hidden');
       
@@ -1901,7 +1961,10 @@ ${formatExplanation(explanationLangText)}</div>
     // ── Reattempt Test (same test, reset all state) ──────
     function reattemptTest() {
       // Clear any running timer
-      if (timerInterval) clearInterval(timerInterval);
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
       timerBadge.classList.remove('danger');
       
       // Clear saved answers
@@ -1961,7 +2024,10 @@ ${formatExplanation(explanationLangText)}</div>
       showCustomConfirm("Are you sure you want to exit the test? Your progress will be lost.", () => {
         sessionStorage.removeItem('current_answers');
         sessionStorage.removeItem('is_reattempting');
-        if (timerInterval) clearInterval(timerInterval);
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
         pushUrlState(selectedCategory, selectedSubCategory, null);
         initFromURL(true);
         
@@ -2132,7 +2198,10 @@ ${formatExplanation(explanationLangText)}</div>
           }
           sessionStorage.removeItem('current_answers');
           sessionStorage.removeItem('is_reattempting');
-          if (timerInterval) clearInterval(timerInterval);
+          if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+          }
           activeSectionIndex = 0;
           currentIndex = 0;
       }

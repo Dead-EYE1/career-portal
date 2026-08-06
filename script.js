@@ -214,7 +214,7 @@ window.shareOnWhatsApp = function (uid) {
 window.shareGeneral = function (uid) {
   const job = allData.find(j => j.uid === uid);
   if (!job) return;
-  const title = job.title || 'New Job Update';
+  const title = job.title || 'NJU Test Series Update';
   const url = `https://newjobupdates.in/job/${uid}`;
 
   if (navigator.share) {
@@ -910,7 +910,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   style.textContent = `.header.scrolled { box-shadow: 0 4px 20px rgba(0,53,128,0.14); }`;
   document.head.appendChild(style);
 
-  console.log("✅ New Job Portal Loaded Successfully");
+  console.log("✅ NJU Test Series Portal Loaded Successfully");
 });
 
 // --- CONTACT MODAL LOGIC ---

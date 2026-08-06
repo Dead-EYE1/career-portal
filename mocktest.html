@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mock Test | newjobupdates.in</title>
+  <title>Mock Test | NJU Test Series</title>
   <meta name="description"
-    content="Take a free mock test on newjobupdates.in. Practice General Knowledge questions with instant scoring and negative marking." />
+    content="NJU Test Series (formerly New Job Updates) is your complete portal for the latest government job notifications, admit cards, results, and free mock test series for SSC, UPSC, and Assam State exams." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" as="style"
@@ -313,14 +313,24 @@
   <div class="card hidden" id="sub-category-screen">
     <!-- Back Header -->
     <div class="sub-header">
-      <button class="back-btn" onclick="goBackToCategories()" aria-label="Go back to categories">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-          stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-        Back
-      </button>
+      <div style="display: flex; gap: 8px;">
+        <button class="back-btn" onclick="goBackToCategories()" aria-label="Go back to categories">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back
+        </button>
+        <button class="back-btn" onclick="restartQuiz()" aria-label="Go to mock test home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          Home
+        </button>
+      </div>
+      <span class="exam-badge" id="sub-exam-badge">-</span>
     </div>
 
     <h2 class="quiz-title">Select Test Type</h2>
@@ -371,14 +381,24 @@
   <div class="card hidden" id="test-selection-screen">
     <!-- Back Header -->
     <div class="sub-header">
-      <button class="back-btn" onclick="goBackToSubCategories()" aria-label="Go back to sub-categories">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-          stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-        Back
-      </button>
+      <div style="display: flex; gap: 8px;">
+        <button class="back-btn" onclick="goBackToSubCategories()" aria-label="Go back to sub-categories">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back
+        </button>
+        <button class="back-btn" onclick="restartQuiz()" aria-label="Go to mock test home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          Home
+        </button>
+      </div>
+      <span class="exam-badge" id="test-selection-exam-badge">-</span>
     </div>
 
     <h2 class="quiz-title">Select Test</h2>
@@ -424,6 +444,8 @@
             </svg>
             Exit Test
           </button>
+
+          <span class="exam-badge" id="quiz-exam-badge" style="margin-right: auto; margin-left: 15px;">-</span>
           <div class="quiz-header-actions">
             <select id="live-lang-toggle" onchange="toggleLanguage(this.value)" title="Toggle test language">
               <option value="en">English</option>
@@ -464,6 +486,9 @@
             <span id="progress-text">1 of X</span>
           </div>
         </div>
+
+        <!-- Section Tabs (for Overall Mode) -->
+        <div id="section-tabs-container" class="section-tabs-container hidden"></div>
 
         <!-- Progress Bar -->
         <div class="progress-track">
@@ -667,7 +692,7 @@
   </div>
 
   <footer class="footer">
-    © 2026 <a href="https://newjobupdates.in/">newjobupdates.in</a> — Practice makes perfect.
+    © 2026 <a href="https://newjobupdates.in/">NJU Test Series (newjobupdates.in)</a>. All Rights Reserved. — Practice makes perfect.
   </footer>
 
   <!-- ══════════════════════════════════════════════ -->
