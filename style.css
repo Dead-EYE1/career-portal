@@ -411,7 +411,7 @@ ul {
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
   flex-shrink: 1;
   min-width: 0;
 }
@@ -459,9 +459,8 @@ ul {
 
 .logo-main {
   font-family: var(--font-heading);
-  font-size: 1.45rem;
+  font-size: 1.6rem;
   font-weight: 800;
-  color: var(--primary);
   line-height: 1;
   letter-spacing: -0.5px;
   margin: 0;
@@ -3955,18 +3954,21 @@ html.light-theme .theme-icon-moon {
   height: 100%;
   display: block;
 }
-.logo-main {
-  font-family: 'Georgia', 'Times New Roman', serif;
-  color: #334155;
-  letter-spacing: 0.5px;
-}
 .logo-accent {
-  color: #334155;
-  font-weight: 800;
+  background: linear-gradient(135deg, #2c8bea, #ed6712);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
 }
 .logo-light {
-  font-weight: 500;
-  color: #475569; /* Slightly lighter slate grey for contrast */
+  font-weight: 600;
+  color: var(--text);
+}
+@media (max-width: 480px) {
+  .logo-main {
+    font-size: 1.4rem;
+  }
 }
 @media (max-width: 480px) {
   .hide-on-mobile {

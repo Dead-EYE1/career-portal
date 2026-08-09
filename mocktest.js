@@ -960,11 +960,6 @@
         titleSpan.textContent = `Subject: ${SECTION_NAMES[currentSectionKey]}`;
       }
 
-      const quizExamBadge = document.getElementById('quiz-exam-badge');
-      if (quizExamBadge) {
-        quizExamBadge.textContent = SECTION_NAMES[currentSectionKey];
-      }
-
       renderSectionTabs();
       loadQuestion();
       renderPalette();

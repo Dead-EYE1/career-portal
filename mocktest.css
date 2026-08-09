@@ -103,7 +103,7 @@ body {
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
   text-decoration: none;
   color: inherit;
 }
@@ -130,18 +130,26 @@ body {
 }
 .logo-main {
   margin: 0;
-  font-size: 1.45rem;
+  font-size: 1.6rem;
   line-height: 1.1;
   font-family: var(--font-heading);
-  color: var(--text-primary);
+  letter-spacing: -0.5px;
 }
 .logo-accent {
-  color: var(--primary);
-  font-weight: 800;
+  background: linear-gradient(135deg, #2c8bea, #ed6712);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
 }
 .logo-light {
-  font-weight: 500;
-  opacity: 0.95;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+@media (max-width: 480px) {
+  .logo-main {
+    font-size: 1.4rem;
+  }
 }
 .logo-sub {
   font-size: 0.8rem;
