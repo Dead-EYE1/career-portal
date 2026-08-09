@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/logo.svg?v=7">
   <link rel="icon" type="image/png" sizes="192x192" href="/logo.svg?v=7">
   <link rel="apple-touch-icon" href="/logo.svg?v=7">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=2">
   <script>
     (function () {
       const savedTheme = localStorage.getItem('theme');
@@ -33,8 +33,8 @@
   <header class="header" id="main-header">
     <div class="container header-inner">
       <a href="/" class="logo" id="logo-link">
-        <div class="logo-icon" style="background: transparent; box-shadow: none; border-radius: 0; width: auto; height: auto;">
-          <img src="/logo.svg?v=7" alt="NJU Tests Logo" style="height: 50px; width: auto;" class="logo-image">
+        <div class="logo-icon logo-icon--image">
+          <img src="/logo.svg?v=7" alt="NJU Tests Logo" class="logo-image">
         </div>
         <div class="logo-text">
           <h1 class="logo-main"><span class="logo-accent">NJU</span> <span class="logo-light">Tests</span></h1>
@@ -73,10 +73,10 @@
     </div>
   </nav>
 
-  <main class="main-layout container sidebar-left" id="main-content" style="padding-top: 30px;">
+  <main class="main-layout container sidebar-left page-spaced" id="main-content">
     <section class="content-area">
       <div id="job-detail-container">
-        <p style="text-align:center; padding:40px;">Loading job details...</p>
+        <p class="empty-state">Loading job details...</p>
       </div>
       
 
@@ -100,7 +100,7 @@
     </aside>
   </main>
 
-  <footer class="footer" id="footer" style="margin-top: 40px;">
+  <footer class="footer" id="footer">
     <div class="footer-bottom">
       <div class="container footer-bottom-inner">
         <p>© <span id="copyright-year">2026</span> <strong>NJU Tests (newjobupdates.in)</strong>. All Rights Reserved.</p>
@@ -133,7 +133,7 @@
     </div>
   </div>
 
-  <script src="/script.js"></script>
+  <script src="/script.js?v=2"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       // Setup minimal page dependencies
@@ -150,7 +150,7 @@
       }
 
       if (!uid) {
-        document.getElementById('job-detail-container').innerHTML = '<p class="no-results" style="padding:40px; text-align:center;">Job not found. Invalid URL.</p>';
+        document.getElementById('job-detail-container').innerHTML = '<p class="empty-state">Job not found. Invalid URL.</p>';
         return;
       }
 
@@ -167,7 +167,7 @@
         const job = allData.find(j => j.uid === uid);
         
         if (!job) {
-          document.getElementById('job-detail-container').innerHTML = '<p class="no-results" style="padding:40px; text-align:center;">Job not found. It may have been removed.</p>';
+          document.getElementById('job-detail-container').innerHTML = '<p class="empty-state">Job not found. It may have been removed.</p>';
           return;
         }
 
@@ -180,17 +180,17 @@
         const badgeClass = isPastDeadline ? "badge-expired" : getBadgeClass(job.badge);
         const badgeText = isPastDeadline ? "CLOSED" : (job.organization || job.section || getBadgeText(job.badge));
         const html = `
-          <div class="job-detail-page-header" style="background: var(--bg-card); border-radius: var(--radius-md); padding: 30px 20px; text-align: center; margin-bottom: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-            <span class="post-badge ${badgeClass}" style="margin-bottom:15px; display:inline-block;">${badgeText}</span>
-            <h1 class="post-title" style="font-size: 2rem; margin: 0 0 15px 0; line-height:1.3; color: var(--text-primary);">${job.title}</h1>
-            <div class="post-meta" style="justify-content: center; font-size: 0.95rem;">
+          <div class="job-detail-page-header">
+            <span class="post-badge ${badgeClass} job-detail-header-badge">${badgeText}</span>
+            <h1 class="post-title job-detail-title">${job.title}</h1>
+            <div class="post-meta job-detail-meta">
               <span>📅 ${job.apply_date || job.date || 'TBA'}</span>
               ${job.posts ? `<span>👤 ${job.posts}</span>` : ""}
               <span class="post-meta-tag">🏷️ ${job.tag || 'Update'}</span>
             </div>
           </div>
           
-          ${isPastDeadline ? `<div class="expired-banner" style="margin-bottom:24px;">⚠️ This application window closed on <strong>${job.last_date || 'the deadline'}</strong>. <a href="/">Click here to view latest live jobs</a>.</div>` : ''}
+          ${isPastDeadline ? `<div class="expired-banner">⚠️ This application window closed on <strong>${job.last_date || 'the deadline'}</strong>. <a href="/">Click here to view latest live jobs</a>.</div>` : ''}
 
           <div class="structured-job-content">
             
@@ -215,7 +215,7 @@
                 ${job.domicile ? `<tr><th>Domicile / Residence</th><td>${job.domicile}</td></tr>` : ''}
               </table>
               ` : ''}
-              ${job.other_details ? `<div class="job-other-details" style="${(job.education || job.age_limit || job.domicile) ? 'margin-top: 15px;' : ''}">${safeDetails}</div>` : ''}
+              ${job.other_details ? `<div class="job-other-details">${safeDetails}</div>` : ''}
             </div>
             ` : ''}
 
@@ -224,7 +224,7 @@
               <table class="job-details-table">
                 ${job.date ? `<tr><th>Notification Date</th><td>${job.date}</td></tr>` : ''}
                 ${job.apply_date ? `<tr><th>Online Application Start</th><td>${job.apply_date}</td></tr>` : ''}
-                ${job.last_date ? `<tr><th>Online Application End</th><td><strong style="color:var(--primary);">${job.last_date}</strong></td></tr>` : ''}
+                ${job.last_date ? `<tr><th>Online Application End</th><td><strong class="highlight-text">${job.last_date}</strong></td></tr>` : ''}
                 ${job.admit_card_date ? `<tr><th>Admit Card Release Date</th><td>${job.admit_card_date}</td></tr>` : ''}
                 ${job.exam_date ? `<tr><th>Exam / Selection Date</th><td>${job.exam_date}</td></tr>` : ''}
               </table>
@@ -250,20 +250,17 @@
                 <tr><th>Phases Involved</th><td>${job.selection_process}</td></tr>
               </table>
               ` : ''}
-              ${safeMainDetails ? `<div class="extended-details-content" style="${job.selection_process ? 'margin-top: 15px;' : ''}">${safeMainDetails}</div>` : ''}
+              ${safeMainDetails ? `<div class="extended-details-content">${safeMainDetails}</div>` : ''}
             </div>
             ` : ''}
 
             <div class="job-section action-section">
               <h3 class="job-section-title">F. Important Links</h3>
               <div class="job-links-grid">
-                ${job.apply_link ? `<a href="${job.apply_link}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Online Direct Link</a>` : '<a href="#" class="apply-btn" style="opacity: 0.6; cursor: not-allowed;" onclick="event.preventDefault();">Link Not Available</a>'}
-                ${job.notification_link ? `<a href="${job.notification_link}" class="apply-btn secondary" target="_blank">Official Notification PDF Link</a>` : ''}
-                ${job.syllabus_link ? `<a href="${job.syllabus_link}" class="apply-btn secondary" target="_blank">Official Syllabus / Exam Pattern Link</a>` : ''}
-                ${job.website_link ? `<a href="${job.website_link}" class="apply-btn secondary" target="_blank">Official Portal Website Link</a>` : ''}
+                  ${job.apply_link ? `<a href="${job.apply_link}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Online Direct Link</a>` : '<a href="#" class="apply-btn disabled" onclick="event.preventDefault();">Link Not Available</a>'}
               </div>
               
-              <div class="share-buttons-row" style="margin-top:20px; justify-content:flex-end; border-top: 1px solid var(--border-light); padding-top: 20px;">
+              <div class="share-buttons-row job-share-actions">
                 <button type="button" class="action-share-btn whatsapp" onclick="shareOnWhatsApp('${job.uid}')" title="Share on WhatsApp">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.487-1.761-1.663-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
                   Share on WhatsApp

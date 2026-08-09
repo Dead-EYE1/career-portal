@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/logo.svg?v=7">
   <link rel="icon" type="image/png" sizes="192x192" href="/logo.svg?v=7">
   <link rel="apple-touch-icon" href="/logo.svg?v=7">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=2">
   <script>
     (function () {
       const savedTheme = localStorage.getItem('theme');
@@ -33,8 +33,8 @@
   <header class="header" id="main-header">
     <div class="container header-inner">
       <a href="/" class="logo" id="logo-link">
-        <div class="logo-icon" style="background: transparent; box-shadow: none; border-radius: 0; width: auto; height: auto;">
-          <img src="/logo.svg?v=7" alt="NJU Tests Logo" style="height: 50px; width: auto;" class="logo-image">
+        <div class="logo-icon logo-icon--image">
+          <img src="/logo.svg?v=7" alt="NJU Tests Logo" class="logo-image">
         </div>
         <div class="logo-text">
           <h1 class="logo-main"><span class="logo-accent">NJU</span> <span class="logo-light">Tests</span></h1>
@@ -72,7 +72,7 @@
     </div>
   </nav>
 
-  <main class="main-layout container sidebar-left" id="main-content" style="padding-top: 30px;">
+  <main class="main-layout container sidebar-left page-spaced" id="main-content">
     <section class="content-area">
       <div class="section-block">
         <div class="section-header">
@@ -80,7 +80,7 @@
           <a href="/" class="view-all-link">← Back to Active Jobs</a>
         </div>
         <div class="posts-list" id="archived-posts-list">
-          <p style="text-align:center; padding:40px;">Loading archived jobs...</p>
+          <p class="empty-state">Loading archived jobs...</p>
         </div>
       </div>
     </section>
@@ -103,7 +103,7 @@
     </aside>
   </main>
 
-  <footer class="footer" id="footer" style="margin-top: 40px;">
+  <footer class="footer" id="footer">
     <div class="footer-bottom">
       <div class="container footer-bottom-inner">
         <p>© <span id="copyright-year">2026</span> <strong>NJU Tests (newjobupdates.in)</strong>. All Rights Reserved.</p>
@@ -111,7 +111,7 @@
     </div>
   </footer>
 
-  <script src="/script.js"></script>
+  <script src="/script.js?v=2"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       initThemeToggle();
@@ -132,7 +132,7 @@
         if (expiredJobs.length > 0) {
           container.innerHTML = generatePostHTML(expiredJobs);
         } else {
-          container.innerHTML = '<div style="padding: 30px 20px; text-align: center; color: var(--text-muted);"><div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div><p>No expired jobs found.</p></div>';
+          container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p class="empty-state-hint">No expired jobs found.</p></div>';
         }
 
       } catch (e) {

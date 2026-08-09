@@ -49,7 +49,7 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
     onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript>
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=2">
   <script>
     (function () {
       const savedTheme = localStorage.getItem('theme');
@@ -70,8 +70,8 @@
   <header class="header" id="main-header">
     <div class="container header-inner">
       <a href="/" class="logo" id="logo-link">
-        <div class="logo-icon" style="background: transparent; box-shadow: none; border-radius: 0; width: auto; height: auto;">
-          <img src="/logo.svg?v=7" alt="NJU Tests Logo" style="height: 50px; width: auto;" class="logo-image">
+        <div class="logo-icon logo-icon--image">
+          <img src="/logo.svg?v=7" alt="NJU Tests Logo" class="logo-image">
         </div>
         <div class="logo-text">
           <h1 class="logo-main"><span class="logo-accent">NJU</span> <span class="logo-light">Tests</span></h1>
@@ -411,7 +411,7 @@
     </div>
   </div>
 
-  <script src="/script.js" defer></script>
+  <script src="/script.js?v=2" defer></script>
 </body>
 
 </html>
