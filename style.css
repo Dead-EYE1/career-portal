@@ -3622,6 +3622,13 @@ html.light-theme .theme-icon-moon {
   color: #25D366;
   border-color: #25D366;
 }
+.icon-btn.mocktest {
+  text-decoration: none;
+}
+.icon-btn.mocktest:hover {
+  color: #2c8bea;
+  border-color: #2c8bea;
+}
 
 /* =============================================
    TOP PROMO BANNER

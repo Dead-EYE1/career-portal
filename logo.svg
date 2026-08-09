@@ -58,10 +58,10 @@
     <!-- Open Book -->
     <g transform="translate(260, 300) scale(1.3)" filter="url(#premium3D_subtle)">
         <defs>
-            <path id="leftPath1" d="M -100,5 Q -60,-20 -20,20" />
-            <path id="leftPath2" d="M -100,26 Q -60,0 -20,41" />
-            <path id="rightPath1" d="M 20,20 Q 60,-20 100,5" />
-            <path id="rightPath2" d="M 20,41 Q 60,0 100,26" />
+            <path id="leftPath1" d="M -110,8.5 Q -60,-16.5 -10,28.5" />
+            <path id="leftPath2" d="M -110,29 Q -60,4 -10,49" />
+            <path id="rightPath1" d="M 10,24.5 Q 60,-20.5 110,4.5" />
+            <path id="rightPath2" d="M 10,49 Q 60,4 110,29" />
         </defs>
 
         <!-- Left Page -->
