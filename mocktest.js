@@ -1677,6 +1677,17 @@ ${formatExplanation(explanationLangText)}</div>
         { key: 'hindi',     icon: 'अ',  name: 'Hindi',       desc: 'Hindi Language' },
         { key: 'english',   icon: 'A',  name: 'English',     desc: 'English Language' }
       ],
+      banking: [
+        { key: 'ibps_po', icon: '🏛️', name: 'IBPS PO', desc: 'Probationary Officers' },
+        { key: 'ibps_clerk', icon: '📝', name: 'IBPS Clerk', desc: 'Clerical Cadre' },
+        { key: 'ibps_so', icon: '👔', name: 'IBPS SO', desc: 'Specialist Officers' },
+        { key: 'ibps_rrb', icon: '🌾', name: 'IBPS RRB', desc: 'PO & Clerk in RRBs' },
+        { key: 'sbi_po', icon: '🏦', name: 'SBI PO', desc: 'Entry-level Officers' },
+        { key: 'sbi_clerk', icon: '📋', name: 'SBI Clerk', desc: 'Junior Associates' },
+        { key: 'rbi_grade_b', icon: '🪙', name: 'RBI Grade B', desc: 'Officer Recruitment' },
+        { key: 'rbi_assistant', icon: '💼', name: 'RBI Assistant', desc: 'Clerical Support' },
+        { key: 'other_banking', icon: '🏢', name: 'Other Banking', desc: 'NABARD, SIDBI, LIC, IDBI' }
+      ],
       _default: [
         { key: 'full_mock',      icon: '🏆', name: 'Full Mock Test',       desc: 'Full length practice paper' },
         { key: 'subject_wise',   icon: '📚', name: 'Subject-Wise Test',    desc: 'Target specific subjects' },
