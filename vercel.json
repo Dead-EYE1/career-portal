@@ -35,6 +35,11 @@
       "source": "/mock-test",
       "destination": "/mocktest.html",
       "statusCode": 301
+    },
+    {
+      "source": "/job/(.*)",
+      "destination": "/post/$1",
+      "statusCode": 301
     }
   ],
   "rewrites": [
