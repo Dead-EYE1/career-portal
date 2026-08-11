@@ -28,6 +28,8 @@ function normaliseDate(items) {
 }
 
 async function fetchSectionData(url) {
+  let firebaseItems = [];
+
   // 1. Fetch from Firestore for jobs
   if (url === '/data/jobs.json') {
     try {
@@ -62,14 +64,11 @@ async function fetchSectionData(url) {
       const q = query(jobsCol, orderBy('createdAt', 'desc')); 
       const querySnapshot = await getDocs(q);
       
-      const items = [];
       querySnapshot.forEach(doc => {
         const data = doc.data();
-        items.push({
+        firebaseItems.push({
           id: doc.id, 
-          ...data, // This will correctly map your database fields (title, date, other_details, etc.)
-          
-          // Ensure backward compatibility with existing HTML rendering fields if any are missing
+          ...data,
           title: data.title || "",
           organization: data.company || data.organization || "",
           category: data.category || data.job_category || "government",
@@ -83,36 +82,32 @@ async function fetchSectionData(url) {
         });
       });
 
-      console.log(`✅ Loaded ${items.length} jobs from Firestore!`);
-
-      // Update local storage cache
-      try {
-        localStorage.setItem('cache_' + url, JSON.stringify({ ts: Date.now(), items }));
-      } catch(e) { /* localStorage full or unavailable */ }
-      
-      return items;
+      console.log(`✅ Loaded ${firebaseItems.length} jobs from Firestore!`);
     } catch (error) {
       console.error("❌ Error fetching jobs from Firestore:", error);
-      // Fall through to original fetch if Firestore fails
     }
   }
 
-  // 2. Original fetch logic (used for other sections like scholarship.json, or as a fallback)
+  // 2. Fetch original JSON logic (used for old jobs.json data & scholarship.json)
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error("Network response was not ok");
     const json = await res.json();
-    const items = json.items || [];
+    const staticItems = json.items || [];
     
+    // Combine Firebase jobs + JSON jobs
+    const combinedItems = [...firebaseItems, ...staticItems];
+
     // Cache with timestamp
     try {
-      localStorage.setItem('cache_' + url, JSON.stringify({ ts: Date.now(), items }));
+      localStorage.setItem('cache_' + url, JSON.stringify({ ts: Date.now(), items: combinedItems }));
     } catch(e) { /* localStorage full or unavailable */ }
     
-    return items;
+    return combinedItems;
   } catch (err) {
     console.error("Error fetching " + url, err);
-    return [];
+    // Even if local JSON fetch fails, return whatever we got from Firebase
+    return firebaseItems;
   }
 }
 
