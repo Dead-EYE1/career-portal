@@ -31,34 +31,31 @@ async function fetchSectionData(url) {
   // 1. Fetch from Firestore for jobs
   if (url === '/data/jobs.json') {
     try {
-      // Reuse existing 'db' instance and Firestore functions 
-      // (assumes db, collection, getDocs, query, orderBy are in scope)
-      const jobsCol = collection(db, 'job_notifications');
-      
-      // Order the results by most recent jobs first
-      const q = query(jobsCol, orderBy('date', 'desc')); 
-      const querySnapshot = await getDocs(q);
-      
-      const items = querySnapshot.docs.map(doc => {
+      // Fetching dynamically from Firestore using the existing 'db' instance
+      const snapshot = await db.collection('job_notifications')
+                                .orderBy('createdAt', 'desc')
+                                .get();
+
+      const items = [];
+      snapshot.forEach(doc => {
         const data = doc.data();
-        
-        // Ensure the fields retrieved map cleanly to the expected HTML rendering
-        return {
+        items.push({
           id: doc.id,
           ...data,
-          // Handle potential field name variations (e.g. company vs organization)
+          // Ensure backward compatibility with existing HTML rendering fields
           title: data.title || "",
           organization: data.company || data.organization || "",
           category: data.category || data.job_category || "government",
           badge: data.badge || "",
           last_date: data.lastDate || data.last_date || "",
           apply_link: data.applyLink || data.apply_link || "",
-          // Convert Firestore timestamp to ISO string if necessary
           date: (data.createdAt && typeof data.createdAt.toDate === 'function') 
             ? data.createdAt.toDate().toISOString().split('T')[0] 
             : (data.postDate || data.date || "")
-        };
+        });
       });
+
+      console.log(`✅ Loaded ${items.length} jobs from Firestore!`);
 
       // Update local storage cache
       try {
@@ -67,7 +64,7 @@ async function fetchSectionData(url) {
       
       return items;
     } catch (error) {
-      console.warn("Firestore fetch failed, falling back to local JSON fetch.", error);
+      console.error("❌ Error fetching jobs from Firestore:", error);
       // Fall through to original fetch if Firestore fails
     }
   }
