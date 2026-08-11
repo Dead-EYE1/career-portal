@@ -31,6 +31,9 @@ async function fetchSectionData(url) {
   // 1. Fetch from Firestore for jobs
   if (url === '/data/jobs.json') {
     try {
+      // Forcefully clear old cache so it doesn't get stuck showing old jobs
+      localStorage.removeItem('cache_/data/jobs.json');
+      
       // Dynamically import Firebase Web SDK (v9+)
       const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
       const { getFirestore, collection, getDocs, query, orderBy } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
