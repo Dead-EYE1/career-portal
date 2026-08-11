@@ -49,6 +49,21 @@ async function fetchSectionData(url) {
           badge: data.badge || "",
           last_date: data.lastDate || data.last_date || "",
           apply_link: data.applyLink || data.apply_link || "",
+          // Map camelCase to snake_case for full detail rendering on job.html
+          details: data.details || data.description || "",
+          other_details: data.other_details || data.otherDetails || "",
+          posts: data.posts || data.vacancies || data.totalVacancies || "",
+          salary: data.salary || data.payScale || "",
+          education: data.education || data.educationalQualification || data.qualification || "",
+          location: data.location || data.jobLocation || "",
+          age_limit: data.age_limit || data.ageLimit || "",
+          domicile: data.domicile || data.residence || "",
+          fee_details: data.fee_details || data.feeDetails || data.application_fee || data.applicationFee || "",
+          payment_mode: data.payment_mode || data.paymentMode || "",
+          admit_card_date: data.admit_card_date || data.admitCardDate || "",
+          exam_date: data.exam_date || data.examDate || data.selectionDate || "",
+          selection_process: data.selection_process || data.selectionProcess || "",
+          
           date: (data.createdAt && typeof data.createdAt.toDate === 'function') 
             ? data.createdAt.toDate().toISOString().split('T')[0] 
             : (data.postDate || data.date || "")
