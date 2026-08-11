@@ -28,15 +28,62 @@ function normaliseDate(items) {
 }
 
 async function fetchSectionData(url) {
+  // 1. Fetch from Firestore for jobs
+  if (url === '/data/jobs.json') {
+    try {
+      // Reuse existing 'db' instance and Firestore functions 
+      // (assumes db, collection, getDocs, query, orderBy are in scope)
+      const jobsCol = collection(db, 'job_notifications');
+      
+      // Order the results by most recent jobs first
+      const q = query(jobsCol, orderBy('date', 'desc')); 
+      const querySnapshot = await getDocs(q);
+      
+      const items = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        
+        // Ensure the fields retrieved map cleanly to the expected HTML rendering
+        return {
+          id: doc.id,
+          ...data,
+          // Handle potential field name variations (e.g. company vs organization)
+          title: data.title || "",
+          organization: data.company || data.organization || "",
+          category: data.category || data.job_category || "government",
+          badge: data.badge || "",
+          last_date: data.lastDate || data.last_date || "",
+          apply_link: data.applyLink || data.apply_link || "",
+          // Convert Firestore timestamp to ISO string if necessary
+          date: (data.createdAt && typeof data.createdAt.toDate === 'function') 
+            ? data.createdAt.toDate().toISOString().split('T')[0] 
+            : (data.postDate || data.date || "")
+        };
+      });
+
+      // Update local storage cache
+      try {
+        localStorage.setItem('cache_' + url, JSON.stringify({ ts: Date.now(), items }));
+      } catch(e) { /* localStorage full or unavailable */ }
+      
+      return items;
+    } catch (error) {
+      console.warn("Firestore fetch failed, falling back to local JSON fetch.", error);
+      // Fall through to original fetch if Firestore fails
+    }
+  }
+
+  // 2. Original fetch logic (used for other sections like scholarship.json, or as a fallback)
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error("Network response was not ok");
     const json = await res.json();
     const items = json.items || [];
+    
     // Cache with timestamp
     try {
       localStorage.setItem('cache_' + url, JSON.stringify({ ts: Date.now(), items }));
     } catch(e) { /* localStorage full or unavailable */ }
+    
     return items;
   } catch (err) {
     console.error("Error fetching " + url, err);
