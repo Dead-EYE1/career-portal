@@ -32,8 +32,8 @@ async function fetchSectionData(url) {
   if (url === '/data/jobs.json') {
     try {
       // Dynamically import Firebase Web SDK (v9+)
-      const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
-      const { getFirestore, collection, getDocs, query, orderBy } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+      const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+      const { getFirestore, collection, getDocs, query, orderBy } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
       
       const firebaseConfig = {
         apiKey: "AIzaSyAh1dbSY0lLbYAZSzfPPpTlru3OmeZ3p_E",
@@ -1017,9 +1017,8 @@ window.submitContactForm = async function(e) {
   const formData = new FormData(form);
   
   try {
-    // Dynamically import Firebase
-    const { initializeApp, getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
-    const { getFirestore, collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const { initializeApp, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    const { getFirestore, collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
     
     const firebaseConfig = {
       apiKey: "AIzaSyAh1dbSY0lLbYAZSzfPPpTlru3OmeZ3p_E",
