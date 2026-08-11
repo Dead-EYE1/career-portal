@@ -31,38 +31,48 @@ async function fetchSectionData(url) {
   // 1. Fetch from Firestore for jobs
   if (url === '/data/jobs.json') {
     try {
-      // Fetching dynamically from Firestore using the existing 'db' instance
-      const snapshot = await db.collection('job_notifications')
-                                .orderBy('createdAt', 'desc')
-                                .get();
+      // Dynamically import Firebase Web SDK (v9+)
+      const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+      const { getFirestore, collection, getDocs, query, orderBy } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+      
+      const firebaseConfig = {
+        apiKey: "AIzaSyAh1dbSY0lLbYAZSzfPPpTlru3OmeZ3p_E",
+        authDomain: "newjobupdates-c234a.firebaseapp.com",
+        projectId: "newjobupdates-c234a",
+        storageBucket: "newjobupdates-c234a.firebasestorage.app",
+        messagingSenderId: "275056131922",
+        appId: "1:275056131922:web:2b44bb31cf42e3897c448b"
+      };
 
+      // Initialize or retrieve Firebase app
+      let app;
+      if (getApps().length === 0) {
+        app = initializeApp(firebaseConfig);
+      } else {
+        app = getApp();
+      }
+      
+      const firestoreDb = getFirestore(app);
+      const jobsCol = collection(firestoreDb, 'job_notifications');
+      
+      // Order the results by most recent jobs first
+      const q = query(jobsCol, orderBy('createdAt', 'desc')); 
+      const querySnapshot = await getDocs(q);
+      
       const items = [];
-      snapshot.forEach(doc => {
+      querySnapshot.forEach(doc => {
         const data = doc.data();
         items.push({
-          id: doc.id,
-          ...data,
-          // Ensure backward compatibility with existing HTML rendering fields
+          id: doc.id, 
+          ...data, // This will correctly map your database fields (title, date, other_details, etc.)
+          
+          // Ensure backward compatibility with existing HTML rendering fields if any are missing
           title: data.title || "",
           organization: data.company || data.organization || "",
           category: data.category || data.job_category || "government",
           badge: data.badge || "",
           last_date: data.lastDate || data.last_date || "",
           apply_link: data.applyLink || data.apply_link || "",
-          // Map camelCase to snake_case for full detail rendering on job.html
-          details: data.details || data.description || "",
-          other_details: data.other_details || data.otherDetails || "",
-          posts: data.posts || data.vacancies || data.totalVacancies || "",
-          salary: data.salary || data.payScale || "",
-          education: data.education || data.educationalQualification || data.qualification || "",
-          location: data.location || data.jobLocation || "",
-          age_limit: data.age_limit || data.ageLimit || "",
-          domicile: data.domicile || data.residence || "",
-          fee_details: data.fee_details || data.feeDetails || data.application_fee || data.applicationFee || "",
-          payment_mode: data.payment_mode || data.paymentMode || "",
-          admit_card_date: data.admit_card_date || data.admitCardDate || "",
-          exam_date: data.exam_date || data.examDate || data.selectionDate || "",
-          selection_process: data.selection_process || data.selectionProcess || "",
           
           date: (data.createdAt && typeof data.createdAt.toDate === 'function') 
             ? data.createdAt.toDate().toISOString().split('T')[0] 
