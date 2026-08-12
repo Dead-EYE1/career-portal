@@ -18,7 +18,7 @@
   </script>
   <!-- SVG Favicon for modern browsers -->
   <link rel="icon" type="image/svg+xml" href="/logo.svg?v=4">
-  <link rel="stylesheet" href="/style.css?v=4">
+  <link rel="stylesheet" href="/style.css?v=6">
   <script>
     (function () {
       const savedTheme = localStorage.getItem('theme');
@@ -138,7 +138,7 @@
     </div>
   </div>
 
-  <script src="/script.js?v=5"></script>
+  <script src="/script.js?v=6"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       // Setup minimal page dependencies
@@ -229,9 +229,24 @@
             `;
           }
 
-          // Exam pattern table
+          // Exam pattern table(s)
           let patternHtml = '';
-          if (hasPattern) {
+          if (ed.phases && ed.phases.length > 0) {
+            patternHtml = ed.phases.map((phase, idx) => {
+              const rows = phase.pattern.map(p =>
+                `<tr><td>${p.section || '—'}</td><td>${p.questions || '—'}</td><td>${p.marks || '—'}</td><td>${p.time || '—'}</td></tr>`
+              ).join('');
+              return `
+                <p class="exam-sub-heading" ${idx > 0 ? 'style="margin-top: 24px;"' : ''}>📋 ${phase.title || 'Exam Pattern'}</p>
+                <div class="responsive-table-wrapper">
+                  <table class="exam-pattern-table">
+                    <thead><tr><th>Section / Subject</th><th>Questions</th><th>Marks</th><th>Time</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                  </table>
+                </div>
+              `;
+            }).join('');
+          } else if (hasPattern) {
             const rows = ed.pattern.map(p =>
               `<tr><td>${p.section || '—'}</td><td>${p.questions || '—'}</td><td>${p.marks || '—'}</td><td>${p.time || '—'}</td></tr>`
             ).join('');
@@ -246,9 +261,15 @@
             `;
           }
 
-          // Syllabus pills
+          // Syllabus pills or Detailed Syllabus
           let syllabusHtml = '';
-          if (hasSyllabus) {
+          if (ed.detailed_syllabus && ed.detailed_syllabus.length > 0) {
+            const listItems = ed.detailed_syllabus.map(s => `<li><strong>${s.subject}</strong> <br/> ${s.topics}</li>`).join('');
+            syllabusHtml = `
+              <p class="exam-sub-heading">📚 Detailed Syllabus</p>
+              <ul class="exam-detailed-syllabus">${listItems}</ul>
+            `;
+          } else if (hasSyllabus) {
             const pills = ed.syllabus.map(s => `<span class="exam-subject-pill">${s}</span>`).join('');
             syllabusHtml = `
               <p class="exam-sub-heading">📚 Syllabus / Topics</p>
