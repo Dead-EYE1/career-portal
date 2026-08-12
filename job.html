@@ -138,7 +138,7 @@
     </div>
   </div>
 
-  <script src="/script.js?v=6"></script>
+  <script src="/script.js?v=7"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       // Setup minimal page dependencies
@@ -211,20 +211,22 @@
           const hasPattern = ed.pattern && ed.pattern.length > 0;
           const hasSyllabus = ed.syllabus && ed.syllabus.length > 0;
 
-          // Marking scheme cards
+          // Marking scheme table
           let markingHtml = '';
           if (hasMarking) {
             const negVal = ed.negative_marking;
             const hasNeg = negVal !== undefined && negVal !== 'No' && negVal !== 0 && negVal !== '0';
             markingHtml = `
               <p class="exam-sub-heading">📊 Marking Scheme</p>
-              <div class="exam-marking-grid">
-                ${ed.total_questions ? `<div class="exam-mark-card total"><span class="exam-mark-value">${ed.total_questions}</span><span class="exam-mark-label">Total Questions</span></div>` : ''}
-                ${ed.total_marks ? `<div class="exam-mark-card total"><span class="exam-mark-value">${ed.total_marks}</span><span class="exam-mark-label">Total Marks</span></div>` : ''}
-                ${ed.correct_marks ? `<div class="exam-mark-card correct"><span class="exam-mark-value">+${ed.correct_marks}</span><span class="exam-mark-label">Correct Answer</span></div>` : ''}
-                ${hasNeg ? `<div class="exam-mark-card negative"><span class="exam-mark-value">−${Math.abs(negVal)}</span><span class="exam-mark-label">Wrong Answer</span></div>` : `<div class="exam-mark-card"><span class="exam-mark-value">NIL</span><span class="exam-mark-label">Negative Marking</span></div>`}
-                ${ed.duration ? `<div class="exam-mark-card time"><span class="exam-mark-value">${ed.duration}</span><span class="exam-mark-label">Duration</span></div>` : ''}
-                ${ed.mode ? `<div class="exam-mark-card"><span class="exam-mark-value" style="font-size:0.95rem;line-height:1.4">${ed.mode}</span><span class="exam-mark-label">Exam Mode</span></div>` : ''}
+              <div class="responsive-table-wrapper">
+                <table class="job-details-table">
+                  ${ed.mode ? `<tr><th>Exam Mode</th><td>${ed.mode}</td></tr>` : ''}
+                  ${ed.total_questions ? `<tr><th>Total Questions</th><td>${ed.total_questions}</td></tr>` : ''}
+                  ${ed.total_marks ? `<tr><th>Total Marks</th><td>${ed.total_marks}</td></tr>` : ''}
+                  ${ed.duration ? `<tr><th>Duration</th><td>${ed.duration}</td></tr>` : ''}
+                  ${ed.correct_marks ? `<tr><th>Correct Answer</th><td>+${ed.correct_marks} Marks</td></tr>` : ''}
+                  ${hasNeg ? `<tr><th>Negative Marking</th><td>-${Math.abs(negVal)} Marks</td></tr>` : `<tr><th>Negative Marking</th><td>NIL</td></tr>`}
+                </table>
               </div>
             `;
           }
