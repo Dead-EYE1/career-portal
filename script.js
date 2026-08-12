@@ -83,31 +83,29 @@ async function fetchSectionData(url) {
       });
 
       console.log(`✅ Loaded ${firebaseItems.length} jobs from Firestore!`);
+      return firebaseItems; // Early return for jobs (database only)
     } catch (error) {
       console.error("❌ Error fetching jobs from Firestore:", error);
+      return []; // Return empty array on error so it doesn't fail
     }
   }
 
-  // 2. Fetch original JSON logic (used for old jobs.json data & scholarship.json)
+  // 2. Fetch original JSON logic (used for scholarship.json)
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error("Network response was not ok");
     const json = await res.json();
     const staticItems = json.items || [];
     
-    // Combine Firebase jobs + JSON jobs
-    const combinedItems = [...firebaseItems, ...staticItems];
-
     // Cache with timestamp
     try {
-      localStorage.setItem('cache_' + url, JSON.stringify({ ts: Date.now(), items: combinedItems }));
+      localStorage.setItem('cache_' + url, JSON.stringify({ ts: Date.now(), items: staticItems }));
     } catch(e) { /* localStorage full or unavailable */ }
     
-    return combinedItems;
+    return staticItems;
   } catch (err) {
     console.error("Error fetching " + url, err);
-    // Even if local JSON fetch fails, return whatever we got from Firebase
-    return firebaseItems;
+    return [];
   }
 }
 
