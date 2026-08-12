@@ -4072,3 +4072,154 @@ html.light-theme .theme-icon-moon {
     display: none !important;
   }
 }
+
+/* =============================================
+   EXAM DETAILS SECTION
+   ============================================= */
+
+/* Marking Scheme Grid */
+.exam-marking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.exam-mark-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 12px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.exam-mark-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.exam-mark-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--primary);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+.exam-mark-card.negative::before { background: #ef4444; }
+.exam-mark-card.time::before    { background: #f59e0b; }
+.exam-mark-card.total::before   { background: #10b981; }
+.exam-mark-card.correct::before { background: var(--primary); }
+
+.exam-mark-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+  display: block;
+}
+.exam-mark-card.negative .exam-mark-value { color: #ef4444; }
+.exam-mark-card.time    .exam-mark-value  { color: #f59e0b; }
+.exam-mark-card.total   .exam-mark-value  { color: #10b981; }
+
+.exam-mark-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Syllabus subject pills */
+.exam-syllabus-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.exam-subject-pill {
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.25);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.exam-subject-pill:hover {
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.2);
+}
+
+/* Exam pattern table */
+.exam-pattern-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+.exam-pattern-table th,
+.exam-pattern-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  font-size: 0.88rem;
+  text-align: left;
+}
+.exam-pattern-table thead th {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.exam-pattern-table tbody tr:nth-child(even) td {
+  background: var(--bg);
+}
+.exam-pattern-table tbody tr:hover td {
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.06);
+}
+
+/* Sub-section headings inside exam section */
+.exam-sub-heading {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 20px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.exam-sub-heading:first-child { margin-top: 0; }
+.exam-sub-heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Important note box */
+.exam-note-box {
+  background: rgba(245, 158, 11, 0.08);
+  border-left: 4px solid #f59e0b;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 12px 16px;
+  margin-top: 14px;
+  font-size: 0.87rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.exam-note-box strong {
+  color: #b45309;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .exam-marking-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .exam-mark-value { font-size: 1.3rem; }
+}

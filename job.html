@@ -184,6 +184,94 @@
         const safeMainDetails = wrapTablesInResponsiveDiv(job.details);
         const badgeClass = isPastDeadline ? "badge-expired" : getBadgeClass(job.badge);
         const badgeText = isPastDeadline ? "CLOSED" : (job.organization || job.section || getBadgeText(job.badge));
+
+        /**
+         * Builds the "F. Exam Details" section HTML from an optional exam_details object.
+         * Returns empty string if no exam_details provided.
+         *
+         * exam_details schema:
+         * {
+         *   mode: string,                       // e.g. "Computer Based Test (CBT)"
+         *   total_marks: number|string,
+         *   total_questions: number|string,
+         *   duration: string,                   // e.g. "60 Minutes"
+         *   correct_marks: number|string,       // marks per correct answer
+         *   negative_marking: number|string,    // marks deducted per wrong answer; "No" or 0 = none
+         *   pattern: [                          // exam pattern table rows (optional)
+         *     { section: string, questions: number|string, marks: number|string, time: string }
+         *   ],
+         *   syllabus: string[],                 // list of subject/topic names (optional)
+         *   note: string                        // any extra note/disclaimer (optional)
+         * }
+         */
+        function buildExamDetailsSection(ed) {
+          if (!ed) return '';
+
+          const hasMarking = ed.total_marks || ed.duration || ed.correct_marks || ed.negative_marking !== undefined;
+          const hasPattern = ed.pattern && ed.pattern.length > 0;
+          const hasSyllabus = ed.syllabus && ed.syllabus.length > 0;
+
+          // Marking scheme cards
+          let markingHtml = '';
+          if (hasMarking) {
+            const negVal = ed.negative_marking;
+            const hasNeg = negVal !== undefined && negVal !== 'No' && negVal !== 0 && negVal !== '0';
+            markingHtml = `
+              <p class="exam-sub-heading">📊 Marking Scheme</p>
+              <div class="exam-marking-grid">
+                ${ed.total_questions ? `<div class="exam-mark-card total"><span class="exam-mark-value">${ed.total_questions}</span><span class="exam-mark-label">Total Questions</span></div>` : ''}
+                ${ed.total_marks ? `<div class="exam-mark-card total"><span class="exam-mark-value">${ed.total_marks}</span><span class="exam-mark-label">Total Marks</span></div>` : ''}
+                ${ed.correct_marks ? `<div class="exam-mark-card correct"><span class="exam-mark-value">+${ed.correct_marks}</span><span class="exam-mark-label">Correct Answer</span></div>` : ''}
+                ${hasNeg ? `<div class="exam-mark-card negative"><span class="exam-mark-value">−${Math.abs(negVal)}</span><span class="exam-mark-label">Wrong Answer</span></div>` : `<div class="exam-mark-card"><span class="exam-mark-value">NIL</span><span class="exam-mark-label">Negative Marking</span></div>`}
+                ${ed.duration ? `<div class="exam-mark-card time"><span class="exam-mark-value">${ed.duration}</span><span class="exam-mark-label">Duration</span></div>` : ''}
+                ${ed.mode ? `<div class="exam-mark-card"><span class="exam-mark-value" style="font-size:0.95rem;line-height:1.4">${ed.mode}</span><span class="exam-mark-label">Exam Mode</span></div>` : ''}
+              </div>
+            `;
+          }
+
+          // Exam pattern table
+          let patternHtml = '';
+          if (hasPattern) {
+            const rows = ed.pattern.map(p =>
+              `<tr><td>${p.section || '—'}</td><td>${p.questions || '—'}</td><td>${p.marks || '—'}</td><td>${p.time || '—'}</td></tr>`
+            ).join('');
+            patternHtml = `
+              <p class="exam-sub-heading">📋 Exam Pattern</p>
+              <div class="responsive-table-wrapper">
+                <table class="exam-pattern-table">
+                  <thead><tr><th>Section / Subject</th><th>Questions</th><th>Marks</th><th>Time</th></tr></thead>
+                  <tbody>${rows}</tbody>
+                </table>
+              </div>
+            `;
+          }
+
+          // Syllabus pills
+          let syllabusHtml = '';
+          if (hasSyllabus) {
+            const pills = ed.syllabus.map(s => `<span class="exam-subject-pill">${s}</span>`).join('');
+            syllabusHtml = `
+              <p class="exam-sub-heading">📚 Syllabus / Topics</p>
+              <div class="exam-syllabus-list">${pills}</div>
+            `;
+          }
+
+          // Note
+          const noteHtml = ed.note
+            ? `<div class="exam-note-box"><strong>📌 Note:</strong> ${ed.note}</div>`
+            : '';
+
+          return `
+            <div class="job-section">
+              <h3 class="job-section-title">F. Exam Details</h3>
+              ${markingHtml}
+              ${patternHtml}
+              ${syllabusHtml}
+              ${noteHtml}
+            </div>
+          `;
+        }
+
         const html = `
           <div class="job-detail-page-header">
             <span class="post-badge ${badgeClass} job-detail-header-badge">${badgeText}</span>
@@ -259,8 +347,10 @@
             </div>
             ` : ''}
 
+            ${buildExamDetailsSection(job.exam_details)}
+
             <div class="job-section action-section">
-              <h3 class="job-section-title">F. Important Links</h3>
+              <h3 class="job-section-title">${job.exam_details ? 'G' : 'F'}. Important Links</h3>
               <div class="job-links-grid">
                   ${job.apply_link ? `<a href="${job.apply_link}" class="apply-btn" target="_blank" rel="noopener noreferrer">Apply Online Direct Link</a>` : '<a href="#" class="apply-btn disabled" onclick="event.preventDefault();">Link Not Available</a>'}
               </div>

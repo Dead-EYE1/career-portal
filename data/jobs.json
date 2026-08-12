@@ -251,6 +251,26 @@
       "education": "B.E./B.Tech/Diploma in Engineering (relevant branch)",
       "other_details": "Age: 18-36 years. Selection through CBT Stage-I, CBT Stage-II, and Document Verification. Apply at rrbapply.gov.in.",
       "details": "RRB Junior Engineer Recruitment 2026. 4,098 Posts across all RRBs.",
+      "exam_details": {
+        "mode": "Computer Based Test (CBT)",
+        "total_questions": 100,
+        "total_marks": 100,
+        "duration": "90 Min (CBT-I)",
+        "correct_marks": 1,
+        "negative_marking": 0.33,
+        "pattern": [
+          { "section": "Mathematics", "questions": 30, "marks": 30, "time": "—" },
+          { "section": "General Intelligence & Reasoning", "questions": 25, "marks": 25, "time": "—" },
+          { "section": "General Awareness", "questions": 15, "marks": 15, "time": "—" },
+          { "section": "General Science", "questions": 30, "marks": 30, "time": "—" }
+        ],
+        "syllabus": [
+          "Mathematics", "General Intelligence & Reasoning", "General Awareness",
+          "General Science", "Engineering Drawing", "Computer Fundamentals",
+          "Basics of Environment", "Technical Subjects (Branch-wise)"
+        ],
+        "note": "CBT Stage-I is qualifying; final merit is based on CBT Stage-II. 1/3 mark deducted for each wrong answer. PWD candidates get extra 20 minutes."
+      },
       "apply_link": "https://rrbapply.gov.in/"
     },
     {
@@ -418,6 +438,24 @@
       "education": "Any Graduate from a recognized University",
       "other_details": "Age: 20-28 years. Selection through Prelims & Mains. Apply at ibps.in.",
       "details": "IBPS Clerk 2026 Recruitment. 11,403 Vacancies across participating banks.",
+      "exam_details": {
+        "mode": "Computer Based Test (CBT)",
+        "total_questions": 100,
+        "total_marks": 100,
+        "duration": "60 Min (Prelims)",
+        "correct_marks": 1,
+        "negative_marking": 0.25,
+        "pattern": [
+          { "section": "English Language", "questions": 30, "marks": 30, "time": "20 Min" },
+          { "section": "Numerical Ability", "questions": 35, "marks": 35, "time": "20 Min" },
+          { "section": "Reasoning Ability", "questions": 35, "marks": 35, "time": "20 Min" }
+        ],
+        "syllabus": [
+          "English Language", "Reasoning Ability", "Numerical Ability",
+          "General/Financial Awareness", "Computer Aptitude", "Quantitative Aptitude"
+        ],
+        "note": "Prelims is qualifying in nature. Merit list is based on Mains score only. Mains has 190 questions for 200 marks in 160 minutes."
+      },
       "apply_link": "https://ibps.in/"
     },
     {
@@ -875,6 +913,24 @@
       "education": "Any Graduate from a recognized University (Final year students may also apply)",
       "details": "<p><strong>🔥 Mega Banking Recruitment:</strong> State Bank of India has officially released the SBI PO 2026 notification (Advertisement No: CRPD/PO/2026-27/09) for 1,500 Probationary Officer vacancies.</p><p>Key Highlights:</p><ul><li>1,446 fresh vacancies + 54 backlog vacancies across all categories.</li><li>Phase-I (Prelims) scheduled for <strong>August 2026</strong>.</li><li>Phase-II (Mains) scheduled for <strong>September 2026</strong>.</li><li>Phase-III includes Psychometric Test, Group Exercises & Personal Interview in Oct/Nov 2026.</li></ul><p>Candidates must complete their One-Time Registration (OTR) on the SBI careers portal before applying.</p>",
       "other_details": "Age Limit: 21-30 years as on 01-04-2026. Upper age relaxation: 5 years for SC/ST, 3 years for OBC. Selection through 3-phase process: Preliminary Exam (100 marks, 1 hour), Main Exam (225 marks, 3 hours), and Interview/GD.",
+      "exam_details": {
+        "mode": "Computer Based Test (CBT)",
+        "total_questions": 100,
+        "total_marks": 100,
+        "duration": "60 Min (Prelims)",
+        "correct_marks": 1,
+        "negative_marking": 0.25,
+        "pattern": [
+          { "section": "English Language", "questions": 30, "marks": 30, "time": "20 Min" },
+          { "section": "Quantitative Aptitude", "questions": 35, "marks": 35, "time": "20 Min" },
+          { "section": "Reasoning Ability", "questions": 35, "marks": 35, "time": "20 Min" }
+        ],
+        "syllabus": [
+          "English Language", "Quantitative Aptitude", "Reasoning Ability",
+          "General Awareness (Economy/Banking)", "Computer Aptitude", "Data Analysis & Interpretation"
+        ],
+        "note": "Prelims is qualifying only. Mains consists of 4 sections — Reasoning & Computer Aptitude (60Q/60M/45min), Data Analysis (35Q/60M/45min), General/Economy/Banking Awareness (40Q/40M/35min), English Language (35Q/40M/40min)."
+      },
       "apply_link": "https://sbi.co.in/web/careers"
     },
     {
