@@ -4165,6 +4165,28 @@ html.light-theme .theme-icon-moon {
   margin-bottom: 6px;
   font-size: 0.95rem;
 }
+.exam-topic-pill-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.exam-topic-pill {
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+.exam-topic-pill:hover {
+  background: rgba(var(--primary-rgb, 2, 132, 199), 0.05);
+  border-color: rgba(var(--primary-rgb, 2, 132, 199), 0.3);
+  color: var(--primary);
+}
 
 /* Exam pattern table */
 .exam-pattern-table {

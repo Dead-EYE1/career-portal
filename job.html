@@ -18,7 +18,7 @@
   </script>
   <!-- SVG Favicon for modern browsers -->
   <link rel="icon" type="image/svg+xml" href="/logo.svg?v=4">
-  <link rel="stylesheet" href="/style.css?v=6">
+  <link rel="stylesheet" href="/style.css?v=7">
   <script>
     (function () {
       const savedTheme = localStorage.getItem('theme');
@@ -266,7 +266,25 @@
           // Syllabus pills or Detailed Syllabus
           let syllabusHtml = '';
           if (ed.detailed_syllabus && ed.detailed_syllabus.length > 0) {
-            const listItems = ed.detailed_syllabus.map(s => `<li><strong>${s.subject}</strong> <br/> ${s.topics}</li>`).join('');
+            const listItems = ed.detailed_syllabus.map(s => {
+              // Parse topics into an array (handles both array and comma-separated string formats)
+              let topicsArray = [];
+              if (Array.isArray(s.topics)) {
+                topicsArray = s.topics;
+              } else if (typeof s.topics === 'string') {
+                topicsArray = s.topics.split(',').map(t => t.trim()).filter(Boolean);
+              }
+              
+              let topicsContent = s.topics; // Fallback
+              if (topicsArray.length > 0) {
+                topicsContent = `<div class="exam-topic-pill-container">` + 
+                  topicsArray.map(t => `<span class="exam-topic-pill">${t}</span>`).join('') + 
+                  `</div>`;
+              }
+              
+              return `<li><strong>${s.subject}</strong> ${topicsContent}</li>`;
+            }).join('');
+            
             syllabusHtml = `
               <p class="exam-sub-heading">📚 Detailed Syllabus</p>
               <ul class="exam-detailed-syllabus">${listItems}</ul>
