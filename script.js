@@ -76,9 +76,9 @@ async function fetchSectionData(url) {
           last_date: data.lastDate || data.last_date || "",
           apply_link: data.applyLink || data.apply_link || "",
           
-          date: (data.createdAt && typeof data.createdAt.toDate === 'function') 
+          date: data.postDate || data.date || ((data.createdAt && typeof data.createdAt.toDate === 'function') 
             ? data.createdAt.toDate().toISOString().split('T')[0] 
-            : (data.postDate || data.date || "")
+            : "")
         });
       });
 
@@ -856,17 +856,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         return isNaN(d.getTime()) ? 0 : d.getTime();
       };
 
-      const dateA = getTime(a.raw_apply_date);
-      const dateB = getTime(b.raw_apply_date);
-      if (dateA !== dateB) {
-        return dateB - dateA;
-      }
       const postA = getTime(a.raw_date);
       const postB = getTime(b.raw_date);
       if (postA !== postB) {
         return postB - postA;
       }
-      return b.id - a.id;
+      const dateA = getTime(a.raw_apply_date);
+      const dateB = getTime(b.raw_apply_date);
+      if (dateA !== dateB) {
+        return dateB - dateA;
+      }
+      if (a.id < b.id) return 1;
+      if (a.id > b.id) return -1;
+      return 0;
     });
     const scholarshipData = normaliseDate(rawScholarship).map(s => ({ ...s, section: "Scholarship", uid: `scholar-${s.id}` }));
 
