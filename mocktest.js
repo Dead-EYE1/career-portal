@@ -539,6 +539,7 @@
     let timerModalCallback = null;  // Callback for when timer mode is selected
     let isStudyMode = false;        // Study Mode flag
     let studyAllRevealed = false;   // Track if all study answers are revealed
+    let activeStudySectionIndex = 0;
 
     const categoryNames = {
       'ssc_gd': 'SSC GD',
@@ -2391,6 +2392,8 @@ ${formatExplanation(explanationLangText)}</div>
         const studyScreen = document.getElementById('study-mode-screen');
         if (studyScreen) studyScreen.classList.remove('hidden');
 
+        activeStudySectionIndex = 0;
+        renderStudySectionTabs();
         renderStudyQuestions();
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -2400,7 +2403,41 @@ ${formatExplanation(explanationLangText)}</div>
       }
     }
 
-    // ── Render All Study Questions ────────────────────────
+    // ── Render Study Section Tabs ─────────────────────────
+    function renderStudySectionTabs() {
+      const container = document.getElementById('study-section-tabs-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (SECTION_ORDER.length <= 1) {
+        container.classList.add('hidden');
+        return;
+      }
+      container.classList.remove('hidden');
+
+      SECTION_ORDER.forEach((secKey, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'section-tab-btn';
+        if (index === activeStudySectionIndex) {
+          btn.classList.add('active');
+        }
+        btn.textContent = SECTION_NAMES[secKey] || secKey;
+        btn.onclick = () => {
+          activeStudySectionIndex = index;
+          studyAllRevealed = false;
+          const revealAllBtn = document.getElementById('study-reveal-all-btn');
+          if (revealAllBtn) {
+            revealAllBtn.textContent = '👁 Reveal All Answers';
+            revealAllBtn.classList.remove('all-revealed');
+          }
+          renderStudySectionTabs();
+          renderStudyQuestions();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    // ── Render Study Questions ────────────────────────────
     function renderStudyQuestions() {
       const container = document.getElementById('study-questions-container');
       if (!container) return;
@@ -2410,12 +2447,21 @@ ${formatExplanation(explanationLangText)}</div>
       const optionKeys = ['a', 'b', 'c', 'd'];
       let globalNum = 1;
 
-      SECTION_ORDER.forEach(secKey => {
-        const questionsArr = allQuestionsBySection[secKey] || [];
-        if (questionsArr.length === 0) return;
+      const secKey = SECTION_ORDER[activeStudySectionIndex];
+      const questionsArr = allQuestionsBySection[secKey] || [];
 
-        questionsArr.forEach((q, idx) => {
-          const card = document.createElement('div');
+      const progressTextEl = document.getElementById('study-progress-text');
+      if (progressTextEl) {
+        progressTextEl.textContent = `${questionsArr.length} Questions`;
+      }
+
+      if (questionsArr.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary);">No questions available in this section.</div>';
+        return;
+      }
+
+      questionsArr.forEach((q, idx) => {
+        const card = document.createElement('div');
           card.className = 'study-question-card';
           card.id = `study-card-${secKey}-${idx}`;
           card.style.animationDelay = `${Math.min(globalNum * 0.03, 0.6)}s`;
@@ -2527,7 +2573,6 @@ ${formatExplanation(explanationLangText)}</div>
           container.appendChild(card);
           globalNum++;
         });
-      });
 
       // Typeset MathJax if loaded
       ensureMathJax().then(() => {
