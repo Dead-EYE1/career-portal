@@ -1441,6 +1441,9 @@
           // Style "Step N:" with line breaks
           textPart = textPart.replace(/(Step\s+\d+[:.']?)/gi, '\n\n<div style="margin-top: 14px; margin-bottom: 10px; font-weight: 700; color: var(--green); letter-spacing: 0.03em;">$1</div>\n');
           
+          // Add line breaks after full stops (sentences)
+          textPart = textPart.replace(/\.\s+/g, '.\n\n');
+          
           // Keep existing fraction and exponent replacements
           textPart = textPart.replace(/(\d+(?:\.\d+)?)\^(\d+(?:\.\d+)?)/g, '$1<sup>$2</sup>')
                              .replace(/(\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)/g, '<span style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; font-size: 0.85em; line-height: 1.1; margin: 0 4px;"><span style="border-bottom: 1.5px solid currentColor; width: 100%; text-align: center; padding-bottom: 1px;">$1</span><span style="padding-top: 1px;">$2</span></span>');
