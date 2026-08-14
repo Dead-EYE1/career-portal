@@ -1781,7 +1781,17 @@ ${formatExplanation(explanationLangText)}</div>
     function selectSubCategory(subCategory) {
       selectedSubCategory = subCategory;
       pushUrlState(selectedCategory, subCategory, null);
-      loadTestsDynamically(selectedCategory, subCategory);
+      
+      if (isStudyMode) {
+        let testLang = 'en';
+        if (subCategory === 'full_mock' || subCategory === 'previous_year') {
+          const langSelect = document.getElementById('mock-lang-select');
+          if (langSelect) testLang = langSelect.value;
+        }
+        startStudyMode(selectedCategory, subCategory, null, testLang);
+      } else {
+        loadTestsDynamically(selectedCategory, subCategory);
+      }
     }
 
     // ── Dynamic Test Loader Action ───────────────────────
@@ -2244,12 +2254,17 @@ ${formatExplanation(explanationLangText)}</div>
         }
 
         const dbSubCategory = dbSubCategoryMap[subCategory] || subCategory;
-        const q = query(
+        const queryArgs = [
           collection(db, 'questions'),
           where('exam', '==', category),
-          where('subCategory', '==', dbSubCategory),
-          where('testId', '==', testId)
-        );
+          where('subCategory', '==', dbSubCategory)
+        ];
+        
+        if (testId) {
+          queryArgs.push(where('testId', '==', testId));
+        }
+        
+        const q = query(...queryArgs);
 
         const snapshot = await getDocs(q);
 
@@ -2490,7 +2505,7 @@ ${formatExplanation(explanationLangText)}</div>
 
             if (optImgUrl) {
               optionsHtml += `
-                <div class="study-option study-option-image ${isCorrect ? 'is-correct' : ''}">
+                <div class="study-option study-option-image ${isCorrect ? 'is-correct' : ''}" onclick="selectStudyOption(this, '${secKey}', ${idx})">
                   <span class="study-key">${optionLabels[optIdx]}</span>
                   <img src="${optImgUrl}" loading="lazy" decoding="async" alt="Option ${optionLabels[optIdx]}" />
                 </div>
@@ -2504,7 +2519,7 @@ ${formatExplanation(explanationLangText)}</div>
                 : (opt || '');
 
               optionsHtml += `
-                <div class="study-option ${isCorrect ? 'is-correct' : ''}">
+                <div class="study-option ${isCorrect ? 'is-correct' : ''}" onclick="selectStudyOption(this, '${secKey}', ${idx})">
                   <span class="study-key">${optionLabels[optIdx]}</span>
                   <span>${optionLangText}</span>
                 </div>
@@ -2581,6 +2596,19 @@ ${formatExplanation(explanationLangText)}</div>
           window.MathJax.typesetPromise().catch(err => console.warn('MathJax typeset failed:', err));
         }
       });
+    }
+
+    // ── Select Study Option ──────────────────────────────
+    function selectStudyOption(btn, secKey, qIdx) {
+      const card = document.getElementById(`study-card-${secKey}-${qIdx}`);
+      if (!card) return;
+      const allBtns = card.querySelectorAll('.study-option');
+      allBtns.forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      if (!card.classList.contains('answer-revealed')) {
+        toggleStudyAnswer(secKey, qIdx);
+      }
     }
 
     // ── Toggle Individual Study Answer ───────────────────
@@ -2677,9 +2705,9 @@ ${formatExplanation(explanationLangText)}</div>
       const studyScreen = document.getElementById('study-mode-screen');
       if (studyScreen) studyScreen.classList.add('hidden');
       
-      // Go back to test selection
-      if (testSelectionScreen) {
-        testSelectionScreen.classList.remove('hidden');
+      // Go back to sub-category selection since we skipped test selection in study mode
+      if (subScreen) {
+        subScreen.classList.remove('hidden');
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -2719,6 +2747,7 @@ ${formatExplanation(explanationLangText)}</div>
     window.toggleStudyAnswer = toggleStudyAnswer;
     window.toggleRevealAllStudyAnswers = toggleRevealAllStudyAnswers;
     window.toggleStudyLanguage = toggleStudyLanguage;
+    window.selectStudyOption = selectStudyOption;
 
     // ── Navigation State Helpers ─────────────────────────
     function pushUrlState(exam, sub, test, mode) {

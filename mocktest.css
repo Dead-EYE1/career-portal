@@ -2962,7 +2962,7 @@ html.light-theme .theme-icon-moon { display: none; }
 .study-questions-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 /* Individual Question Card */
@@ -2970,7 +2970,7 @@ html.light-theme .theme-icon-moon { display: none; }
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 16px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   animation: studyCardFadeIn 0.4s ease both;
 }
@@ -3019,7 +3019,7 @@ html.light-theme .theme-icon-moon { display: none; }
   font-size: 1rem;
   line-height: 1.65;
   color: var(--text-primary);
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   word-wrap: break-word;
 }
 
@@ -3038,22 +3038,40 @@ html.light-theme .theme-icon-moon { display: none; }
 .study-options-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .study-option {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 12px 14px;
+  padding: 8px 12px;
   background: var(--bg-option);
-  border: 1px solid var(--border-option);
+  border: 1.5px solid var(--border-option);
   border-radius: var(--radius-sm);
   font-size: 0.92rem;
   line-height: 1.5;
   color: var(--text-primary);
   transition: all 0.2s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.study-option:hover {
+  border-color: var(--accent);
+  background: var(--bg-option-hover);
+}
+.study-option:active {
+  transform: scale(0.985);
+}
+.study-option.selected {
+  border-color: var(--accent);
+  background: var(--bg-option);
+}
+.study-option.selected .study-key {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
 }
 
 .study-option .study-key {
@@ -3198,6 +3216,17 @@ html.light-theme .theme-icon-moon { display: none; }
   color: #fff;
 }
 
+/* Highlight wrong option in options list when selected and answer is revealed */
+.study-question-card.answer-revealed .study-option.selected:not(.is-correct) {
+  background: rgba(228, 88, 88, 0.1);
+  border-color: rgba(228, 88, 88, 0.4);
+}
+.study-question-card.answer-revealed .study-option.selected:not(.is-correct) .study-key {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+}
+
 /* Footer Actions */
 .study-footer-actions {
   display: flex;
@@ -3259,4 +3288,3 @@ html.light-theme .theme-icon-moon { display: none; }
     min-width: unset;
   }
 }
-
