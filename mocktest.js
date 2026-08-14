@@ -1436,13 +1436,13 @@
           let textPart = tokens[i];
           
           // Add line breaks before keywords
-          textPart = textPart.replace(/\b(Given:|Formula:|Solution:|Therefore:|Ans:|Answer:)/gi, '\n\n**$1**\n');
+          textPart = textPart.replace(/\b(Given:|Formula:|Solution:|Therefore:|Ans:|Answer:)/gi, '\n**$1** ');
           
-          // Style "Step N:" with line breaks
-          textPart = textPart.replace(/(Step\s+\d+[:.']?)/gi, '\n\n<div style="margin-top: 14px; margin-bottom: 10px; font-weight: 700; color: var(--green); letter-spacing: 0.03em;">$1</div>\n');
+          // Style "Step N:" with reduced margins and no extra newlines
+          textPart = textPart.replace(/(Step\s+\d+[:.']?)/gi, '<div style="margin-top: 8px; margin-bottom: 4px; font-weight: 700; color: var(--green); letter-spacing: 0.03em;">$1</div>');
           
           // Add line breaks after full stops (sentences)
-          textPart = textPart.replace(/\.\s+/g, '.\n\n');
+          textPart = textPart.replace(/\.\s+/g, '.\n');
           
           // Keep existing fraction and exponent replacements
           textPart = textPart.replace(/(\d+(?:\.\d+)?)\^(\d+(?:\.\d+)?)/g, '$1<sup>$2</sup>')
