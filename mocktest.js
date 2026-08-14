@@ -2221,6 +2221,7 @@ ${formatExplanation(explanationLangText)}</div>
 
     // ── Start Study Mode ─────────────────────────────────
     async function startStudyMode(category, subCategory, testId, testLang = 'en') {
+      pushUrlState(category, subCategory, testId, 'study');
       selectedCategory = category;
       selectedSubCategory = subCategory;
       selectedTestId = testId || '';
@@ -2720,19 +2721,23 @@ ${formatExplanation(explanationLangText)}</div>
     window.toggleStudyLanguage = toggleStudyLanguage;
 
     // ── Navigation State Helpers ─────────────────────────
-    function pushUrlState(exam, sub, test) {
+    function pushUrlState(exam, sub, test, mode) {
       const url = new URL(window.location);
       const curExam = url.searchParams.get('exam') || '';
       const curSub = url.searchParams.get('sub') || '';
       const curTest = url.searchParams.get('test') || '';
+      const curMode = url.searchParams.get('mode') || '';
+      
       const targetExam = exam || '';
       const targetSub = sub || '';
       const targetTest = test || '';
+      const targetMode = mode || (isStudyMode ? 'study' : '');
       
-      if (targetExam !== curExam || targetSub !== curSub || targetTest !== curTest) {
+      if (targetExam !== curExam || targetSub !== curSub || targetTest !== curTest || targetMode !== curMode) {
         if (exam) url.searchParams.set('exam', exam); else url.searchParams.delete('exam');
         if (sub) url.searchParams.set('sub', sub); else url.searchParams.delete('sub');
         if (test) url.searchParams.set('test', test); else url.searchParams.delete('test');
+        if (targetMode) url.searchParams.set('mode', targetMode); else url.searchParams.delete('mode');
         window.history.pushState({}, '', url);
       }
     }
@@ -2744,6 +2749,13 @@ ${formatExplanation(explanationLangText)}</div>
       const examParam = urlParams.get('exam');
       const subParam = urlParams.get('sub');
       const testParam = urlParams.get('test');
+      const modeParam = urlParams.get('mode');
+
+      if (modeParam === 'study') {
+        setMode('study');
+      } else {
+        setMode('mocktest');
+      }
       
       if (isPopState) hideAllScreens();
 
@@ -2754,7 +2766,11 @@ ${formatExplanation(explanationLangText)}</div>
         // Initialize the sub-category screen state in case they navigate back
         selectCategory(examParam, null);
         
-        fetchQuestions(examParam, subParam, testParam, 'en');
+        if (modeParam === 'study') {
+          startStudyMode(examParam, subParam, testParam, 'en');
+        } else {
+          fetchQuestions(examParam, subParam, testParam, 'en');
+        }
       } else if (examParam && subParam) {
         selectedCategory = examParam;
         selectedSubCategory = subParam;
