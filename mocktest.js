@@ -537,6 +537,8 @@
     let timeSpentPerQuestion = {};  // { sectionKey: [seconds, ...] }
     let timingMode = 'sectional';   // 'sectional' or 'overall'
     let timerModalCallback = null;  // Callback for when timer mode is selected
+    let isStudyMode = false;        // Study Mode flag
+    let studyAllRevealed = false;   // Track if all study answers are revealed
 
     const categoryNames = {
       'ssc_gd': 'SSC GD',
@@ -1424,25 +1426,41 @@
     function formatExplanation(text) {
       if (!text) return '';
       
-      let parts = text.split('$');
-      for (let i = 0; i < parts.length; i++) {
+      // Tokenize to protect math blocks from being altered
+      const mathRegex = /(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\))/g;
+      const tokens = text.split(mathRegex);
+
+      for (let i = 0; i < tokens.length; i++) {
+        // Even indices are regular text, odd indices are math blocks
         if (i % 2 === 0) {
-          parts[i] = parts[i]
-            .replace(/(Step\s+\d+[:.']?)/gi, '<div style="margin-top: 14px; margin-bottom: 10px; font-weight: 700; color: var(--green); letter-spacing: 0.03em;">$1</div>')
-            .replace(/(\d+(?:\.\d+)?)\^(\d+(?:\.\d+)?)/g, '$1<sup>$2</sup>')
-            .replace(/(\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)/g, '<span style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; font-size: 0.85em; line-height: 1.1; margin: 0 4px;"><span style="border-bottom: 1.5px solid currentColor; width: 100%; text-align: center; padding-bottom: 1px;">$1</span><span style="padding-top: 1px;">$2</span></span>');
+          let textPart = tokens[i];
+          
+          // Add line breaks before keywords
+          textPart = textPart.replace(/\b(Given:|Formula:|Solution:|Therefore:|Ans:|Answer:)/gi, '\n\n**$1**\n');
+          
+          // Style "Step N:" with line breaks
+          textPart = textPart.replace(/(Step\s+\d+[:.']?)/gi, '\n\n<div style="margin-top: 14px; margin-bottom: 10px; font-weight: 700; color: var(--green); letter-spacing: 0.03em;">$1</div>\n');
+          
+          // Keep existing fraction and exponent replacements
+          textPart = textPart.replace(/(\d+(?:\.\d+)?)\^(\d+(?:\.\d+)?)/g, '$1<sup>$2</sup>')
+                             .replace(/(\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)/g, '<span style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; font-size: 0.85em; line-height: 1.1; margin: 0 4px;"><span style="border-bottom: 1.5px solid currentColor; width: 100%; text-align: center; padding-bottom: 1px;">$1</span><span style="padding-top: 1px;">$2</span></span>');
+
+          tokens[i] = textPart;
         }
       }
-      let formattedText = parts.join('$');
+      
+      let formattedText = tokens.join('');
 
       return formattedText.split('\n').map(line => {
         const trimmed = line.trim();
+        // Replace **keyword** with styled span if needed, but simple bold is fine too
+        let processedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         if (trimmed.startsWith('*')) {
           const content = trimmed.replace(/^\*+\s*/, '');
-          return `<div class="expl-bullet">${content}</div>`;
+          return `<div class="expl-bullet">${processedLine.replace(/^\*+\s*/, '')}</div>`;
         }
-        return line;
-      }).join('\n');
+        return processedLine;
+      }).join('\n').replace(/\n{3,}/g, '\n\n').trim();
     }
 
     // ── Render Solutions Review ───────────────────────────
@@ -1634,6 +1652,47 @@ ${formatExplanation(explanationLangText)}</div>
       if (subScreen) {
         subScreen.classList.remove('hidden');
         renderSubCategoryGrid(category);
+      }
+
+      // Update info chips based on mode
+      const infoChips = document.querySelector('.sub-category-info-chips');
+      if (isStudyMode && infoChips) {
+        infoChips.innerHTML = `
+          <div class="study-info-chips">
+            <span class="study-info-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              Study Mode
+            </span>
+            <span class="study-info-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              No Timer
+            </span>
+            <span class="study-info-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              No Scoring
+            </span>
+          </div>
+        `;
+      } else if (infoChips && !isStudyMode) {
+        // Restore default mock test info chips
+        infoChips.innerHTML = `
+          <span class="chip accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+            <span id="time-chip">15 Minutes</span>
+          </span>
+          <span class="chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" /></svg>
+            <span id="questions-chip">0 Questions</span>
+          </span>
+          <span class="chip green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+            +2 Correct
+          </span>
+          <span class="chip red">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            \u22120.25 Wrong
+          </span>
+        `;
       }
 
       // Update timer display dynamically
@@ -1862,9 +1921,9 @@ ${formatExplanation(explanationLangText)}</div>
               const btn = document.createElement('button');
               btn.className = 'sub-card';
               btn.innerHTML = `
-                <span class="sub-icon">📝</span>
+                <span class="sub-icon">${isStudyMode ? '📖' : '📝'}</span>
                 <span class="sub-name">${testData.testName || 'Practice Test'}</span>
-                <span class="sub-desc">Start practice mock test</span>
+                <span class="sub-desc">${isStudyMode ? 'Study questions & answers' : 'Start practice mock test'}</span>
               `;
               btn.onclick = () => {
                 let testLang = 'en';
@@ -1884,6 +1943,14 @@ ${formatExplanation(explanationLangText)}</div>
                     testLang = 'brx';
                   }
                 }
+
+                // ── Study Mode Branch ──
+                if (isStudyMode) {
+                  startStudyMode(category, subCategory, testData.testId, testLang);
+                  return;
+                }
+
+                // ── Mock Test Mode (original flow) ──
                 if (category === 'assam_police' && (subCategory === 'full_mock' || subCategory === 'previous_year')) {
                   timingMode = 'overall';
                   fetchQuestions(category, subCategory, testData.testId, testLang);
@@ -2113,10 +2180,466 @@ ${formatExplanation(explanationLangText)}</div>
       }
     }
 
+    // ══════════════════════════════════════════════════════
+    //  STUDY MODE FUNCTIONS
+    // ══════════════════════════════════════════════════════
+
+    // ── Mode Toggle Handler ──────────────────────────────
+    function setMode(mode) {
+      isStudyMode = (mode === 'study');
+      
+      const mocktestBtn = document.getElementById('mode-mocktest');
+      const studyBtn = document.getElementById('mode-study');
+      const slider = document.getElementById('mode-toggle-slider');
+      const modeDesc = document.getElementById('mode-desc');
+      const startIcon = document.querySelector('.start-screen-icon');
+      const quizTitle = document.querySelector('#start-screen .quiz-title');
+      const quizDesc = document.querySelector('#start-screen > .quiz-desc');
+
+      if (isStudyMode) {
+        if (mocktestBtn) mocktestBtn.classList.remove('active');
+        if (studyBtn) studyBtn.classList.add('active');
+        if (slider) slider.classList.add('study-active');
+        if (modeDesc) modeDesc.textContent = 'Read questions & answers at your own pace';
+        if (startIcon) startIcon.textContent = '\ud83d\udcd6';
+        if (quizTitle) quizTitle.textContent = ' Study Mode';
+        if (quizDesc) quizDesc.textContent = 'Browse through questions and reveal answers when you\'re ready. No timer, no scoring \u2014 just learning!';
+      } else {
+        if (mocktestBtn) mocktestBtn.classList.add('active');
+        if (studyBtn) studyBtn.classList.remove('active');
+        if (slider) slider.classList.remove('study-active');
+        if (modeDesc) modeDesc.textContent = 'Timed test with scoring & negative marking';
+        if (startIcon) startIcon.textContent = '\ud83d\udcdd';
+        if (quizTitle) quizTitle.textContent = ' Mock Test';
+        if (quizDesc) quizDesc.textContent = 'Test your knowledge with a quick mock test. Instant scoring with negative marking \u2014 just like the real exam!';
+      }
+    }
+
+    // ── Start Study Mode ─────────────────────────────────
+    async function startStudyMode(category, subCategory, testId, testLang = 'en') {
+      selectedCategory = category;
+      selectedSubCategory = subCategory;
+      selectedTestId = testId || '';
+      selectedMockTestLanguage = testLang;
+
+      showGlobalLoader('Loading study material...', startStudyMode, category, subCategory, testId, testLang);
+      
+      try {
+        // Dynamically update SECTION_ORDER before rendering
+        if (category === 'weekly_quiz') {
+          let sec = (subCategory || 'gk').toLowerCase();
+          if (sec === 'math' || sec === 'mathematics' || sec === 'maths') sec = 'quant';
+          SECTION_ORDER = [sec];
+        } else if (category === 'assam_police') {
+          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english', 'general', 'assamese', 'bengali', 'bodo'];
+        } else if (testLang === 'hi') {
+          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'hindi'];
+        } else {
+          SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english'];
+        }
+
+        const dbSubCategory = dbSubCategoryMap[subCategory] || subCategory;
+        const q = query(
+          collection(db, 'questions'),
+          where('exam', '==', category),
+          where('subCategory', '==', dbSubCategory),
+          where('testId', '==', testId)
+        );
+
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+          hideGlobalLoader();
+          if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
+          showToast(`No questions available for study.`, 'warning');
+          return;
+        }
+
+        // Organize questions by section (reuses same logic as fetchQuestions)
+        allQuestionsBySection = {};
+        SECTION_ORDER.forEach(sec => {
+          allQuestionsBySection[sec] = [];
+        });
+
+        snapshot.docs.forEach(docSnap => {
+          const data = docSnap.data();
+          let rawSec;
+          if (category === 'weekly_quiz') {
+            rawSec = (subCategory || 'gk').toLowerCase();
+          } else {
+            rawSec = (data.section || 'reasoning').toLowerCase();
+          }
+          if (rawSec === 'math' || rawSec === 'mathematics' || rawSec === 'maths') rawSec = 'quant';
+          if (rawSec === 'general knowledge' || rawSec === 'general_knowledge' || rawSec === 'general awareness' || rawSec === 'general_awareness') rawSec = 'gk';
+
+          const questionObj = {
+            id: docSnap.id,
+            section: rawSec,
+            imageUrl: data.imageUrl || '',
+            question: {
+              en: data.questionText_en || '',
+              hi: data.questionText_hi || data.questionText || '',
+              as: data.questionText_as || '',
+              bn: data.questionText_bn || '',
+              brx: data.questionText_brx || ''
+            },
+            options: [
+              { en: data.a_en || '', hi: data.a_hi || data.a || '', as: data.a_as || '', bn: data.a_bn || '', brx: data.a_brx || '' },
+              { en: data.b_en || '', hi: data.b_hi || data.b || '', as: data.b_as || '', bn: data.b_bn || '', brx: data.b_brx || '' },
+              { en: data.c_en || '', hi: data.c_hi || data.c || '', as: data.c_as || '', bn: data.c_bn || '', brx: data.c_brx || '' },
+              { en: data.d_en || '', hi: data.d_hi || data.d || '', as: data.d_as || '', bn: data.d_bn || '', brx: data.d_brx || '' }
+            ],
+            optionImages: [
+              data.a_imageUrl || '',
+              data.b_imageUrl || '',
+              data.c_imageUrl || '',
+              data.d_imageUrl || ''
+            ],
+            answer: data.correct,
+            explanation: {
+              en: data.explanation_en || '',
+              hi: data.explanation_hi || data.explanation || '',
+              as: data.explanation_as || '',
+              bn: data.explanation_bn || '',
+              brx: data.explanation_brx || ''
+            }
+          };
+
+          if (allQuestionsBySection[questionObj.section]) {
+            allQuestionsBySection[questionObj.section].push(questionObj);
+          }
+        });
+
+        // Filter and sort (same logic as fetchQuestions)
+        SECTION_ORDER.forEach(sec => {
+          allQuestionsBySection[sec] = allQuestionsBySection[sec].filter(q => {
+            let applyLang = selectedMockTestLanguage;
+            if (q.section === 'hindi') applyLang = 'hi';
+            if (q.section === 'english') applyLang = 'en';
+            const questionLangText = typeof q.question === 'object'
+              ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '')
+              : (q.question || '');
+            const hasText = questionLangText && questionLangText.trim().length > 0;
+            const hasImage = q.imageUrl && q.imageUrl.trim().length > 0;
+            return hasText || hasImage;
+          });
+
+          allQuestionsBySection[sec].sort((a, b) => {
+            return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+          });
+        });
+
+        const totalFetched = Object.values(allQuestionsBySection).reduce((a, b) => a + b.length, 0);
+        if (totalFetched === 0) {
+          hideGlobalLoader();
+          if (testSelectionScreen) testSelectionScreen.classList.remove('hidden');
+          showToast('No questions available for study.', 'warning');
+          return;
+        }
+
+        // Show study mode screen
+        if (subScreen) subScreen.classList.add('hidden');
+        if (testSelectionScreen) testSelectionScreen.classList.add('hidden');
+        hideGlobalLoader();
+
+        // Update study screen header
+        const studyExamBadge = document.getElementById('study-exam-badge');
+        if (studyExamBadge) {
+          const catName = categoryNames[category] || category.toUpperCase();
+          const subName = subCategory.replace('_', ' ').toUpperCase();
+          studyExamBadge.textContent = `${catName} - ${subName}`;
+        }
+
+        // Update study language toggle
+        const studyLangToggle = document.getElementById('study-lang-toggle');
+        if (studyLangToggle) {
+          studyLangToggle.value = selectedMockTestLanguage;
+          
+          // Show/hide language options based on category
+          const studyAsOpt = document.getElementById('study-assamese-option');
+          const studyBnOpt = document.getElementById('study-bengali-option');
+          const studyBrxOpt = document.getElementById('study-bodo-option');
+          const studyHiOpt = document.getElementById('study-hindi-option');
+          
+          const showRegional = REGIONAL_LANG_ALLOWED_EXAMS.includes(category);
+          const showBodo = BODO_ALLOWED_EXAMS.includes(category);
+          const hideHindi = (category === 'assam_police');
+          
+          if (studyAsOpt) studyAsOpt.style.display = showRegional ? '' : 'none';
+          if (studyBnOpt) studyBnOpt.style.display = showRegional ? '' : 'none';
+          if (studyBrxOpt) studyBrxOpt.style.display = showBodo ? '' : 'none';
+          if (studyHiOpt) studyHiOpt.style.display = hideHindi ? 'none' : '';
+        }
+
+        // Update progress text
+        const progressTextEl = document.getElementById('study-progress-text');
+        if (progressTextEl) {
+          progressTextEl.textContent = `${totalFetched} Questions`;
+        }
+
+        // Reset reveal all state
+        studyAllRevealed = false;
+        const revealAllBtn = document.getElementById('study-reveal-all-btn');
+        if (revealAllBtn) {
+          revealAllBtn.textContent = '\ud83d\udc41 Reveal All Answers';
+          revealAllBtn.classList.remove('all-revealed');
+        }
+
+        const studyScreen = document.getElementById('study-mode-screen');
+        if (studyScreen) studyScreen.classList.remove('hidden');
+
+        renderStudyQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      } catch (error) {
+        console.error('Error loading study questions:', error);
+        showGlobalError('Error loading questions. Please check your connection.');
+      }
+    }
+
+    // ── Render All Study Questions ────────────────────────
+    function renderStudyQuestions() {
+      const container = document.getElementById('study-questions-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const optionLabels = ['A', 'B', 'C', 'D'];
+      const optionKeys = ['a', 'b', 'c', 'd'];
+      let globalNum = 1;
+
+      SECTION_ORDER.forEach(secKey => {
+        const questionsArr = allQuestionsBySection[secKey] || [];
+        if (questionsArr.length === 0) return;
+
+        questionsArr.forEach((q, idx) => {
+          const card = document.createElement('div');
+          card.className = 'study-question-card';
+          card.id = `study-card-${secKey}-${idx}`;
+          card.style.animationDelay = `${Math.min(globalNum * 0.03, 0.6)}s`;
+
+          let applyLang = selectedMockTestLanguage;
+          if (q.section === 'hindi') applyLang = 'hi';
+          if (q.section === 'english') applyLang = 'en';
+
+          // Question text with fallback
+          const questionLangText = typeof q.question === 'object'
+            ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || q.question['as'] || q.question['bn'] || q.question['brx'] || '')
+            : (q.question || '');
+
+          // Section badge
+          const sectionName = SECTION_NAMES[secKey] || secKey;
+
+          // Build options HTML
+          const correctKey = (q.answer || '').toLowerCase();
+          const correctIdx = optionKeys.indexOf(correctKey);
+
+          let optionsHtml = '';
+          q.options.forEach((opt, optIdx) => {
+            const optImgUrl = (q.optionImages && q.optionImages[optIdx]) ? q.optionImages[optIdx].trim() : '';
+            const isCorrect = optIdx === correctIdx;
+
+            if (optImgUrl) {
+              optionsHtml += `
+                <div class="study-option study-option-image ${isCorrect ? 'is-correct' : ''}">
+                  <span class="study-key">${optionLabels[optIdx]}</span>
+                  <img src="${optImgUrl}" loading="lazy" decoding="async" alt="Option ${optionLabels[optIdx]}" />
+                </div>
+              `;
+            } else {
+              let optApplyLang = selectedMockTestLanguage;
+              if (q.section === 'hindi') optApplyLang = 'hi';
+              if (q.section === 'english') optApplyLang = 'en';
+              const optionLangText = typeof opt === 'object'
+                ? (opt[optApplyLang] || opt['en'] || opt['hi'] || opt['as'] || opt['bn'] || opt['brx'] || '')
+                : (opt || '');
+
+              optionsHtml += `
+                <div class="study-option ${isCorrect ? 'is-correct' : ''}">
+                  <span class="study-key">${optionLabels[optIdx]}</span>
+                  <span>${optionLangText}</span>
+                </div>
+              `;
+            }
+          });
+
+          // Correct answer text for the answer section
+          const correctOptObj = q.options[correctIdx];
+          let correctOptText = '';
+          if (correctOptObj) {
+            const correctImgUrl = (q.optionImages && q.optionImages[correctIdx]) ? q.optionImages[correctIdx].trim() : '';
+            if (correctImgUrl) {
+              correctOptText = `<img src="${correctImgUrl}" loading="lazy" style="max-width:100%;border-radius:8px;" alt="Correct answer" />`;
+            } else {
+              let cLang = selectedMockTestLanguage;
+              if (q.section === 'hindi') cLang = 'hi';
+              if (q.section === 'english') cLang = 'en';
+              correctOptText = typeof correctOptObj === 'object'
+                ? (correctOptObj[cLang] || correctOptObj['en'] || correctOptObj['hi'] || '')
+                : (correctOptObj || '');
+            }
+          }
+
+          // Explanation
+          const explanationLangText = typeof q.explanation === 'object'
+            ? (q.explanation[applyLang] || q.explanation['en'] || q.explanation['hi'] || q.explanation['as'] || q.explanation['bn'] || q.explanation['brx'] || '')
+            : (q.explanation || '');
+
+          const explanationHtml = explanationLangText
+            ? `<div class="study-explanation"><strong>Explanation</strong>${formatExplanation(explanationLangText)}</div>`
+            : '';
+
+          // Image
+          const imageHtml = (q.imageUrl && q.imageUrl.trim())
+            ? `<img class="study-question-image visible" src="${q.imageUrl}" loading="lazy" decoding="async" alt="Question illustration" />`
+            : '';
+
+          const answerId = `study-answer-${secKey}-${idx}`;
+
+          card.innerHTML = `
+            <div class="study-question-number">
+              Question ${globalNum}
+              <span class="study-question-section-badge">${sectionName}</span>
+            </div>
+            <div class="study-question-text">Q${globalNum}. ${questionLangText}</div>
+            ${imageHtml}
+            <div class="study-options-list">
+              ${optionsHtml}
+            </div>
+            <button type="button" class="study-show-answer-btn" id="study-btn-${secKey}-${idx}" onclick="toggleStudyAnswer('${secKey}', ${idx})">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="btn-icon" width="18" height="18"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              Show Answer
+            </button>
+            <div class="study-answer-section" id="${answerId}">
+              <div class="study-answer-content">
+                <div class="study-correct-label">\u2713 Correct Answer</div>
+                <div class="study-correct-answer">
+                  <span class="study-key">${correctIdx >= 0 ? optionLabels[correctIdx] : '?'}</span>
+                  <span>${correctOptText}</span>
+                </div>
+                ${explanationHtml}
+              </div>
+            </div>
+          `;
+
+          container.appendChild(card);
+          globalNum++;
+        });
+      });
+
+      // Typeset MathJax if loaded
+      ensureMathJax().then(() => {
+        if (window.MathJax && window.MathJax.typesetPromise) {
+          window.MathJax.typesetPromise().catch(err => console.warn('MathJax typeset failed:', err));
+        }
+      });
+    }
+
+    // ── Toggle Individual Study Answer ───────────────────
+    function toggleStudyAnswer(secKey, idx) {
+      const answerSection = document.getElementById(`study-answer-${secKey}-${idx}`);
+      const btn = document.getElementById(`study-btn-${secKey}-${idx}`);
+      const card = document.getElementById(`study-card-${secKey}-${idx}`);
+
+      if (!answerSection) return;
+
+      const isRevealed = answerSection.classList.contains('revealed');
+      
+      if (isRevealed) {
+        answerSection.classList.remove('revealed');
+        if (btn) {
+          btn.classList.remove('revealed');
+          btn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="btn-icon" width="18" height="18"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            Show Answer
+          `;
+        }
+        if (card) card.classList.remove('answer-revealed');
+      } else {
+        answerSection.classList.add('revealed');
+        if (btn) {
+          btn.classList.add('revealed');
+          btn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="btn-icon" width="18" height="18"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            Hide Answer
+          `;
+        }
+        if (card) card.classList.add('answer-revealed');
+      }
+    }
+
+    // ── Toggle Reveal All Answers ────────────────────────
+    function toggleRevealAllStudyAnswers() {
+      studyAllRevealed = !studyAllRevealed;
+      
+      const revealAllBtn = document.getElementById('study-reveal-all-btn');
+      
+      SECTION_ORDER.forEach(secKey => {
+        const questionsArr = allQuestionsBySection[secKey] || [];
+        questionsArr.forEach((q, idx) => {
+          const answerSection = document.getElementById(`study-answer-${secKey}-${idx}`);
+          const btn = document.getElementById(`study-btn-${secKey}-${idx}`);
+          const card = document.getElementById(`study-card-${secKey}-${idx}`);
+
+          if (!answerSection) return;
+
+          if (studyAllRevealed) {
+            answerSection.classList.add('revealed');
+            if (btn) {
+              btn.classList.add('revealed');
+              btn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="btn-icon" width="18" height="18"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                Hide Answer
+              `;
+            }
+            if (card) card.classList.add('answer-revealed');
+          } else {
+            answerSection.classList.remove('revealed');
+            if (btn) {
+              btn.classList.remove('revealed');
+              btn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="btn-icon" width="18" height="18"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                Show Answer
+              `;
+            }
+            if (card) card.classList.remove('answer-revealed');
+          }
+        });
+      });
+
+      if (revealAllBtn) {
+        if (studyAllRevealed) {
+          revealAllBtn.textContent = '\ud83d\udeab Hide All Answers';
+          revealAllBtn.classList.add('all-revealed');
+        } else {
+          revealAllBtn.textContent = '\ud83d\udc41 Reveal All Answers';
+          revealAllBtn.classList.remove('all-revealed');
+        }
+      }
+    }
+
+    // ── Study Mode Language Toggle ───────────────────────
+    function toggleStudyLanguage(lang) {
+      selectedMockTestLanguage = lang;
+      renderStudyQuestions();
+    }
+
+    // ── Exit Study Mode ─────────────────────────────────
+    function exitStudyMode() {
+      const studyScreen = document.getElementById('study-mode-screen');
+      if (studyScreen) studyScreen.classList.add('hidden');
+      
+      // Go back to test selection
+      if (testSelectionScreen) {
+        testSelectionScreen.classList.remove('hidden');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     // ── Event Listeners ──────────────────────────────────
     if (nextBtn) nextBtn.addEventListener('click', handleNextClick);
     const reviewBtn = document.getElementById('review-btn');
     if (reviewBtn) reviewBtn.addEventListener('click', handleReviewClick);
+
 
     // ── Expose functions globally for native inline HTML onclick properties ──
     window.handleNextClick = handleNextClick;
@@ -2142,6 +2665,11 @@ ${formatExplanation(explanationLangText)}</div>
     window.handlePhoneAuth = handlePhoneAuth;
     window.showMyResults = showMyResults;
     window.hideMyResults = hideMyResults;
+    window.setMode = setMode;
+    window.exitStudyMode = exitStudyMode;
+    window.toggleStudyAnswer = toggleStudyAnswer;
+    window.toggleRevealAllStudyAnswers = toggleRevealAllStudyAnswers;
+    window.toggleStudyLanguage = toggleStudyLanguage;
 
     // ── Navigation State Helpers ─────────────────────────
     function pushUrlState(exam, sub, test) {
@@ -2228,8 +2756,10 @@ ${formatExplanation(explanationLangText)}</div>
     const myResultsBackBtn  = document.getElementById('my-results-back-btn');
     const dropdownResult    = document.getElementById('dropdown-result');
 
+    const studyModeScreen = document.getElementById('study-mode-screen');
+
     function hideAllScreens() {
-      [startScreen, subScreen, testSelectionScreen, quizScreen, resultScreen, myResultsScreen]
+      [startScreen, subScreen, testSelectionScreen, quizScreen, resultScreen, myResultsScreen, studyModeScreen]
         .forEach(s => { if (s) s.classList.add('hidden'); });
     }
 
