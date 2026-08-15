@@ -850,22 +850,37 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (a.featured && !b.featured) return -1;
       if (!a.featured && b.featured) return 1;
 
+      const parsePosts = (p) => {
+        if (!p) return 0;
+        // Extract the first number found, removing commas
+        const match = String(p).replace(/,/g, '').match(/\d+/);
+        return match ? parseInt(match[0], 10) : 0;
+      };
+
+      const postsA = parsePosts(a.posts);
+      const postsB = parsePosts(b.posts);
+      if (postsA !== postsB) {
+        return postsB - postsA;
+      }
+
       const getTime = (dateStr) => {
         if (!dateStr || dateStr === 'TBA') return 0;
         const d = new Date(dateStr);
         return isNaN(d.getTime()) ? 0 : d.getTime();
       };
 
-      const postA = getTime(a.raw_date);
-      const postB = getTime(b.raw_date);
-      if (postA !== postB) {
-        return postB - postA;
-      }
       const dateA = getTime(a.raw_apply_date);
       const dateB = getTime(b.raw_apply_date);
       if (dateA !== dateB) {
         return dateB - dateA;
       }
+
+      const postA = getTime(a.raw_date);
+      const postB = getTime(b.raw_date);
+      if (postA !== postB) {
+        return postB - postA;
+      }
+
       if (a.id < b.id) return 1;
       if (a.id > b.id) return -1;
       return 0;

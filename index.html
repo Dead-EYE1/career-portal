@@ -43,7 +43,7 @@
   <!-- Verification & Theme -->
   <meta name="google-site-verification" content="HOK2Hj-qEbqBn5wotJZSY198q-NBF4n1eBqi02YfAq0" />
   <!-- SVG Favicon for modern browsers -->
-  <link rel="icon" type="image/svg+xml" href="/logo.svg?v=7">
+  <link rel="icon" type="image/svg+xml" href="/logo.svg?v=15">
   <meta name="msapplication-TileColor" content="#111322" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,7 +53,7 @@
   <noscript>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
   </noscript>
-  <link rel="stylesheet" href="/style.css?v=12">
+  <link rel="stylesheet" href="/style.css?v=15">
   <script>
     (function () {
       const savedTheme = localStorage.getItem('theme');
@@ -68,14 +68,14 @@
 
   <div class="top-promo-banner">
     <span>📢 Get Instant Alerts for Latest Govt Jobs, Mock test & study mode!</span>
-    <a href="/#assam-jobs-section" class="promo-btn">View Job Details</a>
+    <a href="/#central-jobs-section" class="promo-btn">View Job Details</a>
   </div>
 
   <header class="header" id="main-header">
     <div class="container header-inner">
       <a href="/" class="logo" id="logo-link">
         <div class="logo-icon logo-icon--image">
-          <img src="/logo.svg?v=7" alt="NJ Updates Logo" class="logo-image">
+          <img src="/logo.svg?v=15" alt="NJ Updates Logo" class="logo-image">
         </div>
         <div class="logo-text">
           <h1 class="logo-main"><span class="logo-accent">NJ</span> <span class="logo-light">Updates</span></h1>
@@ -131,7 +131,7 @@
     <div class="container nav-inner">
       <ul class="nav-menu" id="nav-menu">
         <li><a href="/" class="nav-link active" id="nav-home">🏠 Home</a></li>
-        <li><a href="/#assam-jobs-section" class="nav-link" id="nav-govt">Govt Jobs</a></li>
+        <li><a href="/#central-jobs-section" class="nav-link" id="nav-govt">Govt Jobs</a></li>
         <li><a href="/#scholarship-section" class="nav-link" id="nav-scholarship">Scholarship</a></li>
         <li><a href="/mocktest.html" class="nav-link" id="nav-mocktest">📝 Mock Test</a></li>
         <li><a href="#" class="nav-link" id="nav-contact" onclick="openContactModal(event)">Contact</a></li>
@@ -181,18 +181,18 @@
 
       <div class="tabs-wrapper">
         <div class="job-tabs-container" id="job-tabs">
-          <button class="job-tab active" data-target="assam-jobs-container">Assam State Jobs</button>
-          <button class="job-tab" data-target="central-jobs-container">Central Govt & Banking</button>
+          <button class="job-tab active" data-target="central-jobs-container">Central Govt & Banking</button>
+          <button class="job-tab" data-target="assam-jobs-container">Assam State Jobs</button>
           <button class="job-tab" data-target="upcoming-jobs-container">Upcoming Jobs</button>
         </div>
 
-        <div id="assam-jobs-container" class="job-tab-content active">
-          <div class="section-block" id="assam-jobs-section">
+        <div id="central-jobs-container" class="job-tab-content active">
+          <div class="section-block" id="central-jobs-section">
             <div class="section-header">
-              <h2 class="section-title">🌿 Assam State Jobs</h2>
+              <h2 class="section-title">🏛️ Central Govt & Banking</h2>
               <a href="/archived-jobs.html" class="view-all-link">Expired Jobs →</a>
             </div>
-            <div class="posts-list" id="assam-posts-list">
+            <div class="posts-list" id="central-posts-list">
               <div class="skeleton-card">
                 <div class="skeleton-line w60"></div>
                 <div class="skeleton-line w80"></div>
@@ -212,13 +212,13 @@
           </div>
         </div>
 
-        <div id="central-jobs-container" class="job-tab-content">
-          <div class="section-block" id="central-jobs-section">
+        <div id="assam-jobs-container" class="job-tab-content">
+          <div class="section-block" id="assam-jobs-section">
             <div class="section-header">
-              <h2 class="section-title">🏛️ Central Govt & Banking</h2>
+              <h2 class="section-title">🌿 Assam State Jobs</h2>
               <a href="/archived-jobs.html" class="view-all-link">Expired Jobs →</a>
             </div>
-            <div class="posts-list" id="central-posts-list">
+            <div class="posts-list" id="assam-posts-list">
               <div class="skeleton-card">
                 <div class="skeleton-line w60"></div>
                 <div class="skeleton-line w80"></div>
@@ -358,7 +358,7 @@
           <h4 class="footer-heading">Quick Links</h4>
           <ul class="footer-link-list">
             <li><a href="#" id="fl-home">Home</a></li>
-            <li><a href="/#assam-jobs-section" id="fl-govt">Govt Jobs</a></li>
+            <li><a href="/#central-jobs-section" id="fl-govt">Govt Jobs</a></li>
             <li><a href="/#scholarship-section" id="fl-scholarship">Scholarship</a></li>
             <li><a href="#" id="fl-contact" onclick="openContactModal(event)">Contact Us</a></li>
           </ul>
@@ -402,7 +402,7 @@
       <span class="nav-icon">🏠</span>
       <span>Home</span>
     </a>
-    <a href="/#assam-jobs-section" class="mobile-nav-item" id="mob-nav-govt">
+    <a href="/#central-jobs-section" class="mobile-nav-item" id="mob-nav-govt">
       <span class="nav-icon">💼</span>
       <span>Govt Jobs</span>
     </a>
@@ -447,7 +447,7 @@
     </div>
   </div>
 
-  <script src="/script.js?v=12" defer></script>
+  <script src="/script.js?v=15" defer></script>
 </body>
 
 </html>
