@@ -606,7 +606,7 @@
           let sec = (subCategory || 'gk').toLowerCase();
           if (sec === 'math' || sec === 'mathematics' || sec === 'maths') sec = 'quant';
           SECTION_ORDER = [sec];
-        } else if (category === 'assam_police' && (subCategory === 'full_mock' || subCategory === 'previous_year')) {
+        } else if (category === 'assam_police') {
           SECTION_ORDER = ['reasoning', 'gk', 'quant', 'english', 'general', 'assamese', 'bengali', 'bodo'];
         } else if (selectedMockTestLanguage === 'hi') {
           SECTION_ORDER = ['reasoning', 'gk', 'quant', 'hindi'];
@@ -645,9 +645,9 @@
           // For weekly_quiz, section = subCategory (they're the same subject)
           let rawSec;
           if (category === 'weekly_quiz') {
-            rawSec = (subCategory || 'gk').toLowerCase();
+            rawSec = (subCategory || 'gk').toLowerCase().trim();
           } else {
-            rawSec = (data.section || 'reasoning').toLowerCase();
+            rawSec = (data.section || 'reasoning').toLowerCase().trim();
           }
           if (rawSec === 'math' || rawSec === 'mathematics' || rawSec === 'maths') rawSec = 'quant';
           if (rawSec === 'general knowledge' || rawSec === 'general_knowledge' || rawSec === 'general awareness' || rawSec === 'general_awareness') rawSec = 'gk';
@@ -700,7 +700,7 @@
 
             // Build fallback chain: selected lang → 'en' → 'hi'
             const questionLangText = typeof q.question === 'object'
-              ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '')
+              ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || q.question['as'] || q.question['bn'] || q.question['brx'] || '')
               : (q.question || '');
             const hasText = questionLangText && questionLangText.trim().length > 0;
             const hasImage = q.imageUrl && q.imageUrl.trim().length > 0;
@@ -2287,9 +2287,9 @@ ${formatExplanation(explanationLangText)}</div>
           const data = docSnap.data();
           let rawSec;
           if (category === 'weekly_quiz') {
-            rawSec = (subCategory || 'gk').toLowerCase();
+            rawSec = (subCategory || 'gk').toLowerCase().trim();
           } else {
-            rawSec = (data.section || 'reasoning').toLowerCase();
+            rawSec = (data.section || 'reasoning').toLowerCase().trim();
           }
           if (rawSec === 'math' || rawSec === 'mathematics' || rawSec === 'maths') rawSec = 'quant';
           if (rawSec === 'general knowledge' || rawSec === 'general_knowledge' || rawSec === 'general awareness' || rawSec === 'general_awareness') rawSec = 'gk';
@@ -2339,7 +2339,7 @@ ${formatExplanation(explanationLangText)}</div>
             if (q.section === 'hindi') applyLang = 'hi';
             if (q.section === 'english') applyLang = 'en';
             const questionLangText = typeof q.question === 'object'
-              ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || '')
+              ? (q.question[applyLang] || q.question['en'] || q.question['hi'] || q.question['as'] || q.question['bn'] || q.question['brx'] || '')
               : (q.question || '');
             const hasText = questionLangText && questionLangText.trim().length > 0;
             const hasImage = q.imageUrl && q.imageUrl.trim().length > 0;
