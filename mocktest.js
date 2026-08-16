@@ -1,7 +1,7 @@
 // ── Firebase Imports ───────────────────────────────
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-    import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, where, serverTimestamp, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, where, serverTimestamp, addDoc, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     // ── Firebase Config ─────────────────────────────────
@@ -1139,7 +1139,7 @@
 
       const optionKeys = ['a', 'b', 'c', 'd'];
       const selectedKey = optionKeys[index];
-      const correctKey = (q.answer || '').toLowerCase();
+      const correctKey = String(q.answer || '').toLowerCase();
       const isCorrect = (selectedKey === correctKey);
 
       const currentSectionKey = SECTION_ORDER[activeSectionIndex];
@@ -1510,7 +1510,7 @@
             const isAnswered = state && state.status === 'answered';
             const userSelectedIdx = state ? state.selectedIdx : -1;
             
-            const correctKey = (q.answer || '').toLowerCase();
+            const correctKey = String(q.answer || '').toLowerCase();
             const correctIdx = optionKeys.indexOf(correctKey);
             
             const card = document.createElement('div');
@@ -2843,10 +2843,45 @@ ${formatExplanation(explanationLangText)}</div>
       initFromURL(true);
     });
 
+    // ── Fetch Category Test Counts ───────────────────────
+    async function loadCategoryCounts() {
+      const categories = document.querySelectorAll('.category-card');
+      for (const card of categories) {
+        const onclickAttr = card.getAttribute('onclick');
+        if (onclickAttr && onclickAttr.includes('selectCategory')) {
+          const match = onclickAttr.match(/selectCategory\('([^']+)'/);
+          if (match) {
+            const category = match[1];
+            try {
+              const q = query(collection(db, 'tests'), where('exam', '==', category));
+              const snapshot = await getCountFromServer(q);
+              const count = snapshot.data().count;
+              
+              if (count > 0) {
+                let badge = card.querySelector('.test-count-pill');
+                if (!badge) {
+                  badge = document.createElement('span');
+                  badge.className = 'test-count-pill';
+                  card.appendChild(badge);
+                }
+                badge.textContent = `${count} ${count === 1 ? 'Test' : 'Tests'}`;
+              }
+            } catch (error) {
+              console.error("Error fetching count for", category, error);
+            }
+          }
+        }
+      }
+    }
+
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => initFromURL(false));
+      document.addEventListener('DOMContentLoaded', () => {
+        initFromURL(false);
+        loadCategoryCounts();
+      });
     } else {
       initFromURL(false);
+      loadCategoryCounts();
     }
 
     // ── My Results Screen ────────────────────────────────
