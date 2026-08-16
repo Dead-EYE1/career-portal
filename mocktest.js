@@ -657,7 +657,7 @@
             section: rawSec,
             imageUrl: data.imageUrl || '',
             question: {
-              en: data.questionText_en || '',
+              en: data.questionText_en || (typeof data.question === 'string' ? data.question : '') || '',
               hi: data.questionText_hi || data.questionText || '',
               as: data.questionText_as || '',
               bn: data.questionText_bn || '',
@@ -724,6 +724,9 @@
           showToast(`No questions available in category "${categoryNames[category] || category}".`, 'warning');
           return;
         }
+
+        // Remove empty sections to hide unnecessary tabs
+        SECTION_ORDER = SECTION_ORDER.filter(sec => allQuestionsBySection[sec] && allQuestionsBySection[sec].length > 0);
 
         selectedCategory = category;
         selectedSubCategory = subCategory;
@@ -1041,8 +1044,8 @@
 
       // Show/hide question image
       if (questionImage) {
-        if (q.imageUrl && q.imageUrl.trim() !== '') {
-          questionImage.src = q.imageUrl;
+        if (q.imageUrl && String(q.imageUrl).trim() !== '') {
+          questionImage.src = String(q.imageUrl).trim();
           questionImage.classList.add('visible');
         } else {
           questionImage.classList.remove('visible');
@@ -1053,14 +1056,14 @@
       optionsList.innerHTML = '';
       const keys = ['A', 'B', 'C', 'D'];
       const optionKeys = ['a', 'b', 'c', 'd'];
-      const correctKey = (q.answer || '').toLowerCase();
+      const correctKey = String(q.answer || '').toLowerCase();
       const correctIndex = optionKeys.indexOf(correctKey);
 
       q.options.forEach((opt, i) => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         
-        const optImgUrl = (q.optionImages && q.optionImages[i]) ? q.optionImages[i].trim() : '';
+        const optImgUrl = (q.optionImages && q.optionImages[i]) ? String(q.optionImages[i]).trim() : '';
         if (optImgUrl) {
           btn.classList.add('has-image');
           btn.innerHTML = `<span class="key">${keys[i]}</span><img class="option-image" src="${optImgUrl}" loading="lazy" decoding="async" alt="Option ${keys[i]}" />`;
@@ -2358,6 +2361,9 @@ ${formatExplanation(explanationLangText)}</div>
           showToast('No questions available for study.', 'warning');
           return;
         }
+
+        // Remove empty sections to hide unnecessary tabs
+        SECTION_ORDER = SECTION_ORDER.filter(sec => allQuestionsBySection[sec] && allQuestionsBySection[sec].length > 0);
 
         // Show study mode screen
         if (subScreen) subScreen.classList.add('hidden');
