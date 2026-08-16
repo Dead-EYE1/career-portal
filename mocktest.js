@@ -1715,13 +1715,15 @@ ${formatExplanation(explanationLangText)}</div>
 
     // ── Update Question Count (in Background) ─────────────
     async function updateQuestionCount(category) {
-      if (questionsChip) {
-        questionsChip.textContent = 'Loading...';
+      let currentQChip = document.getElementById('questions-chip');
+      if (currentQChip) {
+        currentQChip.textContent = 'Loading...';
       }
       const q = query(collection(db, 'questions'), where('exam', '==', category));
       const snapshot = await getDocs(q);
-      if (questionsChip) {
-        questionsChip.textContent = `${snapshot.size} Questions`;
+      currentQChip = document.getElementById('questions-chip');
+      if (currentQChip) {
+        currentQChip.textContent = `${snapshot.size} Questions`;
       }
     }
 
