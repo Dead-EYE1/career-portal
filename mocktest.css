@@ -1318,6 +1318,24 @@ body {
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(109, 40, 217, 0.05);
 }
+.logo-icon.logo-icon--image {
+  width: auto;
+  height: auto;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  align-items: flex-start;
+}
+.logo-icon.logo-icon--image .logo-image {
+  display: block;
+  width: auto;
+  height: 50px;
+  max-width: 100%;
+}
+.logo-icon:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(109, 40, 217, 0.45);
+}
 .sub-card:active {
   transform: translateY(0) scale(0.98);
 }

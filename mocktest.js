@@ -2232,6 +2232,11 @@ ${formatExplanation(explanationLangText)}</div>
         if (quizTitle) quizTitle.textContent = ' Mock Test';
         if (quizDesc) quizDesc.textContent = 'Test your knowledge with a quick mock test. Instant scoring with negative marking \u2014 just like the real exam!';
       }
+      
+      // Toggle test count pill visibility
+      document.querySelectorAll('.test-count-pill').forEach(pill => {
+        pill.style.display = isStudyMode ? 'none' : '';
+      });
     }
 
     // ── Start Study Mode ─────────────────────────────────
@@ -2865,6 +2870,7 @@ ${formatExplanation(explanationLangText)}</div>
                   card.appendChild(badge);
                 }
                 badge.textContent = `${count} ${count === 1 ? 'Test' : 'Tests'}`;
+                badge.style.display = isStudyMode ? 'none' : '';
               }
             } catch (error) {
               console.error("Error fetching count for", category, error);

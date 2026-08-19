@@ -462,34 +462,12 @@ function doSearch(query) {
 
 // Global handler to navigate to the clicked search result
 window.handleSearchResultClick = function (uid) {
-  // 1. Close overlay
+  // Close overlay
   const overlay = document.getElementById("search-overlay");
   if (overlay) overlay.classList.remove("active");
 
-  // 2. Find the card in the DOM by uid
-  const post = document.querySelector(`.post-item[data-uid="${uid}"]`);
-  if (post) {
-    // 3. Activate tab containing the card
-    activateTabForPostItem(post);
-
-    // 4. Scroll to it
-    post.scrollIntoView({ behavior: "smooth", block: "center" });
-
-    // 5. Expand details if closed
-    const details = post.querySelector('.post-details');
-    if (details && !details.classList.contains('expanded')) {
-      toggleJobDetails(post);
-    }
-
-    // 6. Highlight briefly to draw attention
-    post.style.transition = "background-color 0.4s";
-    const origBg = post.style.backgroundColor;
-    post.style.backgroundColor = "#fff3e0"; // Soft orange flash
-    setTimeout(() => {
-      post.style.backgroundColor = origBg;
-      post.style.transition = "";
-    }, 1200);
-  }
+  // Navigate to the job details page
+  window.location.href = `/job.html?id=${uid}`;
 };
 
 // ---- HAMBURGER MENU / TOGGLE ----
