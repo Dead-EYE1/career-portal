@@ -5,8 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Job Details | NJ Updates</title>
-  <meta name="description" content="Get instant job alerts, latest government job notifications, admit cards, and results at NJ Updates." />
+  <meta name="description" content="View detailed job information including eligibility, vacancy count, salary, important dates, and application links at NJ Updates." />
   <meta name="keywords" content="NJ Updates, government jobs, admit cards, exam results, job alerts" />
+  <meta name="robots" content="noindex, follow" id="robots-meta">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -16,9 +17,12 @@
     "url": "https://newjobupdates.in/"
   }
   </script>
-  <!-- SVG Favicon for modern browsers -->
-  <link rel="icon" type="image/svg+xml" href="/logo.svg?v=24">
-  <link rel="stylesheet" href="/style.css?v=24">
+  <!-- Favicons: SVG primary + PNG fallback for Google Search -->
+  <link rel="icon" type="image/svg+xml" href="/logo.svg?v=25">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png?v=25">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=25">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=25">
+  <link rel="stylesheet" href="/style.css?v=25">
   <script>
     (function () {
       const savedTheme = localStorage.getItem('theme');
@@ -39,7 +43,7 @@
     <div class="container header-inner">
       <a href="/" class="logo" id="logo-link">
         <div class="logo-icon logo-icon--image">
-          <img src="/logo.svg?v=24" alt="NJ Updates Logo" class="logo-image">
+          <img src="/logo.svg?v=25" alt="NJ Updates Logo" class="logo-image">
         </div>
         <div class="logo-text">
           <h1 class="logo-main"><span class="logo-accent">NJ</span> <span class="logo-light">Updates</span></h1>
@@ -138,7 +142,7 @@
     </div>
   </div>
 
-  <script src="/script.js?v=24"></script>
+  <script src="/script.js?v=25"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       // Setup minimal page dependencies
@@ -178,6 +182,15 @@
 
         // Render full details
         document.title = `${job.title} | newjobupdates.in`;
+
+        // SEO: Upgrade robots to allow indexing now that real content exists
+        const robotsMeta = document.getElementById('robots-meta');
+        if (robotsMeta) robotsMeta.setAttribute('content', 'index, follow');
+
+        // SEO: Set a dynamic meta description for this specific job
+        const descMeta = document.querySelector('meta[name="description"]');
+        if (descMeta) descMeta.setAttribute('content',
+          `${job.title} — Apply now. View eligibility, last date, salary & vacancy details at NJ Updates.`);
         
         const isPastDeadline = job.raw_last_date ? isExpired(job.raw_last_date) : false;
         const safeDetails = wrapTablesInResponsiveDiv(job.other_details);
