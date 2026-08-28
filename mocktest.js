@@ -1722,11 +1722,20 @@ ${formatExplanation(explanationLangText)}</div>
       if (currentQChip) {
         currentQChip.textContent = 'Loading...';
       }
-      const q = query(collection(db, 'questions'), where('exam', '==', category));
-      const snapshot = await getDocs(q);
-      currentQChip = document.getElementById('questions-chip');
-      if (currentQChip) {
-        currentQChip.textContent = `${snapshot.size} Questions`;
+      try {
+        const q = query(collection(db, 'questions'), where('exam', '==', category));
+        const snapshot = await getCountFromServer(q);
+        const count = snapshot.data().count;
+        currentQChip = document.getElementById('questions-chip');
+        if (currentQChip) {
+          currentQChip.textContent = `${count} Questions`;
+        }
+      } catch (err) {
+        console.error('Error counting questions:', err);
+        currentQChip = document.getElementById('questions-chip');
+        if (currentQChip) {
+          currentQChip.textContent = '? Questions';
+        }
       }
     }
 
@@ -3191,20 +3200,20 @@ ${formatExplanation(explanationLangText)}</div>
         <h3 style="margin-bottom: 16px;">Are you sure?</h3>
         <p style="color: var(--text-secondary); margin-bottom: 24px;">${message}</p>
         <div style="display: flex; gap: 12px; justify-content: center;">
-          <button class="otp-btn" id="confirm-yes-btn" style="flex: 1; background: #ef4444; color: #fff; border: none;">Yes, Exit</button>
-          <button class="otp-btn" id="confirm-no-btn" style="flex: 1; background: var(--surface); color: var(--text-primary); border: 1px solid var(--border);">Cancel</button>
+          <button class="otp-btn confirm-yes-btn" style="flex: 1; background: #ef4444; color: #fff; border: none;">Yes, Exit</button>
+          <button class="otp-btn confirm-no-btn" style="flex: 1; background: var(--surface); color: var(--text-primary); border: 1px solid var(--border);">Cancel</button>
         </div>
       `;
       
       overlay.appendChild(modal);
       document.body.appendChild(overlay);
       
-      document.getElementById('confirm-yes-btn').addEventListener('click', () => {
+      modal.querySelector('.confirm-yes-btn').addEventListener('click', () => {
         document.body.removeChild(overlay);
         if (onConfirm) onConfirm();
       });
       
-      document.getElementById('confirm-no-btn').addEventListener('click', () => {
+      modal.querySelector('.confirm-no-btn').addEventListener('click', () => {
         document.body.removeChild(overlay);
       });
     };

@@ -11,7 +11,9 @@ function isoToDisplay(iso) {
   const [y, m, d] = iso.split('-');
   if (!y || !m || !d) return iso;
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  return `${months[+m - 1]} ${+d}, ${y}`;
+  const monthIdx = +m - 1;
+  if (monthIdx < 0 || monthIdx > 11) return iso; // Invalid month, return as-is
+  return `${months[monthIdx]} ${+d}, ${y}`;
 }
 
 function normaliseDate(items) {
@@ -226,11 +228,12 @@ function isExpired(dateStr) {
   return today > d;
 }
 
+// Pre-sorted by length (longest first) to match multi-word keywords before single-word ones
+const EXAM_KEYWORDS = ['INDIA POST GDS', 'ASSAM POLICE', 'Indian Air Force', 'Indian Navy', 'Coal India', 'Oil India', 'SSC CGL', 'SSC GD', 'Railway', 'NABARD', 'IBPS', 'APSC', 'ADRE', 'UPSC', 'Bank', 'CISF', 'SSC', 'RBI', 'RRB', 'SBI', 'BRO'];
+
 function highlightExamKeywords(title) {
-  const keywords = ['SSC GD', 'ASSAM POLICE', 'SSC CGL', 'SSC', 'RBI', 'INDIA POST GDS', 'BRO', 'UPSC', 'RRB', 'APSC', 'ADRE', 'Bank', 'Railway', 'SBI', 'IBPS', 'CISF', 'Indian Air Force', 'Indian Navy', 'Coal India', 'NABARD', 'Oil India'];
   let newTitle = title;
-  const sortedKeywords = keywords.sort((a, b) => b.length - a.length);
-  for (const kw of sortedKeywords) {
+  for (const kw of EXAM_KEYWORDS) {
     const regex = new RegExp(`\\b(${kw})\\b`, 'i');
     if (regex.test(newTitle)) {
       newTitle = newTitle.replace(regex, `<span class="exam-highlight-badge">$1</span>`);
@@ -273,7 +276,7 @@ window.shareOnWhatsApp = function (uid) {
   }
 
   const encodedText = encodeURIComponent(text);
-  window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+  window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank', 'noopener,noreferrer');
 };
 
 window.shareGeneral = function (uid) {
@@ -442,7 +445,8 @@ function doSearch(query) {
   overlay.classList.add("active");
 
   if (matches.length === 0) {
-    resultsList.innerHTML = `<p class="no-results">No results found for "<strong>${query}</strong>"</p>`;
+    const safeQuery = query.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    resultsList.innerHTML = `<p class="no-results">No results found for "<strong>${safeQuery}</strong>"</p>`;
     return;
   }
 
@@ -501,18 +505,36 @@ function initNewsletter() {
   const form = document.getElementById("newsletter-form");
   const success = document.getElementById("newsletter-success");
   if (!form || !success) return;
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = document.getElementById("newsletter-email");
-    if (email && email.value) {
-      form.style.display = "none";
-      success.style.display = "block";
-      setTimeout(() => {
-        success.style.display = "none";
-        form.style.display = "flex";
-        email.value = "";
-      }, 4000);
+    const emailInput = document.getElementById("newsletter-email");
+    if (!emailInput || !emailInput.value) return;
+    const emailValue = emailInput.value.trim();
+    if (!emailValue) return;
+
+    // Show success immediately for UX, save in background
+    form.style.display = "none";
+    success.style.display = "block";
+
+    // Save to Firestore
+    try {
+      const { getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+      const { getFirestore, collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const app = getApp();
+      const db = getFirestore(app);
+      await addDoc(collection(db, 'subscribers'), {
+        email: emailValue,
+        subscribedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error('Error saving subscriber:', err);
     }
+
+    setTimeout(() => {
+      success.style.display = "none";
+      form.style.display = "flex";
+      emailInput.value = "";
+    }, 4000);
   });
 }
 
@@ -755,12 +777,14 @@ function generateJobSchema(jobs) {
   const schema = {
     "@context": "https://schema.org",
     "@graph": jobs.filter(j => j.title).map(job => {
-      const datePosted = job.raw_date ? new Date(job.raw_date) : new Date();
+      let datePosted = job.raw_date ? new Date(job.raw_date) : null;
+      if (!datePosted || isNaN(datePosted.getTime())) datePosted = new Date();
+
       let validThroughDate = job.raw_last_date && !isNaN(new Date(job.raw_last_date).getTime()) ? new Date(job.raw_last_date) :
         (job.raw_apply_date && !isNaN(new Date(job.raw_apply_date).getTime()) ? new Date(job.raw_apply_date) : null);
 
       // Provide a 30-day dummy fallback for "TBA" or missing dates to fix the 6th warning
-      if (!validThroughDate) {
+      if (!validThroughDate || isNaN(validThroughDate.getTime())) {
         validThroughDate = new Date(datePosted.getTime() + 30 * 24 * 60 * 60 * 1000);
       }
 
@@ -944,34 +968,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Generate SEO schema for loaded jobs
   generateJobSchema(jobsDataForSchema);
 
-  // SPA Routing: auto-open job from URL
-  const pathParts = window.location.pathname.split('/');
-  if (pathParts.length >= 3 && pathParts[1] === 'job') {
-    const uid = decodeURIComponent(pathParts[2]);
-    setTimeout(() => {
-      const shareBtn = document.querySelector(`button[onclick="event.stopPropagation(); shareGeneral('${uid}')"]`);
-      if (shareBtn) {
-        const postItem = shareBtn.closest('.post-item');
-        if (postItem) {
-          activateTabForPostItem(postItem); // Activate containing tab first
-          postItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          toggleJobDetails(postItem);
-          const origBg = postItem.style.backgroundColor;
-          postItem.style.transition = 'background-color 0.4s';
-          postItem.style.backgroundColor = '#fff3e0';
-          setTimeout(() => {
-            postItem.style.backgroundColor = origBg;
-            postItem.style.transition = '';
-          }, 1500);
-        }
-      }
-    }, 300);
-  }
-
-  // Header scroll style
-  const style = document.createElement("style");
-  style.textContent = `.header.scrolled { box-shadow: 0 4px 20px rgba(0,53,128,0.14); }`;
-  document.head.appendChild(style);
+  // NOTE: SPA routing for /job/ path removed — Vercel redirects /job/* → /post/* → job.html
+  // The .header.scrolled style is defined in style.css
 
   console.log("✅ NJ Updates Portal Loaded Successfully");
 });

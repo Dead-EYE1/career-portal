@@ -119,10 +119,9 @@
     </div>
   </footer>
 
-  <script src="/script.js?v=25"></script>
+  <script src="/script.js?v=25" defer></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
-      initThemeToggle();
       
       const yearSpan = document.getElementById("copyright-year");
       if (yearSpan) yearSpan.textContent = new Date().getFullYear();
