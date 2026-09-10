@@ -122,10 +122,10 @@
           <p class="otp-status-msg hidden" id="auth-status-msg"></p>
 
           <footer class="card-footer auth-toggle-row">
-            <p class="signup-text">
+            <div class="auth-toggle-row">
               <span id="auth-toggle-text">New here? </span>
-              <button type="button" class="link-btn auth-link-btn" onclick="toggleAuthMode()">Sign up</button>
-            </p>
+              <button type="button" class="link-btn auth-link-btn" id="auth-toggle-btn" onclick="toggleAuthMode()">Sign up</button>
+            </div>
             <button type="button" class="btn-ghost-close modal-close-btn" id="modal-close-btn">Close</button>
           </footer>
         </form>
