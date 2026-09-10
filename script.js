@@ -35,7 +35,7 @@ async function fetchSectionData(url) {
   // 1. Fetch from Firestore for jobs
   if (url === '/data/jobs.json') {
     try {
-      // Forcefully clear old cache so it doesn't get stuck showing old jobs
+      // Clean up old legacy cache keys if present
       localStorage.removeItem('cache_/data/jobs.json');
       
       // Dynamically import Firebase Web SDK (v9+)
@@ -85,6 +85,12 @@ async function fetchSectionData(url) {
       });
 
       console.log(`✅ Loaded ${firebaseItems.length} jobs from Firestore!`);
+      
+      // Cache the Firebase jobs to ensure instant UI rendering on next load
+      try {
+        localStorage.setItem('nj_cache_' + url, JSON.stringify({ ts: Date.now(), items: firebaseItems }));
+      } catch(e) { /* Ignore */ }
+
       return firebaseItems; // Early return for jobs (database only)
     } catch (error) {
       console.error("❌ Error fetching jobs from Firestore:", error);
@@ -101,7 +107,7 @@ async function fetchSectionData(url) {
     
     // Cache with timestamp
     try {
-      localStorage.setItem('cache_' + url, JSON.stringify({ ts: Date.now(), items: staticItems }));
+      localStorage.setItem('nj_cache_' + url, JSON.stringify({ ts: Date.now(), items: staticItems }));
     } catch(e) { /* localStorage full or unavailable */ }
     
     return staticItems;
@@ -113,7 +119,7 @@ async function fetchSectionData(url) {
 
 function getCachedData(url, maxAgeMs) {
   try {
-    const raw = localStorage.getItem('cache_' + url);
+    const raw = localStorage.getItem('nj_cache_' + url);
     if (!raw) return null;
     const { ts, items } = JSON.parse(raw);
     if (Date.now() - ts > maxAgeMs) return null;
