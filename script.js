@@ -16,6 +16,34 @@ function isoToDisplay(iso) {
   return `${months[monthIdx]} ${+d}, ${y}`;
 }
 
+function getShortOrgName(name) {
+  if (!name) return "";
+  const match = name.match(/\(([A-Z]{2,})\)/);
+  if (match) return match[1];
+
+  const map = {
+    "staff selection commission": "SSC",
+    "union public service commission": "UPSC",
+    "railway recruitment board": "RRB",
+    "institute of banking personnel selection": "IBPS",
+    "state bank of india": "SBI",
+    "assam public service commission": "APSC",
+    "national informatics centre": "NIC",
+    "indian space research organisation": "ISRO",
+    "food corporation of india": "FCI",
+    "life insurance corporation": "LIC",
+    "reserve bank of india": "RBI"
+  };
+  
+  const lowerName = name.toLowerCase().trim();
+  for (const [full, short] of Object.entries(map)) {
+    if (lowerName.includes(full)) {
+      return short;
+    }
+  }
+  return name;
+}
+
 function normaliseDate(items) {
   if (!items) return [];
   return items.map(item => ({
@@ -72,7 +100,7 @@ async function fetchSectionData(url) {
           id: doc.id, 
           ...data,
           title: data.title || "",
-          organization: data.company || data.organization || "",
+          organization: getShortOrgName(data.company || data.organization || ""),
           category: data.category || data.job_category || "government",
           badge: data.badge || "",
           last_date: data.lastDate || data.last_date || "",
@@ -900,8 +928,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       ...scholarshipData
     ];
 
-    const assamJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && (j.group === 'Assam' || j.tag === 'Assam' || j.tag === 'APSC'));
-    const centralJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && (j.group === 'Central' || (j.tag !== 'Assam' && j.tag !== 'APSC' && j.group !== 'Assam')));
+    const isAssam = (j) => {
+      const g = (j.group || '').toLowerCase();
+      const t = (j.tag || '').toLowerCase();
+      return g.includes('assam') || t.includes('assam') || t.includes('apsc');
+    };
+    
+    const assamJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && isAssam(j));
+    const centralJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && !isAssam(j));
     const upcomingJobs = jobsData.filter(j => j.status === 'upcoming');
 
     const activeScholarship = scholarshipData.filter(s => s.status !== 'upcoming');
