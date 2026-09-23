@@ -344,6 +344,15 @@ window.copyJobLink = function (uid, btnElement) {
 
 
 function generatePostHTML(data) {
+  if (!data || data.length === 0) {
+    return `
+      <div class="empty-state" style="padding: 40px 20px; text-align: center;">
+        <div class="empty-state-icon" style="font-size: 3rem; margin-bottom: 15px;">📭</div>
+        <p style="font-size: 1.1rem; color: var(--text-color); margin-bottom: 8px;">No jobs available in this section right now.</p>
+        <p class="empty-state-hint" style="color: var(--text-muted); font-size: 0.95rem;">Please check back later for new updates.</p>
+      </div>
+    `;
+  }
   return data.map(item => {
     const isPastDeadline = item.raw_last_date ? isExpired(item.raw_last_date) : false;
     const expiredClass = isPastDeadline ? "expired-card-item" : "";
@@ -931,7 +940,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const isAssam = (j) => {
       const g = (j.group || '').toLowerCase();
       const t = (j.tag || '').toLowerCase();
-      return g.includes('assam') || t.includes('assam') || t.includes('apsc');
+      return g.includes('assam') || t.includes('assam') || t.includes('apsc') || g.includes('state') || t.includes('state');
     };
     
     const assamJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && isAssam(j));
