@@ -1623,33 +1623,60 @@ ${formatExplanation(explanationLangText)}</div>
 
       selectedCategory = category;
 
-      // Toggle language options in test-selection dropdown based on exam category
-      const assameseOpt = document.getElementById('assamese-option');
-      const bengaliOpt = document.getElementById('bengali-option');
-      const bodoOpt = document.getElementById('bodo-option');
-      const hindiOpt = document.getElementById('hindi-option');
-
+      // Toggle language options across all dropdowns (Test Selection, Live Quiz, Study Mode)
       const showRegional = REGIONAL_LANG_ALLOWED_EXAMS.includes(category);
       const showBodo = BODO_ALLOWED_EXAMS.includes(category);
       const hideHindi = (category === 'assam_police');
 
-      if (assameseOpt) assameseOpt.style.display = showRegional ? '' : 'none';
-      if (bengaliOpt) bengaliOpt.style.display = showRegional ? '' : 'none';
-      if (bodoOpt) bodoOpt.style.display = showBodo ? '' : 'none';
-      if (hindiOpt) hindiOpt.style.display = hideHindi ? 'none' : '';
+      const selects = [
+        {
+          id: 'mock-lang-select',
+          opts: {
+            as: document.getElementById('assamese-option'),
+            bn: document.getElementById('bengali-option'),
+            brx: document.getElementById('bodo-option'),
+            hi: document.getElementById('hindi-option')
+          }
+        },
+        {
+          id: 'live-lang-toggle',
+          opts: {
+            as: document.getElementById('live-assamese-option'),
+            bn: document.getElementById('live-bengali-option'),
+            brx: document.getElementById('live-bodo-option'),
+            hi: document.getElementById('live-hindi-option')
+          }
+        },
+        {
+          id: 'study-lang-toggle',
+          opts: {
+            as: document.getElementById('study-assamese-option'),
+            bn: document.getElementById('study-bengali-option'),
+            brx: document.getElementById('study-bodo-option'),
+            hi: document.getElementById('study-hindi-option')
+          }
+        }
+      ];
 
-      const langSelect = document.getElementById('mock-lang-select');
-      if (langSelect) {
-        if (!showRegional && ['as', 'bn'].includes(langSelect.value)) {
-          langSelect.value = 'en';
+      selects.forEach(sel => {
+        if (sel.opts.as) sel.opts.as.style.display = showRegional ? '' : 'none';
+        if (sel.opts.bn) sel.opts.bn.style.display = showRegional ? '' : 'none';
+        if (sel.opts.brx) sel.opts.brx.style.display = showBodo ? '' : 'none';
+        if (sel.opts.hi) sel.opts.hi.style.display = hideHindi ? 'none' : '';
+
+        const dropdown = document.getElementById(sel.id);
+        if (dropdown) {
+          if (!showRegional && ['as', 'bn'].includes(dropdown.value)) {
+            dropdown.value = 'en';
+          }
+          if (!showBodo && dropdown.value === 'brx') {
+            dropdown.value = 'en';
+          }
+          if (hideHindi && dropdown.value === 'hi') {
+            dropdown.value = 'en';
+          }
         }
-        if (!showBodo && langSelect.value === 'brx') {
-          langSelect.value = 'en';
-        }
-        if (hideHindi && langSelect.value === 'hi') {
-          langSelect.value = 'en';
-        }
-      }
+      });
 
       if (subExamBadge) {
         subExamBadge.textContent = categoryNames[category] || category.toUpperCase();
@@ -3102,61 +3129,6 @@ ${formatExplanation(explanationLangText)}</div>
 
     // ── Toast Notification System ──────────────────────
     window.showToast = function(message, type = 'info') {
-      let style = document.getElementById('toast-styles');
-      if (!style) {
-        style = document.createElement('style');
-        style.id = 'toast-styles';
-        style.textContent = `
-          .custom-toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            pointer-events: none;
-          }
-          .custom-toast {
-            min-width: 250px;
-            max-width: 350px;
-            background: rgba(30, 30, 30, 0.95);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            color: #fff;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-            animation: toastSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            pointer-events: auto;
-          }
-          .custom-toast.toast-error { border-bottom: 4px solid #ef4444; }
-          .custom-toast.toast-warning { border-bottom: 4px solid #f59e0b; }
-          .custom-toast.toast-success { border-bottom: 4px solid #10b981; }
-          .custom-toast.toast-info { border-bottom: 4px solid #3b82f6; }
-          
-          .custom-toast.fade-out {
-            animation: toastFadeOut 0.3s ease-in forwards;
-          }
-          
-          @keyframes toastSlideIn {
-            from { transform: translateX(120%) scale(0.9); opacity: 0; }
-            to { transform: translateX(0) scale(1); opacity: 1; }
-          }
-          @keyframes toastFadeOut {
-            from { transform: translateX(0) scale(1); opacity: 1; }
-            to { transform: translateX(120%) scale(0.9); opacity: 0; }
-          }
-        `;
-        document.head.appendChild(style);
-      }
-
       let container = document.getElementById('toast-container');
       if (!container) {
         container = document.createElement('div');
@@ -3173,7 +3145,7 @@ ${formatExplanation(explanationLangText)}</div>
       else if (type === 'warning') icon = '⚠️';
       else if (type === 'success') icon = '✅';
 
-      toast.innerHTML = `<span style="font-size: 1.3rem;">${icon}</span> <span>${message}</span>`;
+      toast.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-msg">${message}</span>`;
       
       container.appendChild(toast);
 
@@ -3193,15 +3165,14 @@ ${formatExplanation(explanationLangText)}</div>
       
       const modal = document.createElement('div');
       modal.className = 'login-modal';
-      modal.style.textAlign = 'center';
       
       modal.innerHTML = `
         <div class="modal-icon" style="font-size: 2.5rem; margin-bottom: 12px;">⚠️</div>
-        <h3 style="margin-bottom: 16px;">Are you sure?</h3>
-        <p style="color: var(--text-secondary); margin-bottom: 24px;">${message}</p>
+        <h3>Are you sure?</h3>
+        <p>${message}</p>
         <div style="display: flex; gap: 12px; justify-content: center;">
-          <button class="otp-btn confirm-yes-btn" style="flex: 1; background: #ef4444; color: #fff; border: none;">Yes, Exit</button>
-          <button class="otp-btn confirm-no-btn" style="flex: 1; background: var(--surface); color: var(--text-primary); border: 1px solid var(--border);">Cancel</button>
+          <button class="confirm-yes-btn">Yes, Exit</button>
+          <button class="confirm-no-btn">Cancel</button>
         </div>
       `;
       

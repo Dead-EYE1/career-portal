@@ -316,7 +316,7 @@ window.shareOnWhatsApp = function (uid) {
 window.shareGeneral = function (uid) {
   const job = allData.find(j => j.uid === uid);
   if (!job) return;
-  const title = job.title || 'NJ Updates';
+  const title = job.title || 'NJ Hub';
   const url = `https://newjobupdates.in/post/${uid}`;
 
   if (navigator.share) {
@@ -1020,7 +1020,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // NOTE: SPA routing for /job/ path removed — Vercel redirects /job/* → /post/* → job.html
   // The .header.scrolled style is defined in style.css
 
-  console.log("✅ NJ Updates Portal Loaded Successfully");
+  console.log("✅ NJ Hub Portal Loaded Successfully");
 });
 
 // --- CONTACT MODAL LOGIC ---
