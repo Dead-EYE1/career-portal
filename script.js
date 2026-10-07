@@ -57,6 +57,8 @@ function normaliseDate(items) {
   }));
 }
 
+import { fetchJobs, addSubscriber, addContactMessage } from './firebase-service.js';
+
 async function fetchSectionData(url) {
   let firebaseItems = [];
 
@@ -66,38 +68,11 @@ async function fetchSectionData(url) {
       // Clean up old legacy cache keys if present
       localStorage.removeItem('cache_/data/jobs.json');
       
-      // Dynamically import Firebase Web SDK (v9+)
-      const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-      const { getFirestore, collection, getDocs, query, orderBy } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const rawJobs = await fetchJobs();
       
-      const firebaseConfig = {
-        apiKey: "AIzaSyAh1dbSY0lLbYAZSzfPPpTlru3OmeZ3p_E",
-        authDomain: "newjobupdates-c234a.firebaseapp.com",
-        projectId: "newjobupdates-c234a",
-        storageBucket: "newjobupdates-c234a.firebasestorage.app",
-        messagingSenderId: "275056131922",
-        appId: "1:275056131922:web:2b44bb31cf42e3897c448b"
-      };
-
-      // Initialize or retrieve Firebase app
-      let app;
-      if (getApps().length === 0) {
-        app = initializeApp(firebaseConfig);
-      } else {
-        app = getApp();
-      }
-      
-      const firestoreDb = getFirestore(app);
-      const jobsCol = collection(firestoreDb, 'job_notifications');
-      
-      // Order the results by most recent jobs first
-      const q = query(jobsCol, orderBy('createdAt', 'desc')); 
-      const querySnapshot = await getDocs(q);
-      
-      querySnapshot.forEach(doc => {
-        const data = doc.data();
+      rawJobs.forEach(data => {
         firebaseItems.push({
-          id: doc.id, 
+          id: data.id, 
           ...data,
           title: data.title || "",
           organization: getShortOrgName(data.company || data.organization || ""),
@@ -561,14 +536,7 @@ function initNewsletter() {
 
     // Save to Firestore
     try {
-      const { getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-      const { getFirestore, collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-      const app = getApp();
-      const db = getFirestore(app);
-      await addDoc(collection(db, 'subscribers'), {
-        email: emailValue,
-        subscribedAt: serverTimestamp()
-      });
+      await addSubscriber(emailValue);
     } catch (err) {
       console.error('Error saving subscriber:', err);
     }
@@ -878,7 +846,7 @@ function generateJobSchema(jobs) {
 }
 
 // ---- INIT ----
-document.addEventListener("DOMContentLoaded", async () => {
+async function initApp() {
   setLiveDate();
 
   // Set copyright year dynamically
@@ -1021,7 +989,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   // The .header.scrolled style is defined in style.css
 
   console.log("✅ NJ Hub Portal Loaded Successfully");
-});
+};
+
+// Check if DOM is already loaded before adding event listener,
+// since type="module" scripts are deferred.
+if (document.readyState === 'loading') {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
+}
 
 // --- CONTACT MODAL LOGIC ---
 window.openContactModal = function(e) {
@@ -1055,32 +1031,11 @@ window.submitContactForm = async function(e) {
   const formData = new FormData(form);
   
   try {
-    const { initializeApp, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-    const { getFirestore, collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-    
-    const firebaseConfig = {
-      apiKey: "AIzaSyAh1dbSY0lLbYAZSzfPPpTlru3OmeZ3p_E",
-      authDomain: "newjobupdates-c234a.firebaseapp.com",
-      projectId: "newjobupdates-c234a",
-      storageBucket: "newjobupdates-c234a.firebasestorage.app",
-      messagingSenderId: "275056131922",
-      appId: "1:275056131922:web:2b44bb31cf42e3897c448b"
-    };
-
-    let app;
-    try {
-      app = getApp();
-    } catch (err) {
-      app = initializeApp(firebaseConfig);
-    }
-    const db = getFirestore(app);
-    
-    await addDoc(collection(db, 'contact_messages'), {
-      name: formData.get('name'),
-      email: formData.get('email'),
-      message: formData.get('message'),
-      createdAt: serverTimestamp()
-    });
+    await addContactMessage(
+      formData.get('name'),
+      formData.get('email'),
+      formData.get('message')
+    );
     
     status.textContent = 'Message sent successfully! We will get back to you soon.';
     status.className = 'contact-status success';
