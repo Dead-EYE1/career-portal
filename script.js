@@ -57,7 +57,7 @@ function normaliseDate(items) {
   }));
 }
 
-import { fetchJobs, addSubscriber, addContactMessage } from './firebase-service.js';
+import { fetchJobs, addSubscriber, addContactMessage } from './firebase-service.js?v=40';
 
 async function fetchSectionData(url) {
   let firebaseItems = [];
