@@ -30,9 +30,41 @@ export async function fetchJobs() {
     querySnapshot.forEach(doc => {
       items.push({ id: doc.id, ...doc.data() });
     });
+    
+    // Sort jobs by most number of vacancies
+    items.sort((a, b) => {
+      // Helper function to extract the first numeric value from a string (e.g. "10,884 Vacancies" -> 10884)
+      const getVacancies = (str) => {
+        if (!str) return 0;
+        const match = str.replace(/,/g, '').match(/\d+/);
+        return match ? parseInt(match[0], 10) : 0;
+      };
+      
+      const countA = getVacancies(a.posts);
+      const countB = getVacancies(b.posts);
+      
+      return countB - countA; // Descending order (highest vacancies first)
+    });
+
     return items;
   } catch (error) {
     console.error("❌ Error fetching jobs from Firestore:", error);
+    throw error;
+  }
+}
+
+export async function fetchJobById(id) {
+  try {
+    // Import doc and getDoc if not already imported at top, but let's just use them since we'll add to imports
+    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const docRef = doc(db, 'job_notifications', id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() };
+    }
+    return null;
+  } catch (error) {
+    console.error("❌ Error fetching job by ID:", error);
     throw error;
   }
 }
