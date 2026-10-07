@@ -1280,3 +1280,11 @@ window.showToast = function(message, type = 'info') {
     });
   }, 4000);
 };
+
+// EXPORT TO GLOBAL SCOPE FOR INLINE SCRIPTS
+window.isExpired = isExpired;
+window.wrapTablesInResponsiveDiv = wrapTablesInResponsiveDiv;
+window.getBadgeClass = getBadgeClass;
+window.getBadgeText = getBadgeText;
+window.getButtonText = getButtonText;
+window.generatePostHTML = generatePostHTML;
