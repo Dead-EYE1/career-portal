@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, query, orderBy, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAh1dbSY0lLbYAZSzfPPpTlru3OmeZ3p_E",
@@ -27,8 +27,8 @@ export async function fetchJobs() {
     const querySnapshot = await getDocs(q);
     
     const items = [];
-    querySnapshot.forEach(doc => {
-      items.push({ id: doc.id, ...doc.data() });
+    querySnapshot.forEach(document => {
+      items.push({ id: document.id, ...document.data() });
     });
     
     // Sort jobs by most number of vacancies
@@ -55,8 +55,6 @@ export async function fetchJobs() {
 
 export async function fetchJobById(id) {
   try {
-    // Import doc and getDoc if not already imported at top, but let's just use them since we'll add to imports
-    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
     const docRef = doc(db, 'job_notifications', id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
