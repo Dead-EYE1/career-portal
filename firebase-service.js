@@ -28,12 +28,12 @@ export async function fetchJobs() {
     
     const items = [];
     querySnapshot.forEach(document => {
-      items.push({ id: document.id, ...document.data() });
+      // Map doc.id to both 'id' and 'uid' to support existing UI templates
+      items.push({ id: document.id, uid: document.id, ...document.data() });
     });
     
     // Sort jobs by most number of vacancies
     items.sort((a, b) => {
-      // Helper function to extract the first numeric value from a string (e.g. "10,884 Vacancies" -> 10884)
       const getVacancies = (str) => {
         if (!str) return 0;
         const match = str.replace(/,/g, '').match(/\d+/);
@@ -43,7 +43,7 @@ export async function fetchJobs() {
       const countA = getVacancies(a.posts);
       const countB = getVacancies(b.posts);
       
-      return countB - countA; // Descending order (highest vacancies first)
+      return countB - countA;
     });
 
     return items;
@@ -55,7 +55,9 @@ export async function fetchJobs() {
 
 export async function fetchJobById(id) {
   try {
-    const docRef = doc(db, 'job_notifications', id);
+    // Strip legacy prefixes if the user navigated via old links
+    const cleanId = (id || '').replace(/^job-/, '').replace(/^scholar-/, '');
+    const docRef = doc(db, 'job_notifications', cleanId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       return { id: docSnap.id, ...docSnap.data() };
