@@ -17,25 +17,25 @@ const db = getFirestore();
 // Available options: 'ssc-cgl', 'ssc-chsl', 'ssc-mts', 'ssc-gd', 'rrb-ntpc', 'assam-police-abub'
 // If it's a completely custom job without a template, leave it empty: ''
 // =========================================================================
-const templateKey = 'ssc-chsl'; 
+const templateKey = 'rrb-ntpc'; 
 
 // =========================================================================
 // 2. FILL IN THE SPECIFIC DETAILS FOR THIS YEAR'S CYCLE
 // =========================================================================
 const currentCycleData = {
-  title: "SSC CHSL (10+2) Examination 2027",
-  badge: "new",                      // "new", "hot", "admit", "scholarship"
-  applyLink: "https://ssc.gov.in/",
+  title: "Railway RRB NTPC Recruitment 2026",
+  badge: "hot",                      // "new", "hot", "admit", "scholarship"
+  applyLink: "https://indianrailways.gov.in/",
   
   // Important Dates
-  postDate: "2027-04-01",            // YYYY-MM-DD
-  apply_date: "2027-04-01",          // YYYY-MM-DD
-  lastDate: "2027-05-01",            // YYYY-MM-DD
-  exam_date: "August 2027",
-  admit_card_date: "July 2027",
+  postDate: "2026-10-01",            // YYYY-MM-DD
+  apply_date: "2026-10-01",          // YYYY-MM-DD
+  lastDate: "2026-10-31",            // YYYY-MM-DD
+  exam_date: "December 2026",
+  admit_card_date: "November 2026",
   
   // Job Highlights
-  posts: "4,500 Approx Vacancies",
+  posts: "10,884 Vacancies (Graduate & Undergraduate)",
   location: "All India"
 };
 
