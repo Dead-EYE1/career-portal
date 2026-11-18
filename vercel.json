@@ -49,7 +49,7 @@
       "destination": "/job.html?id=$1"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!.*\\.(?:css|js|svg|png|jpg|jpeg|gif|json|ico|txt|xml)$).*)",
       "has": [{ "type": "host", "value": "mocktest.newjobupdates.in" }],
       "destination": "/mocktest.html"
     }
