@@ -5,7 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Job Details | NJ Hub</title>
-  <meta name="description" content="View detailed job information including eligibility, vacancy count, salary, important dates, and application links at NJ Hub." />
+  <meta name="description"
+    content="View detailed job information including eligibility, vacancy count, salary, important dates, and application links at NJ Hub." />
   <meta name="keywords" content="NJ Hub, government jobs, admit cards, exam results, job alerts" />
   <meta name="robots" content="noindex, follow" id="robots-meta">
   <script type="application/ld+json">
@@ -77,7 +78,7 @@
       <ul class="nav-menu" id="nav-menu">
         <li><a href="/" class="nav-link">🏠 Home</a></li>
         <li><a href="/#central-jobs-section" class="nav-link">Govt Jobs</a></li>
-        <li><a href="/mocktest.html" class="nav-link">📝 Mock Test</a></li>
+        <li><a href="/mocktest" class="nav-link">📝 NJU Test</a></li>
         <li><a href="#" class="nav-link" id="nav-contact" onclick="openContactModal(event)">📞 Contact</a></li>
       </ul>
     </div>
@@ -88,7 +89,7 @@
       <div id="job-detail-container">
         <p class="empty-state">Loading job details...</p>
       </div>
-      
+
 
     </section>
 
@@ -98,7 +99,8 @@
           class="join-card whatsapp">
           <div class="join-icon">
             <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
             </svg>
           </div>
           <div class="join-text">
@@ -155,7 +157,7 @@
       // Read ID from URL, format: ?id=job-123 or from path /post/job-123 (if rewrite is used)
       const urlParams = new URLSearchParams(window.location.search);
       let uid = urlParams.get('id');
-      
+
       // Fallback for Vercel rewrite checking pathname
       if (!uid && window.location.pathname.startsWith('/post/')) {
         uid = window.location.pathname.replace('/post/', '');
@@ -168,7 +170,7 @@
 
       try {
         const job = await fetchJobById(uid);
-        
+
         if (!job) {
           document.getElementById('job-detail-container').innerHTML = '<p class="empty-state">Job not found. It may have been removed.</p>';
           return;
@@ -185,7 +187,7 @@
         const descMeta = document.querySelector('meta[name="description"]');
         if (descMeta) descMeta.setAttribute('content',
           `${job.title} — Apply now. View eligibility, last date, salary & vacancy details at NJ Hub.`);
-        
+
         const isPastDeadline = job.raw_last_date ? window.isExpired(job.raw_last_date) : false;
         const safeDetails = window.wrapTablesInResponsiveDiv(job.other_details);
         const safeMainDetails = window.wrapTablesInResponsiveDiv(job.details);
@@ -213,10 +215,10 @@
          */
         function buildExamDetailsSection(edInput) {
           if (!edInput) return '';
-          
+
           let ed = edInput;
           if (typeof ed === 'string') {
-            try { ed = JSON.parse(ed); } catch(e) { return ''; }
+            try { ed = JSON.parse(ed); } catch (e) { return ''; }
           }
           if (!ed || typeof ed !== 'object' || Object.keys(ed).length === 0) return '';
 
@@ -287,17 +289,17 @@
               } else if (typeof s.topics === 'string') {
                 topicsArray = s.topics.split(',').map(t => t.trim()).filter(Boolean);
               }
-              
+
               let topicsContent = s.topics; // Fallback
               if (topicsArray.length > 0) {
-                topicsContent = `<div class="exam-topic-pill-container">` + 
-                  topicsArray.map(t => `<span class="exam-topic-pill">${t}</span>`).join('') + 
+                topicsContent = `<div class="exam-topic-pill-container">` +
+                  topicsArray.map(t => `<span class="exam-topic-pill">${t}</span>`).join('') +
                   `</div>`;
               }
-              
+
               return `<li><strong>${s.subject}</strong> ${topicsContent}</li>`;
             }).join('');
-            
+
             syllabusHtml = `
               <p class="exam-sub-heading">📚 Detailed Syllabus</p>
               <ul class="exam-detailed-syllabus">${listItems}</ul>
@@ -423,11 +425,11 @@
 
             <div class="mocktest-cta-section">
               <div class="mocktest-cta-glow"></div>
-              <a href="/mocktest.html" class="mocktest-cta-btn" id="mocktest-cta-btn">
+              <a href="/mocktest" class="mocktest-cta-btn" id="mocktest-cta-btn">
                 <span class="mocktest-cta-icon">📝</span>
                 <span class="mocktest-cta-text">
-                  <span class="mocktest-cta-main">Click Here to Take a Free Mock Test</span>
-                  <span class="mocktest-cta-sub">Prepare for ${job.tag || 'your exam'} — Practice now, score higher!</span>
+                  <span class="mocktest-cta-main">Click Here to Take NJU Mock Test</span>
+                  <span class="mocktest-cta-sub">Prepare for ${job.tag || 'your exam'} — Practice on NJU Test now!</span>
                 </span>
                 <span class="mocktest-cta-arrow">→</span>
               </a>
@@ -435,17 +437,18 @@
 
           </div>
         `;
-        
+
         document.getElementById('job-detail-container').innerHTML = html;
-        
+
 
 
       } catch (e) {
         document.getElementById('job-detail-container').innerHTML = '<p class="no-results">Error loading job details. Please try again.</p>';
       }
     });
-    
+
 
   </script>
 </body>
+
 </html>

@@ -6,12 +6,12 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://newjobupdates.in/mocktest.html</loc>
+    <loc>https://newjobupdates.in/mocktest</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://newjobupdates.in/archived-jobs.html</loc>
+    <loc>https://newjobupdates.in/archived-jobs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>

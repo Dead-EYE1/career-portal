@@ -2256,17 +2256,17 @@ ${formatExplanation(explanationLangText)}</div>
         if (studyBtn) studyBtn.classList.add('active');
         if (slider) slider.classList.add('study-active');
         if (modeDesc) modeDesc.textContent = 'Read questions & answers at your own pace';
-        if (startIcon) startIcon.textContent = '\ud83d\udcd6';
-        if (quizTitle) quizTitle.textContent = ' Study Mode';
-        if (quizDesc) quizDesc.textContent = 'Browse through questions and reveal answers when you\'re ready. No timer, no scoring \u2014 just learning!';
+        if (startIcon) startIcon.textContent = '📖';
+        if (quizTitle) quizTitle.textContent = ' NJU Study Mode';
+        if (quizDesc) quizDesc.textContent = 'Browse through questions and reveal answers when you\'re ready. No timer, no scoring — just learning!';
       } else {
         if (mocktestBtn) mocktestBtn.classList.add('active');
         if (studyBtn) studyBtn.classList.remove('active');
         if (slider) slider.classList.remove('study-active');
         if (modeDesc) modeDesc.textContent = 'Timed test with scoring & negative marking';
-        if (startIcon) startIcon.textContent = '\ud83d\udcdd';
-        if (quizTitle) quizTitle.textContent = ' Mock Test';
-        if (quizDesc) quizDesc.textContent = 'Test your knowledge with a quick mock test. Instant scoring with negative marking \u2014 just like the real exam!';
+        if (startIcon) startIcon.textContent = '📝';
+        if (quizTitle) quizTitle.textContent = ' NJU Mock Test';
+        if (quizDesc) quizDesc.textContent = 'Test your knowledge with a quick mock test. Instant scoring with negative marking — just like the real exam!';
       }
       
       // Toggle test count pill visibility
