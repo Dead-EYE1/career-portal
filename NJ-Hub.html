@@ -43,7 +43,7 @@
   <!-- Verification & Theme -->
   <meta name="google-site-verification" content="HOK2Hj-qEbqBn5wotJZSY198q-NBF4n1eBqi02YfAq0" />
   <!-- Favicons: SVG primary -->
-  <link rel="icon" type="image/svg+xml" href="/logo.svg?v=44">
+  <link rel="icon" type="image/svg+xml" href="/logo.svg?v=45">
   <meta name="msapplication-TileColor" content="#111322" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,8 +53,8 @@
   <noscript>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
   </noscript>
-  <link rel="stylesheet" href="/job-portal/style.css?v=44">
-  <link rel="stylesheet" href="/job-portal/theme-light.css?v=44">
+  <link rel="stylesheet" href="/NJ-Hub.css?v=45">
+  <link rel="stylesheet" href="/theme-light.css?v=45">
   <script>
     (function () {
       const savedTheme = localStorage.getItem('theme');
@@ -140,7 +140,7 @@
     <div class="container header-inner">
       <a href="/" class="logo" id="logo-link">
         <div class="logo-icon logo-icon--image">
-          <img src="/logo.svg?v=44" alt="NJ Hub Logo" class="logo-image" width="54" height="50">
+          <img src="/logo.svg?v=45" alt="NJ Hub Logo" class="logo-image" width="54" height="50">
         </div>
         <div class="logo-text">
           <h1 class="logo-main"><span class="logo-accent">NJ</span> <span class="logo-light">Hub</span></h1>
@@ -284,13 +284,14 @@
           <button class="job-tab active" data-target="central-jobs-container">Central Govt & Banking</button>
           <button class="job-tab" data-target="assam-jobs-container">Assam State Jobs</button>
           <button class="job-tab" data-target="upcoming-jobs-container">Upcoming Jobs</button>
+          <button class="job-tab" data-target="archived-jobs-container">⚠️ Expired Jobs</button>
         </div>
 
         <div id="central-jobs-container" class="job-tab-content active">
           <div class="section-block" id="central-jobs-section">
             <div class="section-header">
               <h2 class="section-title">🏛️ Central Govt & Banking</h2>
-              <a href="/archived-jobs.html" class="view-all-link">Expired Jobs →</a>
+              <a href="#archived-jobs-container" class="view-all-link" onclick="openArchivedJobsTab(event)">Expired Jobs →</a>
             </div>
             <div class="posts-list" id="central-posts-list">
               <div class="skeleton-card">
@@ -316,7 +317,7 @@
           <div class="section-block" id="assam-jobs-section">
             <div class="section-header">
               <h2 class="section-title">🌿 Assam State Jobs</h2>
-              <a href="/archived-jobs.html" class="view-all-link">Expired Jobs →</a>
+              <a href="#archived-jobs-container" class="view-all-link" onclick="openArchivedJobsTab(event)">Expired Jobs →</a>
             </div>
             <div class="posts-list" id="assam-posts-list">
               <div class="skeleton-card">
@@ -348,6 +349,26 @@
                 <div class="empty-state-icon">📅</div>
                 <p>No upcoming jobs at the moment.</p>
                 <p class="empty-state-hint">Check back later for future notifications!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="archived-jobs-container" class="job-tab-content">
+          <div class="section-block" id="archived-jobs-section">
+            <div class="section-header">
+              <h2 class="section-title">⚠️ Archived & Expired Jobs</h2>
+            </div>
+            <div class="posts-list" id="archived-posts-list">
+              <div class="skeleton-card">
+                <div class="skeleton-line w60"></div>
+                <div class="skeleton-line w80"></div>
+                <div class="skeleton-line w40"></div>
+              </div>
+              <div class="skeleton-card">
+                <div class="skeleton-line w60"></div>
+                <div class="skeleton-line w80"></div>
+                <div class="skeleton-line w40"></div>
               </div>
             </div>
           </div>
@@ -547,8 +568,7 @@
     </div>
   </div>
 
-  <script type="module" src="/job-portal/script.js?v=44"></script>
-  <script type="module" src="/job-portal/home-auth.js?v=44"></script>
+  <script type="module" src="/NJ-Hub.js?v=45"></script>
 </body>
 
 </html>

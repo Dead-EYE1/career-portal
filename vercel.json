@@ -43,6 +43,16 @@
       "statusCode": 301
     },
     {
+      "source": "/archived-jobs",
+      "destination": "/#archived-jobs-container",
+      "statusCode": 301
+    },
+    {
+      "source": "/archived-jobs.html",
+      "destination": "/#archived-jobs-container",
+      "statusCode": 301
+    },
+    {
       "source": "/job/(.*)",
       "destination": "/post/$1",
       "statusCode": 301
@@ -83,42 +93,6 @@
       "destination": "/mock-test/mocktest.html"
     },
     {
-      "source": "/post/(.*)",
-      "destination": "/job-portal/job.html?id=$1"
-    },
-    {
-      "source": "/job.html",
-      "destination": "/job-portal/job.html"
-    },
-    {
-      "source": "/archived-jobs",
-      "destination": "/job-portal/archived-jobs.html"
-    },
-    {
-      "source": "/archived-jobs.html",
-      "destination": "/job-portal/archived-jobs.html"
-    },
-    {
-      "source": "/style.css",
-      "destination": "/job-portal/style.css"
-    },
-    {
-      "source": "/theme-light.css",
-      "destination": "/job-portal/theme-light.css"
-    },
-    {
-      "source": "/script.js",
-      "destination": "/job-portal/script.js"
-    },
-    {
-      "source": "/home-auth.js",
-      "destination": "/job-portal/home-auth.js"
-    },
-    {
-      "source": "/firebase-service.js",
-      "destination": "/job-portal/firebase-service.js"
-    },
-    {
       "source": "/mocktest.css",
       "destination": "/mock-test/mocktest.css"
     },
@@ -127,12 +101,68 @@
       "destination": "/mock-test/mocktest.js"
     },
     {
+      "source": "/post/(.*)",
+      "destination": "/job.html?id=$1"
+    },
+    {
+      "source": "/job.html",
+      "destination": "/job.html"
+    },
+    {
+      "source": "/archived-jobs",
+      "destination": "/NJ-Hub.html"
+    },
+    {
+      "source": "/archived-jobs.html",
+      "destination": "/NJ-Hub.html"
+    },
+    {
+      "source": "/style.css",
+      "destination": "/NJ-Hub.css"
+    },
+    {
+      "source": "/theme-light.css",
+      "destination": "/theme-light.css"
+    },
+    {
+      "source": "/script.js",
+      "destination": "/NJ-Hub.js"
+    },
+    {
+      "source": "/home-auth.js",
+      "destination": "/NJ-Hub.js"
+    },
+    {
+      "source": "/firebase.js",
+      "destination": "/firebase.js"
+    },
+    {
+      "source": "/firebase-service.js",
+      "destination": "/firebase.js"
+    },
+    {
+      "source": "/job-portal/(.*)",
+      "destination": "/$1"
+    },
+    {
+      "source": "/NJ-Hub",
+      "destination": "/NJ-Hub.html"
+    },
+    {
+      "source": "/NJ-Hub.html",
+      "destination": "/NJ-Hub.html"
+    },
+    {
       "source": "/index.html",
-      "destination": "/job-portal/index.html"
+      "destination": "/NJ-Hub.html"
+    },
+    {
+      "source": "/index",
+      "destination": "/NJ-Hub.html"
     },
     {
       "source": "/",
-      "destination": "/job-portal/index.html"
+      "destination": "/NJ-Hub.html"
     }
   ]
 }
