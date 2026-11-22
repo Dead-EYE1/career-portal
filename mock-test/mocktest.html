@@ -40,7 +40,7 @@
   }
   </script>
   <!-- Favicons: SVG primary -->
-  <link rel="icon" type="image/svg+xml" href="/logo.svg?v=43">
+  <link rel="icon" type="image/svg+xml" href="/logo.svg?v=44">
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -49,10 +49,11 @@
   <noscript>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
   </noscript>
-  <link rel="stylesheet" href="mocktest.css?v=42" />
+  <link rel="stylesheet" href="/mock-test/mocktest.css?v=44" />
+  <link rel="stylesheet" href="/mock-test/theme-light.css?v=44" />
   <script>
     (function () {
-      const savedTheme = localStorage.getItem('theme');
+      const savedTheme = localStorage.getItem('mocktest_theme');
       if (savedTheme === 'light') {
         document.documentElement.classList.add('light-theme');
       }
@@ -170,7 +171,7 @@
     <div class="brand-container">
       <a href="/" class="logo" id="logo-link" title="New Job Updates — Home">
         <div class="logo-icon logo-icon--image">
-          <img src="/logo.svg?v=43" alt="NJU Test Logo" class="logo-image" width="54" height="50">
+          <img src="/logo.svg?v=44" alt="NJU Test Logo" class="logo-image" width="54" height="50">
         </div>
         <div class="logo-text">
           <h1 class="logo-main"><span class="logo-accent">NJU</span> <span class="logo-light">Test</span></h1>
@@ -868,7 +869,7 @@
   <!-- ══════════════════════════════════════════════ -->
   <!--  JAVASCRIPT (Firebase Firestore Integration)   -->
   <!-- ══════════════════════════════════════════════ -->
-  <script type="module" src="mocktest.js?v=42"></script>
+  <script type="module" src="/mock-test/mocktest.js?v=44"></script>
 </body>
 
 </html>

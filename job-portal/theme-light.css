@@ -125,6 +125,12 @@
   border: 1px solid #e2e8f0;
 }
 
+.light-theme .badge-result {
+  background: #ede9fe;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+
 .light-theme .badge-expired {
   background: var(--primary);
   color: #ffffff;

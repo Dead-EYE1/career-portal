@@ -38,6 +38,11 @@
       "statusCode": 301
     },
     {
+      "source": "/mock-test/",
+      "destination": "/mocktest",
+      "statusCode": 301
+    },
+    {
       "source": "/job/(.*)",
       "destination": "/post/$1",
       "statusCode": 301
@@ -45,13 +50,89 @@
   ],
   "rewrites": [
     {
-      "source": "/post/(.*)",
-      "destination": "/job.html?id=$1"
-    },
-    {
       "source": "/((?!.*\\.(?:css|js|svg|png|jpg|jpeg|gif|json|ico|txt|xml)$).*)",
       "has": [{ "type": "host", "value": "mocktest.newjobupdates.in" }],
-      "destination": "/mocktest.html"
+      "destination": "/mock-test/mocktest.html"
+    },
+    {
+      "source": "/mocktest",
+      "destination": "/mock-test/mocktest.html"
+    },
+    {
+      "source": "/mocktest/",
+      "destination": "/mock-test/mocktest.html"
+    },
+    {
+      "source": "/mocktest.html",
+      "destination": "/mock-test/mocktest.html"
+    },
+    {
+      "source": "/mock-test",
+      "destination": "/mock-test/mocktest.html"
+    },
+    {
+      "source": "/mock-test/",
+      "destination": "/mock-test/mocktest.html"
+    },
+    {
+      "source": "/mock-test/mocktest",
+      "destination": "/mock-test/mocktest.html"
+    },
+    {
+      "source": "/mock-test/mocktest.html",
+      "destination": "/mock-test/mocktest.html"
+    },
+    {
+      "source": "/post/(.*)",
+      "destination": "/job-portal/job.html?id=$1"
+    },
+    {
+      "source": "/job.html",
+      "destination": "/job-portal/job.html"
+    },
+    {
+      "source": "/archived-jobs",
+      "destination": "/job-portal/archived-jobs.html"
+    },
+    {
+      "source": "/archived-jobs.html",
+      "destination": "/job-portal/archived-jobs.html"
+    },
+    {
+      "source": "/style.css",
+      "destination": "/job-portal/style.css"
+    },
+    {
+      "source": "/theme-light.css",
+      "destination": "/job-portal/theme-light.css"
+    },
+    {
+      "source": "/script.js",
+      "destination": "/job-portal/script.js"
+    },
+    {
+      "source": "/home-auth.js",
+      "destination": "/job-portal/home-auth.js"
+    },
+    {
+      "source": "/firebase-service.js",
+      "destination": "/job-portal/firebase-service.js"
+    },
+    {
+      "source": "/mocktest.css",
+      "destination": "/mock-test/mocktest.css"
+    },
+    {
+      "source": "/mocktest.js",
+      "destination": "/mock-test/mocktest.js"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/job-portal/index.html"
+    },
+    {
+      "source": "/",
+      "destination": "/job-portal/index.html"
     }
   ]
 }

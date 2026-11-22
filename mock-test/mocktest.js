@@ -3123,7 +3123,7 @@ ${formatExplanation(explanationLangText)}</div>
       themeToggleBtn.addEventListener('click', () => {
         document.documentElement.classList.toggle('light-theme');
         const isLight = document.documentElement.classList.contains('light-theme');
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        localStorage.setItem('mocktest_theme', isLight ? 'light' : 'dark');
       });
     }
 

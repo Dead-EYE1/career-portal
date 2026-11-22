@@ -1,0 +1,64 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "title": "ADRE Grade 3 & Grade 4 Result 2026 — Merit List & Cut Off Marks Released",
+      "type": "Result",
+      "tag": "Result",
+      "category": "Assam State",
+      "date": "2026-11-20",
+      "exam_name": "ADRE Class III & IV Exam",
+      "apply_link": "https://slrcg3.sebaonline.org/"
+    },
+    {
+      "id": 2,
+      "title": "Assam Police Constable (AB/UB) Admit Card 2026 — PST/PET Call Letter Download",
+      "type": "Admit Card",
+      "tag": "Admit Card",
+      "category": "Assam Police",
+      "date": "2026-11-18",
+      "exam_name": "Assam Police SLPRB Recruitment",
+      "apply_link": "https://slprbassam.in/"
+    },
+    {
+      "id": 3,
+      "title": "SSC CGL 2026 Tier-I Final Result & Cut-off Marks Declared",
+      "type": "Result",
+      "tag": "Result",
+      "category": "SSC",
+      "date": "2026-11-15",
+      "exam_name": "SSC Combined Graduate Level 2026",
+      "apply_link": "https://ssc.gov.in/"
+    },
+    {
+      "id": 4,
+      "title": "SSC GD Constable Admit Card 2026 — CBT Exam Date & City Intimation Slip",
+      "type": "Admit Card",
+      "tag": "Admit Card",
+      "category": "SSC",
+      "date": "2026-11-12",
+      "exam_name": "SSC GD Constable 2026",
+      "apply_link": "https://ssc.gov.in/"
+    },
+    {
+      "id": 5,
+      "title": "APSC CCE (Prelims) Result 2026 — Qualified Candidates Roll Numbers List",
+      "type": "Result",
+      "tag": "Result",
+      "category": "Assam",
+      "date": "2026-11-05",
+      "exam_name": "APSC Combined Competitive Examination",
+      "apply_link": "https://apsc.nic.in/"
+    },
+    {
+      "id": 6,
+      "title": "IBPS PO / Clerk Mains Admit Card 2026 — Online Exam Call Letter Out",
+      "type": "Admit Card",
+      "tag": "Admit Card",
+      "category": "Banking",
+      "date": "2026-10-28",
+      "exam_name": "IBPS CRP PO/MT & Clerical",
+      "apply_link": "https://www.ibps.in/"
+    }
+  ]
+}

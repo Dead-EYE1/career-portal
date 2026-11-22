@@ -57,7 +57,7 @@ function normaliseDate(items) {
   }));
 }
 
-import { fetchJobs, addSubscriber, addContactMessage } from './firebase-service.js?v=41';
+import { fetchJobs, addSubscriber, addContactMessage } from './firebase-service.js?v=44';
 
 async function fetchSectionData(url) {
   let firebaseItems = [];
@@ -136,6 +136,7 @@ function getBadgeClass(badge) {
     new: "badge-new",
     hot: "badge-hot",
     admit: "badge-admit",
+    result: "badge-result",
     scholarship: "badge-scholarship",
   };
   return map[badge] || "badge-new";
@@ -146,6 +147,7 @@ function getBadgeText(badge) {
     new: "NEW",
     hot: "HOT",
     admit: "ADMIT",
+    result: "RESULT",
     scholarship: "AWARD",
   };
   return map[badge] || "NEW";
@@ -153,7 +155,8 @@ function getBadgeText(badge) {
 
 function getButtonText(badge) {
   const map = {
-    admit: "Download Now",
+    admit: "Download Admit",
+    result: "Check Result",
     scholarship: "Apply Now",
     new: "Apply Now",
     hot: "Apply Now"
@@ -271,11 +274,14 @@ window.shareOnWhatsApp = function (uid) {
   const url = `https://newjobupdates.in/post/${uid}`;
 
   let text = '';
-  if (job.section === "Scholarship") {
-    text = `🏆 *${title}*\n\n`;
-    if (job.education) text += `🎓 ${job.education}\n`;
+  if (job.section === "Result & Admit" || job.section === "Scholarship") {
+    const isResult = (job.type || job.tag || '').toLowerCase().includes('result');
+    text = isResult ? `📜 *${title}*\n\n` : `🎫 *${title}*\n\n`;
+    if (job.exam_name) text += `📝 Exam: ${job.exam_name}\n`;
+    if (job.category) text += `🏛️ Category: ${job.category}\n`;
+    if (job.date) text += `📅 Released: ${job.date}\n`;
     if (job.last_date) text += `⏰ Last Date: ${job.last_date}\n`;
-    text += `\n Apply Now: ${url}\n`;
+    text += `\n Check / Download: ${job.apply_link || url}\n`;
   } else {
     text = `🚨 *${title}*\n\n`;
     if (job.posts) text += `👤 ${job.posts}\n`;
@@ -374,31 +380,37 @@ function renderPosts(listId, data) {
   container.innerHTML = generatePostHTML(data);
 }
 
-function generateScholarshipHTML(data) {
+function generateResultAdmitHTML(data) {
   return data.map(item => {
     const isPastDeadline = item.raw_last_date ? isExpired(item.raw_last_date) : false;
     const expiredClass = isPastDeadline ? "expired-card" : "";
-    const badgeText = isPastDeadline ? "CLOSED" : (item.tag || "Scholarship");
+    
+    const isResult = (item.type || item.tag || '').toLowerCase().includes('result');
+    const icon = isResult ? "📜" : "🎫";
+    const badgeText = isPastDeadline ? "CLOSED" : (item.tag || (isResult ? "RESULT" : "ADMIT CARD"));
+    const badgeClass = isResult ? "badge-result" : "badge-admit";
+    const actionText = isPastDeadline ? "View Details" : (isResult ? "Check Result" : "Download Admit");
     
     return `
-    <div class="scholar-card ${expiredClass}" data-uid="${item.uid}">
+    <div class="scholar-card result-admit-card ${expiredClass}" data-uid="${item.uid}">
       <div class="scholar-card-header">
         <div class="scholar-icon-wrap">
-          <span class="scholar-icon">🎓</span>
+          <span class="scholar-icon">${icon}</span>
         </div>
-        <span class="scholar-badge">${badgeText}</span>
+        <span class="scholar-badge ${badgeClass}">${badgeText}</span>
       </div>
       <div class="scholar-card-body">
         <h3 class="scholar-title">${item.title}</h3>
         <div class="scholar-meta">
-          ${item.education ? `<div class="s-meta-item"><span>📚</span> ${item.education}</div>` : ''}
-          ${item.date ? `<div class="s-meta-item"><span>📅</span> Posted: ${item.date}</div>` : ''}
-          ${item.last_date ? `<div class="s-meta-item"><span>⏰</span> Deadline: <strong style="color:var(--primary);">${item.last_date}</strong></div>` : ''}
+          ${item.exam_name ? `<div class="s-meta-item"><span>📝</span> ${item.exam_name}</div>` : (item.education ? `<div class="s-meta-item"><span>📚</span> ${item.education}</div>` : '')}
+          ${item.category ? `<div class="s-meta-item"><span>🏛️</span> ${item.category}</div>` : ''}
+          ${item.date ? `<div class="s-meta-item"><span>📅</span> Released: ${item.date}</div>` : ''}
+          ${item.last_date ? `<div class="s-meta-item"><span>⏰</span> Last Date: <strong style="color:var(--primary);">${item.last_date}</strong></div>` : ''}
         </div>
       </div>
       <div class="scholar-card-footer">
         <a href="${item.apply_link || '#'}" class="scholar-apply-btn" target="_blank" rel="noopener noreferrer">
-          ${isPastDeadline ? "View Details" : "Apply Now"} →
+          ${actionText} →
         </a>
         <button type="button" class="scholar-share-btn" onclick="shareOnWhatsApp('${item.uid}')" aria-label="Share on WhatsApp">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
@@ -410,11 +422,13 @@ function generateScholarshipHTML(data) {
   `}).join("");
 }
 
-function renderScholarships(listId, data) {
-  const container = document.getElementById(listId);
+function renderResultAdmit(listId, data) {
+  const container = document.getElementById(listId) || document.getElementById("result-admit-list") || document.getElementById("scholarship-list");
   if (!container) return;
-  container.innerHTML = generateScholarshipHTML(data);
+  container.innerHTML = generateResultAdmitHTML(data);
 }
+const generateScholarshipHTML = generateResultAdmitHTML;
+const renderScholarships = renderResultAdmit;
 
 
 
@@ -898,11 +912,11 @@ async function initApp() {
       if (a.id > b.id) return -1;
       return 0;
     });
-    const scholarshipData = normaliseDate(rawScholarship).map(s => ({ ...s, section: "Scholarship", uid: `scholar-${s.id}` }));
+    const resultAdmitData = normaliseDate(rawScholarship).map(s => ({ ...s, section: "Result & Admit", uid: `res-${s.id}` }));
 
     allData = [
       ...jobsData,
-      ...scholarshipData
+      ...resultAdmitData
     ];
 
     const isAssam = (j) => {
@@ -915,7 +929,7 @@ async function initApp() {
     const centralJobs = jobsData.filter(j => j.status !== 'upcoming' && (!j.raw_last_date || !isExpired(j.raw_last_date)) && !isAssam(j));
     const upcomingJobs = jobsData.filter(j => j.status === 'upcoming');
 
-    const activeScholarship = scholarshipData.filter(s => s.status !== 'upcoming');
+    const activeResultAdmit = resultAdmitData.filter(s => s.status !== 'upcoming');
 
     renderPosts("assam-posts-list", assamJobs);
     renderPosts("central-posts-list", centralJobs);
@@ -930,29 +944,30 @@ async function initApp() {
       expiredList.innerHTML = '';
     }
 
-    renderScholarships("scholarship-list", activeScholarship);
+    renderResultAdmit("result-admit-list", activeResultAdmit);
 
     return jobsData;
   }
 
   // Try cache-first render for instant display
   const cachedJobs = getCachedData('/data/jobs.json', CACHE_TTL);
-  const cachedScholarship = getCachedData('/data/scholarship.json', CACHE_TTL);
+  const cachedResultAdmit = getCachedData('/data/result-admit.json', CACHE_TTL) || getCachedData('/data/scholarship.json', CACHE_TTL);
   let jobsDataForSchema;
 
-  if (cachedJobs && cachedScholarship) {
+  if (cachedJobs && cachedResultAdmit) {
     // Render from cache instantly
-    jobsDataForSchema = processAndRender(cachedJobs, cachedScholarship);
+    jobsDataForSchema = processAndRender(cachedJobs, cachedResultAdmit);
 
     // Refresh in background (non-blocking)
     Promise.all([
       fetchSectionData('/data/jobs.json'),
-      fetchSectionData('/data/scholarship.json')
-    ]).then(([freshJobs, freshScholarship]) => {
-      if (freshJobs.length > 0 || freshScholarship.length > 0) {
+      fetchSectionData('/data/result-admit.json')
+    ]).then(([freshJobs, freshResultAdmit]) => {
+      const freshAdmitList = freshResultAdmit && freshResultAdmit.length > 0 ? freshResultAdmit : [];
+      if (freshJobs.length > 0 || freshAdmitList.length > 0) {
         jobsDataForSchema = processAndRender(
           freshJobs.length > 0 ? freshJobs : cachedJobs,
-          freshScholarship.length > 0 ? freshScholarship : cachedScholarship
+          freshAdmitList.length > 0 ? freshAdmitList : cachedResultAdmit
         );
         generateJobSchema(jobsDataForSchema);
         setTimeout(initAnimations, 100);
@@ -960,11 +975,11 @@ async function initApp() {
     });
   } else {
     // No cache — fetch and wait
-    const [rawJobs, rawScholarship] = await Promise.all([
+    const [rawJobs, rawResultAdmit] = await Promise.all([
       fetchSectionData('/data/jobs.json'),
-      fetchSectionData('/data/scholarship.json')
+      fetchSectionData('/data/result-admit.json')
     ]);
-    jobsDataForSchema = processAndRender(rawJobs, rawScholarship);
+    jobsDataForSchema = processAndRender(rawJobs, rawResultAdmit);
   }
 
 
