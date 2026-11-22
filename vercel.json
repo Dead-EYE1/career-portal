@@ -110,15 +110,23 @@
     },
     {
       "source": "/archived-jobs",
-      "destination": "/NJ-Hub.html"
+      "destination": "/index.html"
     },
     {
       "source": "/archived-jobs.html",
-      "destination": "/NJ-Hub.html"
+      "destination": "/index.html"
+    },
+    {
+      "source": "/job.css",
+      "destination": "/job.css"
+    },
+    {
+      "source": "/job.js",
+      "destination": "/job.js"
     },
     {
       "source": "/style.css",
-      "destination": "/NJ-Hub.css"
+      "destination": "/job.css"
     },
     {
       "source": "/theme-light.css",
@@ -126,11 +134,19 @@
     },
     {
       "source": "/script.js",
-      "destination": "/NJ-Hub.js"
+      "destination": "/job.js"
     },
     {
       "source": "/home-auth.js",
-      "destination": "/NJ-Hub.js"
+      "destination": "/job.js"
+    },
+    {
+      "source": "/NJ-Hub.css",
+      "destination": "/job.css"
+    },
+    {
+      "source": "/NJ-Hub.js",
+      "destination": "/job.js"
     },
     {
       "source": "/firebase.js",
@@ -146,23 +162,23 @@
     },
     {
       "source": "/NJ-Hub",
-      "destination": "/NJ-Hub.html"
+      "destination": "/index.html"
     },
     {
       "source": "/NJ-Hub.html",
-      "destination": "/NJ-Hub.html"
+      "destination": "/index.html"
     },
     {
       "source": "/index.html",
-      "destination": "/NJ-Hub.html"
+      "destination": "/index.html"
     },
     {
       "source": "/index",
-      "destination": "/NJ-Hub.html"
+      "destination": "/index.html"
     },
     {
       "source": "/",
-      "destination": "/NJ-Hub.html"
+      "destination": "/index.html"
     }
   ]
 }
